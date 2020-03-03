@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content="栈栈限定仅在表尾进行插入和删除操作的线性表，栈常用的操作有压栈与弹栈，用于标识栈的属性有栈顶与栈底。ESP寄存器保存着永远指向系统栈最上面一个栈针的栈顶。EBP寄存器保存着永远指向系统栈最上面一个栈,"> 
+    <meta name="description" content="栈栈限定仅在表尾进行插入和删除操作的线性表，栈常用的操作有压栈与弹栈，用于标识栈的属性有栈顶与栈底。ESP寄存器保存着永远指向系统栈最上面一个栈帧的栈顶。EBP寄存器保存着永远指向系统栈最上面一个栈,"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -136,7 +136,7 @@
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <h1 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h1><h2 id="栈-1"><a href="#栈-1" class="headerlink" title="栈"></a>栈</h2><p>限定仅在表尾进行插入和删除操作的线性表，栈常用的操作有压栈与弹栈，用于标识栈的属性有栈顶与栈底。<br>ESP寄存器保存着永远指向系统栈最上面一个栈针的栈顶。<br>EBP寄存器保存着永远指向系统栈最上面一个栈针的栈底。  </p>
+            <h1 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h1><h2 id="栈-1"><a href="#栈-1" class="headerlink" title="栈"></a>栈</h2><p>限定仅在表尾进行插入和删除操作的线性表，栈常用的操作有压栈与弹栈，用于标识栈的属性有栈顶与栈底。<br>ESP寄存器保存着永远指向系统栈最上面一个栈帧的栈顶。<br>EBP寄存器保存着永远指向系统栈最上面一个栈帧的栈底。  </p>
 <h2 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h2><p>提到栈，想到的就是函数的调用等等  </p>
 <h3 id="jump与call的区别"><a href="#jump与call的区别" class="headerlink" title="jump与call的区别"></a>jump与call的区别</h3><p>jump是跳转到该地址开始执行。而执行完成之后的返回地址将由程序自行确定。<br>call是把下一条指令的地址压入栈之后再跳转执行，方便ret到正确的下一条指令，中间涉及到堆栈平衡的操作。</p>
 <h3 id="C-中函数调用约定"><a href="#C-中函数调用约定" class="headerlink" title="C++中函数调用约定"></a>C++中函数调用约定</h3><ol>
@@ -148,13 +148,13 @@
 <li>常见的__stdcall为例，主调函数首先将参数从右往左压入栈</li>
 <li>call指令执行，将函数的返回地址，也就是EIP压入栈</li>
 <li>进入被调函数，有需要的话将寄存器的值再进行保存（与EBP紧邻的高地址不一定是返回地址，参考main函数的调用）</li>
-<li>将主调函数的栈针底压入栈</li>
+<li>将主调函数的栈帧底压入栈</li>
 <li>将ESP赋值给EBP，然后抬高栈顶</li>
 <li>函数ret之前，恢复之前保存的寄存器值</li>
-<li>将EBP赋值给ESP，并弹栈赋值EBP，以返回主调函数栈针</li>
+<li>将EBP赋值给ESP，并弹栈赋值EBP，以返回主调函数栈帧</li>
 <li>ret返回主调函数继续执行</li>
 </ol>
-<h3 id="formit-frame-pointer参数"><a href="#formit-frame-pointer参数" class="headerlink" title="-formit-frame-pointer参数"></a>-formit-frame-pointer参数</h3><p>调试程序时发现，printf函数在执行中并没有改变EBP的值，比如说，在main函数调用了printf之后，EBP并没有改变，但是仍然存在着抬高栈顶的操作。《程序员的自我修养》中提到，gcc编译器有参数-formit-frame-pointer，可以取消帧指针，直接通过esp来计算相关变量的位置，这样，多了一个ebp寄存器使用。经过编程尝试确实如此，通过-formit-frame-pointer编译后的函数汇编代码中不存在类似 mov esp，ebp 的操作。</p>
+<h3 id="formit-frame-pointer参数"><a href="#formit-frame-pointer参数" class="headerlink" title="-formit-frame-pointer参数"></a>-formit-frame-pointer参数</h3><p>调试程序时发现，printf函数在执行中并没有改变EBP的值，比如说，在main函数调用了printf之后，EBP并没有改变，但是仍然存在着抬高栈顶的操作。《程序员的自我修养》中提到，gcc编译器有参数-formit-frame-pointer，可以取消帧指针，直接通过esp来计算相关变量的位置，这样多了一个ebp寄存器使用。经过编程尝试确实如此，通过-formit-frame-pointer编译后的函数汇编代码中不存在类似 mov esp，ebp 的操作。</p>
 <h1 id="栈的防护与攻击"><a href="#栈的防护与攻击" class="headerlink" title="栈的防护与攻击"></a>栈的防护与攻击</h1><p>在这里简单介绍Windows与Linux下的相关栈防护与基本突破办法。</p>
 <h2 id="windows平台"><a href="#windows平台" class="headerlink" title="windows平台"></a>windows平台</h2><h3 id="GS"><a href="#GS" class="headerlink" title="GS"></a>GS</h3><p>调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。工作原理就是在函数返回之前，对cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。<br>怎么突破呢？  </p>
 <ol>
