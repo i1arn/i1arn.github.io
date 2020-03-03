@@ -159,7 +159,7 @@
 <h2 id="windows平台"><a href="#windows平台" class="headerlink" title="windows平台"></a>windows平台</h2><h3 id="GS"><a href="#GS" class="headerlink" title="GS"></a>GS</h3><p>调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。工作原理就是在函数返回之前，对cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。<br>怎么突破呢？  </p>
 <ol>
 <li>不可能爆破，但是可以爆破他的位置（拿不到程序调试的时候）。常规的办法就是尝试去打印出cookie，然后在溢出的时候在适当的位置填入Cookie，确保Cookie不会变</li>
-<li>虚函数 ？？？？？？？？？</li>
+<li>虚函数</li>
 <li>GS并没有对SEH进行保护，利用SEH</li>
 <li>难度最大的一种，</li>
 </ol>
