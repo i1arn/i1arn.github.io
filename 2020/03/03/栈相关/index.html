@@ -87,7 +87,8 @@
         <div class="else">
             <p class="animated fadeInDown">
                 
-                <a href="javascript:;"><b>「 </b>Article<b> 」</b></a>
+                <a href="/categories/lol"><b>「
+                    </b>LOL<b> 」</b></a>
                 
                 March 03, 2020
             </p>
@@ -98,13 +99,13 @@
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    2.2k
+                    14k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    2 mins.
+                    13 mins.
                 </span>
                 
                 
@@ -116,6 +117,8 @@
                 
             </p>
             
+            
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/pwn/" rel="tag">pwn</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/reverse/" rel="tag">reverse</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a></li></ul>
             
         </div>
     </div>
@@ -137,32 +140,37 @@
     <div class='main'>
         <div class="content markdown animated fadeIn">
             <h1 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h1><h2 id="栈-1"><a href="#栈-1" class="headerlink" title="栈"></a>栈</h2><p>限定仅在表尾进行插入和删除操作的线性表，栈常用的操作有压栈与弹栈，用于标识栈的属性有栈顶与栈底。<br>ESP寄存器保存着永远指向系统栈最上面一个栈帧的栈顶。<br>EBP寄存器保存着永远指向系统栈最上面一个栈帧的栈底。  </p>
-<h2 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h2><p>提到栈，想到的就是函数的调用等等  </p>
+<h2 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h2><p>提到栈，想到的就是函数的调用</p>
 <h3 id="jump与call的区别"><a href="#jump与call的区别" class="headerlink" title="jump与call的区别"></a>jump与call的区别</h3><p>jump是跳转到该地址开始执行。而执行完成之后的返回地址将由程序自行确定。<br>call是把下一条指令的地址压入栈之后再跳转执行，方便ret到正确的下一条指令，中间涉及到堆栈平衡的操作。</p>
 <h3 id="C-中函数调用约定"><a href="#C-中函数调用约定" class="headerlink" title="C++中函数调用约定"></a>C++中函数调用约定</h3><ol>
-<li>__cdecl 参数的入栈顺序是从右往左（使用时就是从左往右赋值），栈平衡的操作将在母函数内完成</li>
-<li>__fastcall 也是从右往左，栈平衡在子函数中完成</li>
-<li>__stdcall 从右往左，子函数中完成</li>
+<li>__cdecl c++的默认约定方式，参数的入栈顺序是从右往左（使用时就是从左往右赋值），栈平衡的操作将在主函数内完成</li>
+<li>__fastcall 也是从右往左，栈平衡在被调函数中完成</li>
+<li>__stdcall 从右往左，被调函数中完成</li>
 </ol>
-<h3 id="stdcall"><a href="#stdcall" class="headerlink" title="__stdcall"></a>__stdcall</h3><ol>
-<li>常见的__stdcall为例，主调函数首先将参数从右往左压入栈</li>
+<h3 id="cdecl举例"><a href="#cdecl举例" class="headerlink" title="__cdecl举例"></a>__cdecl举例</h3><ol>
+<li>常见的__cdecl为例，主调函数首先将参数从右往左压入栈</li>
 <li>call指令执行，将函数的返回地址，也就是EIP压入栈</li>
-<li>进入被调函数，有需要的话将寄存器的值再进行保存（与EBP紧邻的高地址不一定是返回地址，参考main函数的调用）</li>
 <li>将主调函数的栈帧底压入栈</li>
-<li>将ESP赋值给EBP，然后抬高栈顶</li>
+<li>将ESP赋值给EBP，设置帧基指针</li>
+<li>有需要的话将寄存器的值再进行保存</li>
+<li>然后抬高栈顶，为变量分配空间</li>
 <li>函数ret之前，恢复之前保存的寄存器值</li>
 <li>将EBP赋值给ESP，并弹栈赋值EBP，以返回主调函数栈帧</li>
 <li>ret返回主调函数继续执行</li>
 </ol>
-<h3 id="formit-frame-pointer参数"><a href="#formit-frame-pointer参数" class="headerlink" title="-formit-frame-pointer参数"></a>-formit-frame-pointer参数</h3><p>调试程序时发现，printf函数在执行中并没有改变EBP的值，比如说，在main函数调用了printf之后，EBP并没有改变，但是仍然存在着抬高栈顶的操作。《程序员的自我修养》中提到，gcc编译器有参数-formit-frame-pointer，可以取消帧指针，直接通过esp来计算相关变量的位置，这样多了一个ebp寄存器使用。经过编程尝试确实如此，通过-formit-frame-pointer编译后的函数汇编代码中不存在类似 mov esp，ebp 的操作。</p>
-<h1 id="栈的防护与攻击"><a href="#栈的防护与攻击" class="headerlink" title="栈的防护与攻击"></a>栈的防护与攻击</h1><p>在这里简单介绍Windows与Linux下的相关栈防护与基本突破办法。</p>
-<h2 id="windows平台"><a href="#windows平台" class="headerlink" title="windows平台"></a>windows平台</h2><h3 id="GS"><a href="#GS" class="headerlink" title="GS"></a>GS</h3><p>调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。工作原理就是在函数返回之前，对cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。<br>怎么突破呢？  </p>
-<ol>
-<li>不可能爆破，但是可以爆破他的位置（拿不到程序调试的时候）。常规的办法就是尝试去打印出cookie，然后在溢出的时候在适当的位置填入Cookie，确保Cookie不会变</li>
-<li>虚函数</li>
-<li>GS并没有对SEH进行保护，利用SEH</li>
-<li>难度最大的一种，</li>
-</ol>
+<h4 id="举例举例"><a href="#举例举例" class="headerlink" title="举例举例"></a>举例举例</h4><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0x08048451</span> &lt;+<span class="number">0</span>&gt;:	<span class="keyword">lea</span>    <span class="built_in">ecx</span>,[<span class="built_in">esp</span>+<span class="number">0x4</span>]      ；为了保存当前栈顶值</span><br><span class="line"><span class="number">0x08048455</span> &lt;+<span class="number">4</span>&gt;:	<span class="keyword">and</span>    <span class="built_in">esp</span>,<span class="number">0xfffffff0</span>     ；这里不是太明白用处，可能也是为了抬高栈顶</span><br><span class="line"><span class="number">0x08048458</span> &lt;+<span class="number">7</span>&gt;:	<span class="keyword">push</span>   <span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ecx</span>-<span class="number">0x4</span>]</span><br><span class="line"><span class="number">0x0804845b</span> &lt;+<span class="number">10</span>&gt;:	<span class="keyword">push</span>   <span class="built_in">ebp</span></span><br><span class="line"><span class="number">0x0804845c</span> &lt;+<span class="number">11</span>&gt;:	<span class="keyword">mov</span>    <span class="built_in">ebp</span>,<span class="built_in">esp</span></span><br><span class="line"><span class="number">0x0804845e</span> &lt;+<span class="number">13</span>&gt;:	<span class="keyword">push</span>   <span class="built_in">ecx</span>                ；压栈，保存<span class="built_in">ecx</span>的值，以便之后恢复堆栈平衡</span><br><span class="line"><span class="number">0x0804845f</span> &lt;+<span class="number">14</span>&gt;:	<span class="keyword">sub</span>    <span class="built_in">esp</span>,<span class="number">0x4</span>            ；抬高栈顶，为函数的局部变量分配空间</span><br><span class="line"><span class="number">0x08048462</span> &lt;+<span class="number">17</span>&gt;:	<span class="keyword">call</span>   <span class="number">0x804847f</span> &lt;__x86<span class="number">.</span>get_pc_thunk<span class="number">.</span><span class="built_in">ax</span>&gt;    ；与PIC技术相关，获取代码位置，用以地址无关代码。函数执行的结果是返回<span class="built_in">EIP</span>的值</span><br><span class="line"><span class="number">0x08048467</span> &lt;+<span class="number">22</span>&gt;:	<span class="keyword">add</span>    <span class="built_in">eax</span>,<span class="number">0x1b99</span></span><br><span class="line"><span class="number">0x0804846c</span> &lt;+<span class="number">27</span>&gt;:	<span class="keyword">call</span>   <span class="number">0x8048426</span> &lt;print()&gt;</span><br><span class="line"><span class="number">0x08048471</span> &lt;+<span class="number">32</span>&gt;:	<span class="keyword">mov</span>    <span class="built_in">eax</span>,<span class="number">0x0</span></span><br><span class="line"><span class="number">0x08048476</span> &lt;+<span class="number">37</span>&gt;:	<span class="keyword">add</span>    <span class="built_in">esp</span>,<span class="number">0x4</span>            ；栈空间释放</span><br><span class="line"><span class="number">0x08048479</span> &lt;+<span class="number">40</span>&gt;:	<span class="keyword">pop</span>    <span class="built_in">ecx</span>                ；弹出保存的寄存器的值</span><br><span class="line"><span class="number">0x0804847a</span> &lt;+<span class="number">41</span>&gt;:	<span class="keyword">pop</span>    <span class="built_in">ebp</span>                 </span><br><span class="line"><span class="number">0x0804847b</span> &lt;+<span class="number">42</span>&gt;:	<span class="keyword">lea</span>    <span class="built_in">esp</span>,[<span class="built_in">ecx</span>-<span class="number">0x4</span>]      ；恢复完主调函数的帧基指针</span><br><span class="line"><span class="number">0x0804847e</span> &lt;+<span class="number">45</span>&gt;:	<span class="keyword">ret</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="有关栈平衡"><a href="#有关栈平衡" class="headerlink" title="有关栈平衡"></a>有关栈平衡</h3><p>栈平衡不仅仅是返回之后EBP更改为主调函数的栈基指针，而且要求栈帧中不在包含调用函数时压入的参数，如此才为平衡。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>  __attribute__((stdcall))  <span class="built_in">print</span>(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> a+b+c;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span>  __attribute__((cdecl))  <span class="built_in">print</span>(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> a+b+c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>__stdcall约定方式</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0x08048426</span> &lt;+<span class="number">0</span>&gt;:	<span class="keyword">push</span>   <span class="built_in">ebp</span></span><br><span class="line"><span class="number">0x08048427</span> &lt;+<span class="number">1</span>&gt;:	<span class="keyword">mov</span>    <span class="built_in">ebp</span>,<span class="built_in">esp</span></span><br><span class="line"><span class="number">0x08048429</span> &lt;+<span class="number">3</span>&gt;:	<span class="keyword">call</span>   <span class="number">0x8048493</span> &lt;__x86<span class="number">.</span>get_pc_thunk<span class="number">.</span><span class="built_in">ax</span>&gt;</span><br><span class="line"><span class="number">0x0804842e</span> &lt;+<span class="number">8</span>&gt;:	<span class="keyword">add</span>    <span class="built_in">eax</span>,<span class="number">0x1bd2</span></span><br><span class="line"><span class="number">0x08048433</span> &lt;+<span class="number">13</span>&gt;:	<span class="keyword">mov</span>    <span class="built_in">edx</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0x8</span>]</span><br><span class="line"><span class="number">0x08048436</span> &lt;+<span class="number">16</span>&gt;:	<span class="keyword">mov</span>    <span class="built_in">eax</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0xc</span>]</span><br><span class="line"><span class="number">0x08048439</span> &lt;+<span class="number">19</span>&gt;:	<span class="keyword">add</span>    <span class="built_in">edx</span>,<span class="built_in">eax</span></span><br><span class="line"><span class="number">0x0804843b</span> &lt;+<span class="number">21</span>&gt;:	<span class="keyword">mov</span>    <span class="built_in">eax</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0x10</span>]</span><br><span class="line"><span class="number">0x0804843e</span> &lt;+<span class="number">24</span>&gt;:	<span class="keyword">add</span>    <span class="built_in">eax</span>,<span class="built_in">edx</span></span><br><span class="line"><span class="number">0x08048440</span> &lt;+<span class="number">26</span>&gt;:	<span class="keyword">pop</span>    <span class="built_in">ebp</span></span><br><span class="line"><span class="number">0x08048441</span> &lt;+<span class="number">27</span>&gt;:	<span class="keyword">ret</span>    <span class="number">0xc</span></span><br></pre></td></tr></table></figure>
+<p>__cdecl约定方式</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">  <span class="number">0x08048426</span> &lt;+<span class="number">0</span>&gt;:	<span class="keyword">push</span>   <span class="built_in">ebp</span></span><br><span class="line">  <span class="number">0x08048427</span> &lt;+<span class="number">1</span>&gt;:	<span class="keyword">mov</span>    <span class="built_in">ebp</span>,<span class="built_in">esp</span></span><br><span class="line">  <span class="number">0x08048429</span> &lt;+<span class="number">3</span>&gt;:	<span class="keyword">call</span>   <span class="number">0x8048494</span> &lt;__x86<span class="number">.</span>get_pc_thunk<span class="number">.</span><span class="built_in">ax</span>&gt;</span><br><span class="line">  <span class="number">0x0804842e</span> &lt;+<span class="number">8</span>&gt;:	<span class="keyword">add</span>    <span class="built_in">eax</span>,<span class="number">0x1bd2</span></span><br><span class="line">  <span class="number">0x08048433</span> &lt;+<span class="number">13</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">edx</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0x8</span>]</span><br><span class="line">  <span class="number">0x08048436</span> &lt;+<span class="number">16</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">eax</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0xc</span>]</span><br><span class="line">  <span class="number">0x08048439</span> &lt;+<span class="number">19</span>&gt;:<span class="keyword">add</span>    <span class="built_in">edx</span>,<span class="built_in">eax</span></span><br><span class="line">  <span class="number">0x0804843b</span> &lt;+<span class="number">21</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">eax</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0x10</span>]</span><br><span class="line">  <span class="number">0x0804843e</span> &lt;+<span class="number">24</span>&gt;:<span class="keyword">add</span>    <span class="built_in">eax</span>,<span class="built_in">edx</span></span><br><span class="line">  <span class="number">0x08048440</span> &lt;+<span class="number">26</span>&gt;:<span class="keyword">pop</span>    <span class="built_in">ebp</span></span><br><span class="line">  <span class="number">0x08048441</span> &lt;+<span class="number">27</span>&gt;:<span class="keyword">ret</span> </span><br><span class="line">  ；……</span><br><span class="line">→  <span class="number">0x804847b</span> &lt;main+<span class="number">40</span>&gt;:	<span class="keyword">add</span>    <span class="built_in">esp</span>, <span class="number">0xc</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="formit-frame-pointer参数"><a href="#formit-frame-pointer参数" class="headerlink" title="-formit-frame-pointer参数"></a>-formit-frame-pointer参数</h3><p>调试程序时发现，printf函数在执行中并没有改变EBP的值，比如说，在main函数调用了printf之后，EBP并没有改变，但是仍然存在着抬高栈顶的操作。《程序员的自我修养》中提到，gcc编译器有参数<code>-formit-frame-pointer</code>，可以取消帧指针，直接通过esp来计算相关变量的位置，这样多了一个ebp寄存器使用。经过编程尝试确实如此，通过<code>-formit-frame-pointer</code>编译后的函数汇编代码中不存在类似 <code>mov esp，ebp</code> 的操作。</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
@@ -206,9 +214,9 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">3 <p>Articles</p></a></li>
-                    <li><a href="/categories">1 <p>Categories</p></a></li>
-                    <li><a href="/tags">1 <p>Tags</p></a></li>
+                    <li><a href="/archives">5 <p>Articles</p></a></li>
+                    <li><a href="/categories">2 <p>Categories</p></a></li>
+                    <li><a href="/tags">4 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -217,7 +225,7 @@
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#栈"><span class="toc-number">1.</span> <span class="toc-text">栈</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#栈-1"><span class="toc-number">1.1.</span> <span class="toc-text">栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数调用"><span class="toc-number">1.2.</span> <span class="toc-text">函数调用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#jump与call的区别"><span class="toc-number">1.2.1.</span> <span class="toc-text">jump与call的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-中函数调用约定"><span class="toc-number">1.2.2.</span> <span class="toc-text">C++中函数调用约定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#stdcall"><span class="toc-number">1.2.3.</span> <span class="toc-text">__stdcall</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#formit-frame-pointer参数"><span class="toc-number">1.2.4.</span> <span class="toc-text">-formit-frame-pointer参数</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#栈的防护与攻击"><span class="toc-number">2.</span> <span class="toc-text">栈的防护与攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#windows平台"><span class="toc-number">2.1.</span> <span class="toc-text">windows平台</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GS"><span class="toc-number">2.1.1.</span> <span class="toc-text">GS</span></a></li></ol></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#栈"><span class="toc-number">1.</span> <span class="toc-text">栈</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#栈-1"><span class="toc-number">1.1.</span> <span class="toc-text">栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数调用"><span class="toc-number">1.2.</span> <span class="toc-text">函数调用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#jump与call的区别"><span class="toc-number">1.2.1.</span> <span class="toc-text">jump与call的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-中函数调用约定"><span class="toc-number">1.2.2.</span> <span class="toc-text">C++中函数调用约定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cdecl举例"><span class="toc-number">1.2.3.</span> <span class="toc-text">__cdecl举例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有关栈平衡"><span class="toc-number">1.2.4.</span> <span class="toc-text">有关栈平衡</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#formit-frame-pointer参数"><span class="toc-number">1.2.5.</span> <span class="toc-text">-formit-frame-pointer参数</span></a></li></ol></li></ol></li></ol>
                 </div>
             </div>
             

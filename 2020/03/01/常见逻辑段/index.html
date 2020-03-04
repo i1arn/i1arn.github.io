@@ -121,7 +121,7 @@
             </p>
             
             
-            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a></li></ul>
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/pwn/" rel="tag">pwn</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/reverse/" rel="tag">reverse</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a></li></ul>
             
         </div>
     </div>
@@ -155,7 +155,7 @@
 <h2 id="rel-text，-rel-data"><a href="#rel-text，-rel-data" class="headerlink" title=".rel.text，.rel.data"></a>.rel.text，.rel.data</h2><p>针对.text、.data段的重定位表。</p>
 <h2 id="got与-plt"><a href="#got与-plt" class="headerlink" title=".got与.plt"></a>.got与.plt</h2><p>got表为了解决在动态链接的时候模块中有绝对地址引用的问题，采用了PIC地址无关代码技术，而这个技术的中心思想就是got表。模块内部的函数调用跳转、数据的访问都可以通过相对地址进行，模块外部的访问函数、数据时就用到了got表。got表中包含了每个变量所在的地址，该地址由链接程序进行维护。通过got表实现了模块外部数据的间接访问。</p>
 <p>plt 延时绑定技术，当函数第一次被用到时才进行符号查找，重定位。</p>
-<p>绑定之后 call test@plt ,与 call [test@got] 执行效果相同。</p>
+<p>绑定之后 <code>call test@plt</code> ,与 <code>call [test@got]</code> 执行效果相同。</p>
 <h2 id="interp"><a href="#interp" class="headerlink" title=".interp"></a>.interp</h2><p>存放动态链接器的路径</p>
 <h2 id="dynamic"><a href="#dynamic" class="headerlink" title=".dynamic"></a>.dynamic</h2><p>保存了动态链接器所需要的基本信息，如重定位表的位置，符号表的位置，共享对象初始化代码的地址等等</p>
 <h2 id="dynsym"><a href="#dynsym" class="headerlink" title=".dynsym"></a>.dynsym</h2><p>保存了与动态链接相关的符号</p>
@@ -204,9 +204,9 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">3 <p>Articles</p></a></li>
-                    <li><a href="/categories">1 <p>Categories</p></a></li>
-                    <li><a href="/tags">1 <p>Tags</p></a></li>
+                    <li><a href="/archives">5 <p>Articles</p></a></li>
+                    <li><a href="/categories">2 <p>Categories</p></a></li>
+                    <li><a href="/tags">4 <p>Tags</p></a></li>
                 </ul>
             </div>
             

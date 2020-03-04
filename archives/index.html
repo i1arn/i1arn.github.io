@@ -60,7 +60,7 @@
                 <div class="content animated fadeIn">
                     <div class="set">
                         <h1 style="text-align: center">Archived</h1>
-                        <p style="text-align: center">「 3 」</p>
+                        <p style="text-align: center">「 5 」</p>
                         <ul class="timeline timeline-centered">
                             
                             
@@ -75,6 +75,37 @@
                                 
                                 <li class="timeline-item">
                                     <div class="timeline-info">
+                                        <span class="gradient-text">March 04, 2020</span>
+                                    </div>
+                                    <div class="timeline-marker"></div>
+                                    <div class="timeline-content">
+                                        <a class="timeline-title" target="_self" href="/2020/03/04/Windows%E3%80%81Linux%E7%A8%8B%E5%BA%8F%E5%B8%B8%E8%A7%81%E7%9A%84%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/">Windows、Linux程序常见的保护机制</a>
+                                        <p>
+                                            栈的防护与攻击在这里简单介绍Windows与Linux下的相关栈防护与基本突破办法。
+windows平台GS调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。工作原理就是在函数返回之前，对cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。怎么突破呢？  
+
+不可能爆破，但是可以爆...
+                                        </p>
+                                    </div>
+                                </li>
+                            
+                                
+                                <li class="timeline-item">
+                                    <div class="timeline-info">
+                                        <span class="gradient-text">March 04, 2020</span>
+                                    </div>
+                                    <div class="timeline-marker"></div>
+                                    <div class="timeline-content">
+                                        <a class="timeline-title" target="_self" href="/2020/03/04/%E5%A0%86%E7%9B%B8%E5%85%B3/">堆相关</a>
+                                        <p>
+                                            
+                                        </p>
+                                    </div>
+                                </li>
+                            
+                                
+                                <li class="timeline-item">
+                                    <div class="timeline-info">
                                         <span class="gradient-text">March 03, 2020</span>
                                     </div>
                                     <div class="timeline-marker"></div>
@@ -82,8 +113,8 @@
                                         <a class="timeline-title" target="_self" href="/2020/03/03/%E6%A0%88%E7%9B%B8%E5%85%B3/">栈相关</a>
                                         <p>
                                             栈栈限定仅在表尾进行插入和删除操作的线性表，栈常用的操作有压栈与弹栈，用于标识栈的属性有栈顶与栈底。ESP寄存器保存着永远指向系统栈最上面一个栈帧的栈顶。EBP寄存器保存着永远指向系统栈最上面一个栈帧的栈底。  
-函数调用提到栈，想到的就是函数的调用等等  
-jump与call的区别jump是跳转到该地址开始执行。而执行完成之后的返回地址将由程序自行确定。call是把下一条指令的地址压入栈之...
+函数调用提到栈，想到的就是函数的调用
+jump与call的区别jump是跳转到该地址开始执行。而执行完成之后的返回地址将由程序自行确定。call是把下一条指令的地址压入栈之后再跳转...
                                         </p>
                                     </div>
                                 </li>

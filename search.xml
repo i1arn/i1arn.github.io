@@ -4,13 +4,93 @@
   
     
     <entry>
+      <title>Windows、Linux程序常见的保护机制</title>
+      <link href="/2020/03/04/Windows%E3%80%81Linux%E7%A8%8B%E5%BA%8F%E5%B8%B8%E8%A7%81%E7%9A%84%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/"/>
+      <url>/2020/03/04/Windows%E3%80%81Linux%E7%A8%8B%E5%BA%8F%E5%B8%B8%E8%A7%81%E7%9A%84%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/</url>
+      
+        <content type="html"><![CDATA[<h1 id="栈的防护与攻击"><a href="#栈的防护与攻击" class="headerlink" title="栈的防护与攻击"></a>栈的防护与攻击</h1><p>在这里简单介绍Windows与Linux下的相关栈防护与基本突破办法。</p><h2 id="windows平台"><a href="#windows平台" class="headerlink" title="windows平台"></a>windows平台</h2><h3 id="GS"><a href="#GS" class="headerlink" title="GS"></a>GS</h3><p>调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。工作原理就是在函数返回之前，对cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。<br>怎么突破呢？  </p><ol><li>不可能爆破，但是可以爆破他的位置（拿不到程序调试的时候）。常规的办法就是尝试去打印出cookie，然后在溢出的时候在适当的位置填入Cookie，确保Cookie不会变</li><li>虚函数</li><li>GS并没有对SEH进行保护，利用SEH</li><li>难度最大的一种，</li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> lol </category>
+          
+          <category> 操作系统 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 随笔 </tag>
+            
+            <tag> os </tag>
+            
+            <tag> pwn </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>堆相关</title>
+      <link href="/2020/03/04/%E5%A0%86%E7%9B%B8%E5%85%B3/"/>
+      <url>/2020/03/04/%E5%A0%86%E7%9B%B8%E5%85%B3/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      <categories>
+          
+          <category> lol </category>
+          
+          <category> 操作系统 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 随笔 </tag>
+            
+            <tag> pwn </tag>
+            
+            <tag> reverse </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>栈相关</title>
       <link href="/2020/03/03/%E6%A0%88%E7%9B%B8%E5%85%B3/"/>
       <url>/2020/03/03/%E6%A0%88%E7%9B%B8%E5%85%B3/</url>
       
-        <content type="html"><![CDATA[<h1 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h1><h2 id="栈-1"><a href="#栈-1" class="headerlink" title="栈"></a>栈</h2><p>限定仅在表尾进行插入和删除操作的线性表，栈常用的操作有压栈与弹栈，用于标识栈的属性有栈顶与栈底。<br>ESP寄存器保存着永远指向系统栈最上面一个栈帧的栈顶。<br>EBP寄存器保存着永远指向系统栈最上面一个栈帧的栈底。  </p><h2 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h2><p>提到栈，想到的就是函数的调用等等  </p><h3 id="jump与call的区别"><a href="#jump与call的区别" class="headerlink" title="jump与call的区别"></a>jump与call的区别</h3><p>jump是跳转到该地址开始执行。而执行完成之后的返回地址将由程序自行确定。<br>call是把下一条指令的地址压入栈之后再跳转执行，方便ret到正确的下一条指令，中间涉及到堆栈平衡的操作。</p><h3 id="C-中函数调用约定"><a href="#C-中函数调用约定" class="headerlink" title="C++中函数调用约定"></a>C++中函数调用约定</h3><ol><li>__cdecl 参数的入栈顺序是从右往左（使用时就是从左往右赋值），栈平衡的操作将在母函数内完成</li><li>__fastcall 也是从右往左，栈平衡在子函数中完成</li><li>__stdcall 从右往左，子函数中完成</li></ol><h3 id="stdcall"><a href="#stdcall" class="headerlink" title="__stdcall"></a>__stdcall</h3><ol><li>常见的__stdcall为例，主调函数首先将参数从右往左压入栈</li><li>call指令执行，将函数的返回地址，也就是EIP压入栈</li><li>进入被调函数，有需要的话将寄存器的值再进行保存（与EBP紧邻的高地址不一定是返回地址，参考main函数的调用）</li><li>将主调函数的栈帧底压入栈</li><li>将ESP赋值给EBP，然后抬高栈顶</li><li>函数ret之前，恢复之前保存的寄存器值</li><li>将EBP赋值给ESP，并弹栈赋值EBP，以返回主调函数栈帧</li><li>ret返回主调函数继续执行</li></ol><h3 id="formit-frame-pointer参数"><a href="#formit-frame-pointer参数" class="headerlink" title="-formit-frame-pointer参数"></a>-formit-frame-pointer参数</h3><p>调试程序时发现，printf函数在执行中并没有改变EBP的值，比如说，在main函数调用了printf之后，EBP并没有改变，但是仍然存在着抬高栈顶的操作。《程序员的自我修养》中提到，gcc编译器有参数-formit-frame-pointer，可以取消帧指针，直接通过esp来计算相关变量的位置，这样多了一个ebp寄存器使用。经过编程尝试确实如此，通过-formit-frame-pointer编译后的函数汇编代码中不存在类似 mov esp，ebp 的操作。</p><h1 id="栈的防护与攻击"><a href="#栈的防护与攻击" class="headerlink" title="栈的防护与攻击"></a>栈的防护与攻击</h1><p>在这里简单介绍Windows与Linux下的相关栈防护与基本突破办法。</p><h2 id="windows平台"><a href="#windows平台" class="headerlink" title="windows平台"></a>windows平台</h2><h3 id="GS"><a href="#GS" class="headerlink" title="GS"></a>GS</h3><p>调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。工作原理就是在函数返回之前，对cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。<br>怎么突破呢？  </p><ol><li>不可能爆破，但是可以爆破他的位置（拿不到程序调试的时候）。常规的办法就是尝试去打印出cookie，然后在溢出的时候在适当的位置填入Cookie，确保Cookie不会变</li><li>虚函数</li><li>GS并没有对SEH进行保护，利用SEH</li><li>难度最大的一种，</li></ol>]]></content>
+        <content type="html"><![CDATA[<h1 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h1><h2 id="栈-1"><a href="#栈-1" class="headerlink" title="栈"></a>栈</h2><p>限定仅在表尾进行插入和删除操作的线性表，栈常用的操作有压栈与弹栈，用于标识栈的属性有栈顶与栈底。<br>ESP寄存器保存着永远指向系统栈最上面一个栈帧的栈顶。<br>EBP寄存器保存着永远指向系统栈最上面一个栈帧的栈底。  </p><h2 id="函数调用"><a href="#函数调用" class="headerlink" title="函数调用"></a>函数调用</h2><p>提到栈，想到的就是函数的调用</p><h3 id="jump与call的区别"><a href="#jump与call的区别" class="headerlink" title="jump与call的区别"></a>jump与call的区别</h3><p>jump是跳转到该地址开始执行。而执行完成之后的返回地址将由程序自行确定。<br>call是把下一条指令的地址压入栈之后再跳转执行，方便ret到正确的下一条指令，中间涉及到堆栈平衡的操作。</p><h3 id="C-中函数调用约定"><a href="#C-中函数调用约定" class="headerlink" title="C++中函数调用约定"></a>C++中函数调用约定</h3><ol><li>__cdecl c++的默认约定方式，参数的入栈顺序是从右往左（使用时就是从左往右赋值），栈平衡的操作将在主函数内完成</li><li>__fastcall 也是从右往左，栈平衡在被调函数中完成</li><li>__stdcall 从右往左，被调函数中完成</li></ol><h3 id="cdecl举例"><a href="#cdecl举例" class="headerlink" title="__cdecl举例"></a>__cdecl举例</h3><ol><li>常见的__cdecl为例，主调函数首先将参数从右往左压入栈</li><li>call指令执行，将函数的返回地址，也就是EIP压入栈</li><li>将主调函数的栈帧底压入栈</li><li>将ESP赋值给EBP，设置帧基指针</li><li>有需要的话将寄存器的值再进行保存</li><li>然后抬高栈顶，为变量分配空间</li><li>函数ret之前，恢复之前保存的寄存器值</li><li>将EBP赋值给ESP，并弹栈赋值EBP，以返回主调函数栈帧</li><li>ret返回主调函数继续执行</li></ol><h4 id="举例举例"><a href="#举例举例" class="headerlink" title="举例举例"></a>举例举例</h4><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0x08048451</span> &lt;+<span class="number">0</span>&gt;:<span class="keyword">lea</span>    <span class="built_in">ecx</span>,[<span class="built_in">esp</span>+<span class="number">0x4</span>]      ；为了保存当前栈顶值</span><br><span class="line"><span class="number">0x08048455</span> &lt;+<span class="number">4</span>&gt;:<span class="keyword">and</span>    <span class="built_in">esp</span>,<span class="number">0xfffffff0</span>     ；这里不是太明白用处，可能也是为了抬高栈顶</span><br><span class="line"><span class="number">0x08048458</span> &lt;+<span class="number">7</span>&gt;:<span class="keyword">push</span>   <span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ecx</span>-<span class="number">0x4</span>]</span><br><span class="line"><span class="number">0x0804845b</span> &lt;+<span class="number">10</span>&gt;:<span class="keyword">push</span>   <span class="built_in">ebp</span></span><br><span class="line"><span class="number">0x0804845c</span> &lt;+<span class="number">11</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">ebp</span>,<span class="built_in">esp</span></span><br><span class="line"><span class="number">0x0804845e</span> &lt;+<span class="number">13</span>&gt;:<span class="keyword">push</span>   <span class="built_in">ecx</span>                ；压栈，保存<span class="built_in">ecx</span>的值，以便之后恢复堆栈平衡</span><br><span class="line"><span class="number">0x0804845f</span> &lt;+<span class="number">14</span>&gt;:<span class="keyword">sub</span>    <span class="built_in">esp</span>,<span class="number">0x4</span>            ；抬高栈顶，为函数的局部变量分配空间</span><br><span class="line"><span class="number">0x08048462</span> &lt;+<span class="number">17</span>&gt;:<span class="keyword">call</span>   <span class="number">0x804847f</span> &lt;__x86<span class="number">.</span>get_pc_thunk<span class="number">.</span><span class="built_in">ax</span>&gt;    ；与PIC技术相关，获取代码位置，用以地址无关代码。函数执行的结果是返回<span class="built_in">EIP</span>的值</span><br><span class="line"><span class="number">0x08048467</span> &lt;+<span class="number">22</span>&gt;:<span class="keyword">add</span>    <span class="built_in">eax</span>,<span class="number">0x1b99</span></span><br><span class="line"><span class="number">0x0804846c</span> &lt;+<span class="number">27</span>&gt;:<span class="keyword">call</span>   <span class="number">0x8048426</span> &lt;print()&gt;</span><br><span class="line"><span class="number">0x08048471</span> &lt;+<span class="number">32</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">eax</span>,<span class="number">0x0</span></span><br><span class="line"><span class="number">0x08048476</span> &lt;+<span class="number">37</span>&gt;:<span class="keyword">add</span>    <span class="built_in">esp</span>,<span class="number">0x4</span>            ；栈空间释放</span><br><span class="line"><span class="number">0x08048479</span> &lt;+<span class="number">40</span>&gt;:<span class="keyword">pop</span>    <span class="built_in">ecx</span>                ；弹出保存的寄存器的值</span><br><span class="line"><span class="number">0x0804847a</span> &lt;+<span class="number">41</span>&gt;:<span class="keyword">pop</span>    <span class="built_in">ebp</span>                 </span><br><span class="line"><span class="number">0x0804847b</span> &lt;+<span class="number">42</span>&gt;:<span class="keyword">lea</span>    <span class="built_in">esp</span>,[<span class="built_in">ecx</span>-<span class="number">0x4</span>]      ；恢复完主调函数的帧基指针</span><br><span class="line"><span class="number">0x0804847e</span> &lt;+<span class="number">45</span>&gt;:<span class="keyword">ret</span></span><br></pre></td></tr></table></figure><h3 id="有关栈平衡"><a href="#有关栈平衡" class="headerlink" title="有关栈平衡"></a>有关栈平衡</h3><p>栈平衡不仅仅是返回之后EBP更改为主调函数的栈基指针，而且要求栈帧中不在包含调用函数时压入的参数，如此才为平衡。</p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>  __attribute__((stdcall))  <span class="built_in">print</span>(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">return</span> a+b+c;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span>  __attribute__((cdecl))  <span class="built_in">print</span>(<span class="keyword">int</span> a,<span class="keyword">int</span> b,<span class="keyword">int</span> c)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">return</span> a+b+c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>__stdcall约定方式</p><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0x08048426</span> &lt;+<span class="number">0</span>&gt;:<span class="keyword">push</span>   <span class="built_in">ebp</span></span><br><span class="line"><span class="number">0x08048427</span> &lt;+<span class="number">1</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">ebp</span>,<span class="built_in">esp</span></span><br><span class="line"><span class="number">0x08048429</span> &lt;+<span class="number">3</span>&gt;:<span class="keyword">call</span>   <span class="number">0x8048493</span> &lt;__x86<span class="number">.</span>get_pc_thunk<span class="number">.</span><span class="built_in">ax</span>&gt;</span><br><span class="line"><span class="number">0x0804842e</span> &lt;+<span class="number">8</span>&gt;:<span class="keyword">add</span>    <span class="built_in">eax</span>,<span class="number">0x1bd2</span></span><br><span class="line"><span class="number">0x08048433</span> &lt;+<span class="number">13</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">edx</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0x8</span>]</span><br><span class="line"><span class="number">0x08048436</span> &lt;+<span class="number">16</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">eax</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0xc</span>]</span><br><span class="line"><span class="number">0x08048439</span> &lt;+<span class="number">19</span>&gt;:<span class="keyword">add</span>    <span class="built_in">edx</span>,<span class="built_in">eax</span></span><br><span class="line"><span class="number">0x0804843b</span> &lt;+<span class="number">21</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">eax</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0x10</span>]</span><br><span class="line"><span class="number">0x0804843e</span> &lt;+<span class="number">24</span>&gt;:<span class="keyword">add</span>    <span class="built_in">eax</span>,<span class="built_in">edx</span></span><br><span class="line"><span class="number">0x08048440</span> &lt;+<span class="number">26</span>&gt;:<span class="keyword">pop</span>    <span class="built_in">ebp</span></span><br><span class="line"><span class="number">0x08048441</span> &lt;+<span class="number">27</span>&gt;:<span class="keyword">ret</span>    <span class="number">0xc</span></span><br></pre></td></tr></table></figure><p>__cdecl约定方式</p><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">  <span class="number">0x08048426</span> &lt;+<span class="number">0</span>&gt;:<span class="keyword">push</span>   <span class="built_in">ebp</span></span><br><span class="line">  <span class="number">0x08048427</span> &lt;+<span class="number">1</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">ebp</span>,<span class="built_in">esp</span></span><br><span class="line">  <span class="number">0x08048429</span> &lt;+<span class="number">3</span>&gt;:<span class="keyword">call</span>   <span class="number">0x8048494</span> &lt;__x86<span class="number">.</span>get_pc_thunk<span class="number">.</span><span class="built_in">ax</span>&gt;</span><br><span class="line">  <span class="number">0x0804842e</span> &lt;+<span class="number">8</span>&gt;:<span class="keyword">add</span>    <span class="built_in">eax</span>,<span class="number">0x1bd2</span></span><br><span class="line">  <span class="number">0x08048433</span> &lt;+<span class="number">13</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">edx</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0x8</span>]</span><br><span class="line">  <span class="number">0x08048436</span> &lt;+<span class="number">16</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">eax</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0xc</span>]</span><br><span class="line">  <span class="number">0x08048439</span> &lt;+<span class="number">19</span>&gt;:<span class="keyword">add</span>    <span class="built_in">edx</span>,<span class="built_in">eax</span></span><br><span class="line">  <span class="number">0x0804843b</span> &lt;+<span class="number">21</span>&gt;:<span class="keyword">mov</span>    <span class="built_in">eax</span>,<span class="built_in">DWORD</span> <span class="built_in">PTR</span> [<span class="built_in">ebp</span>+<span class="number">0x10</span>]</span><br><span class="line">  <span class="number">0x0804843e</span> &lt;+<span class="number">24</span>&gt;:<span class="keyword">add</span>    <span class="built_in">eax</span>,<span class="built_in">edx</span></span><br><span class="line">  <span class="number">0x08048440</span> &lt;+<span class="number">26</span>&gt;:<span class="keyword">pop</span>    <span class="built_in">ebp</span></span><br><span class="line">  <span class="number">0x08048441</span> &lt;+<span class="number">27</span>&gt;:<span class="keyword">ret</span> </span><br><span class="line">  ；……</span><br><span class="line">→  <span class="number">0x804847b</span> &lt;main+<span class="number">40</span>&gt;:<span class="keyword">add</span>    <span class="built_in">esp</span>, <span class="number">0xc</span></span><br></pre></td></tr></table></figure><h3 id="formit-frame-pointer参数"><a href="#formit-frame-pointer参数" class="headerlink" title="-formit-frame-pointer参数"></a>-formit-frame-pointer参数</h3><p>调试程序时发现，printf函数在执行中并没有改变EBP的值，比如说，在main函数调用了printf之后，EBP并没有改变，但是仍然存在着抬高栈顶的操作。《程序员的自我修养》中提到，gcc编译器有参数<code>-formit-frame-pointer</code>，可以取消帧指针，直接通过esp来计算相关变量的位置，这样多了一个ebp寄存器使用。经过编程尝试确实如此，通过<code>-formit-frame-pointer</code>编译后的函数汇编代码中不存在类似 <code>mov esp，ebp</code> 的操作。</p>]]></content>
       
       
+      <categories>
+          
+          <category> lol </category>
+          
+          <category> 操作系统 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 随笔 </tag>
+            
+            <tag> pwn </tag>
+            
+            <tag> reverse </tag>
+            
+        </tags>
       
     </entry>
     
@@ -21,12 +101,14 @@
       <link href="/2020/03/01/%E5%B8%B8%E8%A7%81%E9%80%BB%E8%BE%91%E6%AE%B5/"/>
       <url>/2020/03/01/%E5%B8%B8%E8%A7%81%E9%80%BB%E8%BE%91%E6%AE%B5/</url>
       
-        <content type="html"><![CDATA[<h2 id="text-code"><a href="#text-code" class="headerlink" title=".text .code"></a>.text .code</h2><p>代码段，程序编译后的机器指令往往被放在了代码段。</p><h2 id="data"><a href="#data" class="headerlink" title=".data"></a>.data</h2><p>数据段，初始化了的全局变量和局部静态变量往往放在数据段。</p><h3 id="为啥需要将代码与数据分开？"><a href="#为啥需要将代码与数据分开？" class="headerlink" title="为啥需要将代码与数据分开？"></a>为啥需要将代码与数据分开？</h3><ol><li>指令区域对进程来说是只读的，数据区域需要读写，可以分别设置两者的权限，防止指令被修改</li><li>现代CPU中L1 cache一般设计指令缓存与数据缓存，如此分开，可以提高cache的命中率</li><li>当程序中运行多个该指令集的副本时，物理内存中只需保存一份指令集，再将其映射到不同进程的虚存即可，即共享指令</li></ol><h2 id="bss"><a href="#bss" class="headerlink" title=".bss"></a>.bss</h2><p>未初始化的全局变量和局部静态变量一般放在bss段里。由于数据都未进行初始化，所以没有必要在文件中为其保留空间，.bss段只是为未初始化的全局变量和局部静态变量预留位置，它记录来所有未初始化的全局变量和局部静态变量的大小总和，在文件中不占用空间。</p><h2 id="rodata"><a href="#rodata" class="headerlink" title=".rodata"></a>.rodata</h2><p>只读数据段，还可以在语义上支持C++ 的const关键字。</p><h2 id="comment"><a href="#comment" class="headerlink" title=".comment"></a>.comment</h2><p>存放编译器版本信息。</p><h2 id="rel-text，-rel-data"><a href="#rel-text，-rel-data" class="headerlink" title=".rel.text，.rel.data"></a>.rel.text，.rel.data</h2><p>针对.text、.data段的重定位表。</p><h2 id="got与-plt"><a href="#got与-plt" class="headerlink" title=".got与.plt"></a>.got与.plt</h2><p>got表为了解决在动态链接的时候模块中有绝对地址引用的问题，采用了PIC地址无关代码技术，而这个技术的中心思想就是got表。模块内部的函数调用跳转、数据的访问都可以通过相对地址进行，模块外部的访问函数、数据时就用到了got表。got表中包含了每个变量所在的地址，该地址由链接程序进行维护。通过got表实现了模块外部数据的间接访问。</p><p>plt 延时绑定技术，当函数第一次被用到时才进行符号查找，重定位。</p><p>绑定之后 call test@plt ,与 call [test@got] 执行效果相同。</p><h2 id="interp"><a href="#interp" class="headerlink" title=".interp"></a>.interp</h2><p>存放动态链接器的路径</p><h2 id="dynamic"><a href="#dynamic" class="headerlink" title=".dynamic"></a>.dynamic</h2><p>保存了动态链接器所需要的基本信息，如重定位表的位置，符号表的位置，共享对象初始化代码的地址等等</p><h2 id="dynsym"><a href="#dynsym" class="headerlink" title=".dynsym"></a>.dynsym</h2><p>保存了与动态链接相关的符号</p><h2 id="symtab"><a href="#symtab" class="headerlink" title=".symtab"></a>.symtab</h2><p>保存了该目标文件的所有符号的定义与引用</p><h2 id="init与-fini"><a href="#init与-fini" class="headerlink" title=".init与.fini"></a>.init与.fini</h2><p>.init段是一段属于共享对象的代码，装入共享对象时该代码将执行。例如，.init段由C++运行时系统用于调用.so 中的所有静态初始化函数。各个动态库的init执行顺序是按照依赖关系先后执行的，不是加载顺序。<br>.fini终止代码</p>]]></content>
+        <content type="html"><![CDATA[<h2 id="text-code"><a href="#text-code" class="headerlink" title=".text .code"></a>.text .code</h2><p>代码段，程序编译后的机器指令往往被放在了代码段。</p><h2 id="data"><a href="#data" class="headerlink" title=".data"></a>.data</h2><p>数据段，初始化了的全局变量和局部静态变量往往放在数据段。</p><h3 id="为啥需要将代码与数据分开？"><a href="#为啥需要将代码与数据分开？" class="headerlink" title="为啥需要将代码与数据分开？"></a>为啥需要将代码与数据分开？</h3><ol><li>指令区域对进程来说是只读的，数据区域需要读写，可以分别设置两者的权限，防止指令被修改</li><li>现代CPU中L1 cache一般设计指令缓存与数据缓存，如此分开，可以提高cache的命中率</li><li>当程序中运行多个该指令集的副本时，物理内存中只需保存一份指令集，再将其映射到不同进程的虚存即可，即共享指令</li></ol><h2 id="bss"><a href="#bss" class="headerlink" title=".bss"></a>.bss</h2><p>未初始化的全局变量和局部静态变量一般放在bss段里。由于数据都未进行初始化，所以没有必要在文件中为其保留空间，.bss段只是为未初始化的全局变量和局部静态变量预留位置，它记录来所有未初始化的全局变量和局部静态变量的大小总和，在文件中不占用空间。</p><h2 id="rodata"><a href="#rodata" class="headerlink" title=".rodata"></a>.rodata</h2><p>只读数据段，还可以在语义上支持C++ 的const关键字。</p><h2 id="comment"><a href="#comment" class="headerlink" title=".comment"></a>.comment</h2><p>存放编译器版本信息。</p><h2 id="rel-text，-rel-data"><a href="#rel-text，-rel-data" class="headerlink" title=".rel.text，.rel.data"></a>.rel.text，.rel.data</h2><p>针对.text、.data段的重定位表。</p><h2 id="got与-plt"><a href="#got与-plt" class="headerlink" title=".got与.plt"></a>.got与.plt</h2><p>got表为了解决在动态链接的时候模块中有绝对地址引用的问题，采用了PIC地址无关代码技术，而这个技术的中心思想就是got表。模块内部的函数调用跳转、数据的访问都可以通过相对地址进行，模块外部的访问函数、数据时就用到了got表。got表中包含了每个变量所在的地址，该地址由链接程序进行维护。通过got表实现了模块外部数据的间接访问。</p><p>plt 延时绑定技术，当函数第一次被用到时才进行符号查找，重定位。</p><p>绑定之后 <code>call test@plt</code> ,与 <code>call [test@got]</code> 执行效果相同。</p><h2 id="interp"><a href="#interp" class="headerlink" title=".interp"></a>.interp</h2><p>存放动态链接器的路径</p><h2 id="dynamic"><a href="#dynamic" class="headerlink" title=".dynamic"></a>.dynamic</h2><p>保存了动态链接器所需要的基本信息，如重定位表的位置，符号表的位置，共享对象初始化代码的地址等等</p><h2 id="dynsym"><a href="#dynsym" class="headerlink" title=".dynsym"></a>.dynsym</h2><p>保存了与动态链接相关的符号</p><h2 id="symtab"><a href="#symtab" class="headerlink" title=".symtab"></a>.symtab</h2><p>保存了该目标文件的所有符号的定义与引用</p><h2 id="init与-fini"><a href="#init与-fini" class="headerlink" title=".init与.fini"></a>.init与.fini</h2><p>.init段是一段属于共享对象的代码，装入共享对象时该代码将执行。例如，.init段由C++运行时系统用于调用.so 中的所有静态初始化函数。各个动态库的init执行顺序是按照依赖关系先后执行的，不是加载顺序。<br>.fini终止代码</p>]]></content>
       
       
       <categories>
           
           <category> lol </category>
+          
+          <category> 操作系统 </category>
           
       </categories>
       
@@ -34,6 +116,10 @@
         <tags>
             
             <tag> 随笔 </tag>
+            
+            <tag> pwn </tag>
+            
+            <tag> reverse </tag>
             
         </tags>
       
