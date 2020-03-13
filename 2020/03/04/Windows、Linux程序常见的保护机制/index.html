@@ -10,8 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content="栈的防护与攻击在这里简单介绍Windows与Linux下的相关栈防护与基本突破办法。
-windows平台GS调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Coo,"> 
+    <meta name="description" content="windows平台GS与变量重排技术GS主要用于防止栈溢出。调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。该随机数由.data字节的,"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -100,13 +99,13 @@ windows平台GS调用函数时，在压入EBP之前，也就是紧邻EBP的低�
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    598
+                    5.3k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    1 mins.
+                    5 mins.
                 </span>
                 
                 
@@ -140,13 +139,55 @@ windows平台GS调用函数时，在压入EBP之前，也就是紧邻EBP的低�
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <h1 id="栈的防护与攻击"><a href="#栈的防护与攻击" class="headerlink" title="栈的防护与攻击"></a>栈的防护与攻击</h1><p>在这里简单介绍Windows与Linux下的相关栈防护与基本突破办法。</p>
-<h2 id="windows平台"><a href="#windows平台" class="headerlink" title="windows平台"></a>windows平台</h2><h3 id="GS"><a href="#GS" class="headerlink" title="GS"></a>GS</h3><p>调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。工作原理就是在函数返回之前，对cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。<br>怎么突破呢？  </p>
+            <h1 id="windows平台"><a href="#windows平台" class="headerlink" title="windows平台"></a>windows平台</h1><h2 id="GS与变量重排技术"><a href="#GS与变量重排技术" class="headerlink" title="GS与变量重排技术"></a>GS与变量重排技术</h2><h3 id="GS"><a href="#GS" class="headerlink" title="GS"></a>GS</h3><p>主要用于防止栈溢出。调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。该随机数由.data字节的第一个QWORD作为种子生成。在函数返回之前，对Cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。<br>编译选项为：vs中项目/**属性/配置属性/c++/代码生成/缓冲区安全检查  </p>
+<h3 id="变量重排技术"><a href="#变量重排技术" class="headerlink" title="变量重排技术"></a>变量重排技术</h3><p>在编译时，根据局部变量的类型对变量在栈中的位置进行调整，将字符变量移动到高地址等等措施方式局部变量被溢出修改</p>
+<h2 id="SafeSEH"><a href="#SafeSEH" class="headerlink" title="SafeSEH"></a>SafeSEH</h2><p>在程序调用异常处理函数之前，对要调用的函数进行一系列的有效性校验，当函数发现不可靠时将终止异常处理函数的调用，以防止SEH(Struct Exception Handler)的恶意利用。该功能需要操作系统与编译器的支持。<br>大致流程：  </p>
 <ol>
-<li>不可能爆破，但是可以爆破他的位置（拿不到程序调试的时候）。常规的办法就是尝试去打印出cookie，然后在溢出的时候在适当的位置填入Cookie，确保Cookie不会变</li>
-<li>虚函数</li>
-<li>GS并没有对SEH进行保护，利用SEH</li>
-<li>难度最大的一种，</li>
+<li>检查异常处理链是否在当前栈中</li>
+<li>检查异常处理函数指针是否指向当前栈中</li>
+<li>调用<code>RtlIsValidHandler()</code>函数进行相关检测</li>
+</ol>
+<div align=center><img src="./RtlIsVaildHandler校验流程.jpg" alt="RtlIsValidHandler校验流程" width="70%" height="70%"  /></div>
+
+<h2 id="DEP"><a href="#DEP" class="headerlink" title="DEP"></a>DEP</h2><p>DEP(Data Execution Prevention)，数据执行保护，将数据页标记为不可执行，当去数据页执行时，引发异常。<br>系统提供<code>VirtualProtect</code>等等函数来让程序手动修改页属性<br>编译选项：vs中项目/**属性/配置属性/链接器/高级/数据执行保护  </p>
+<h2 id="ASLR"><a href="#ASLR" class="headerlink" title="ASLR"></a>ASLR</h2><p>ASLR(Address Space Layout Randomization),内存随机化保护机制。在PE头中<code>IMAGE_DLL_CHARACTERISTICS_DYNAMIC_BASE</code>标志是否支持ASLR。<br>编译选项：vs中项目/**属性/配置属性/链接器/高级/随机基址<br>注册表中键值<code>\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\MoveImages</code>将影响系统ASLR支持：  </p>
+<ol>
+<li>0映像随机化将禁用</li>
+<li>-1强制进行处理</li>
+<li>其他正常工作，依赖标识选择处理</li>
+</ol>
+<h2 id="SEHOP"><a href="#SEHOP" class="headerlink" title="SEHOP"></a>SEHOP</h2><p>SEHOP(Structured Exception Handling Overwrite Protection),它将检查SEH链的完整性，其会检查SEH链的末端是否为系统固定的终极异常处理函数。<br>注册表中的键值<code>\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\kernel\DisableExceptionChainValidation</code>将影响系统SHEOP支持  </p>
+<h1 id="Linux平台"><a href="#Linux平台" class="headerlink" title="Linux平台"></a>Linux平台</h1><h2 id="CANARY"><a href="#CANARY" class="headerlink" title="CANARY"></a>CANARY</h2><p>与Windows下的GS类似，通过验证canary的值来判断栈是否溢出。<br>gcc编译选项： </p>
+<ol>
+<li>默认不开启canary保护</li>
+<li><code>-fstack-protector-all</code>为所有函数提供保护</li>
+<li><code>-fstack-protector</code>为使用alloca或本地缓冲区大于8的函数提供保护</li>
+<li><code>--param ssp-buffer-size=4</code>设定不提供保护的函数缓冲区下限</li>
+<li><code>-fno-stack-protector</code>禁用canary保护</li>
+</ol>
+<h2 id="FORTIFY"><a href="#FORTIFY" class="headerlink" title="FORTIFY"></a>FORTIFY</h2><p>Fortify能够轻微的检测对内存和字符串操作的函数的缓冲区溢出问题，目前支持的一些函数有<code>memcpy</code>, <code>mempcpy</code>, <code>memmove</code>, <code>memset</code>, <code>strcpy</code>, <code>stpcpy</code>, <code>strncpy</code>, <code>strcat</code>, <code>strncat</code>, <code>sprintf</code>, <code>vsprintf</code>, <code>snprintf</code>, <code>vsnprintf</code>, <code>gets</code>等等<br>gcc编译选项：</p>
+<ol>
+<li>默认不开启</li>
+<li><code>-D_FORTIFY_SOURCE=1</code>配合优化<code>-O1</code>使用，程序在编译时进行检查但是不改变程序功能</li>
+<li><code>-D_FORTIFY_SOURCE=2</code>，添加新的检查功能，运行时检查，检查异常失败将运行时错误</li>
+</ol>
+<h2 id="NX"><a href="#NX" class="headerlink" title="NX"></a>NX</h2><p>类似Windows下的DEP，Linux下系统提供mprotect等函数来允许程序手动修改页的相关属性。<br>gcc编译选项：</p>
+<ol>
+<li>默认开启NX保护</li>
+<li><code>-z execstack</code>禁用NX保护</li>
+<li><code>-z noexecstack</code>开启NX保护</li>
+</ol>
+<h2 id="PIE"><a href="#PIE" class="headerlink" title="PIE"></a>PIE</h2><h3 id="PIC"><a href="#PIC" class="headerlink" title="PIC"></a>PIC</h3><p>PIC(Position-indenpendent Code),位置无关代码技术。PIC主要解决共享对象指令和可执行文件中对绝对地址的重定位问题</p>
+<h3 id="PIE-1"><a href="#PIE-1" class="headerlink" title="PIE"></a>PIE</h3><p>PIE(Position-indenpendent Executable),类似ASLR，内存地址随机化机制，一个以地址无关方式编译的可执行文件被称作为地址无关可执行文件。<br>系统选项：<code>echo 0 &gt; /proc/sys/kernel/randomize_va_space</code>禁用PIE功能  </p>
+<h2 id="RELRO"><a href="#RELRO" class="headerlink" title="RELRO"></a>RELRO</h2><p>RELRO( Relocation Read-Only),在动态链接的ELF文件中，往往使用got表来动态解析共享库中的函数，而延时绑定技术将在程序运行过程中根据需要查找定位函数，使得got在整个过程中是可写的，这样可能使得got表覆盖而执行任意代码。而RELRO将使程序在开始执行前，解析所有动态链接的函数，然后将got表设置为只读，如此为完全的RELRO保护。而部分的RELRO保护只保护非PLT部分（即.got只读，但是.got.plt可写）</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ol>
+<li><a href="https://introspelliam.github.io/2017/09/30/linux%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%B8%B8%E7%94%A8%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/" target="_blank" rel="noopener">linux程序的常用保护机制</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Buffer_overflow_protection" target="_blank" rel="noopener">Buffer overflow protection</a></li>
+<li><a href="https://lwn.net/Articles/584225/" target="_blank" rel="noopener">“Strong” stack protection for GCC</a></li>
+<li><a href="https://access.redhat.com/blogs/766093/posts/1976213" target="_blank" rel="noopener">Enhance application security with FORTIFY_SOURCE</a></li>
+<li><a href="http://man7.org/linux/man-pages/man2/mprotect.2.html" target="_blank" rel="noopener">mprotect(2) - Linux manual page - man7.org</a></li>
+<li><a href="https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualprotect" target="_blank" rel="noopener">VirtualProtect function</a></li>
+<li></li>
 </ol>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
@@ -191,9 +232,9 @@ windows平台GS调用函数时，在压入EBP之前，也就是紧邻EBP的低�
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">5 <p>Articles</p></a></li>
-                    <li><a href="/categories">2 <p>Categories</p></a></li>
-                    <li><a href="/tags">4 <p>Tags</p></a></li>
+                    <li><a href="/archives">8 <p>Articles</p></a></li>
+                    <li><a href="/categories">4 <p>Categories</p></a></li>
+                    <li><a href="/tags">5 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -202,7 +243,7 @@ windows平台GS调用函数时，在压入EBP之前，也就是紧邻EBP的低�
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#栈的防护与攻击"><span class="toc-number">1.</span> <span class="toc-text">栈的防护与攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#windows平台"><span class="toc-number">1.1.</span> <span class="toc-text">windows平台</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GS"><span class="toc-number">1.1.1.</span> <span class="toc-text">GS</span></a></li></ol></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#windows平台"><span class="toc-number">1.</span> <span class="toc-text">windows平台</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#GS与变量重排技术"><span class="toc-number">1.1.</span> <span class="toc-text">GS与变量重排技术</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GS"><span class="toc-number">1.1.1.</span> <span class="toc-text">GS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#变量重排技术"><span class="toc-number">1.1.2.</span> <span class="toc-text">变量重排技术</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SafeSEH"><span class="toc-number">1.2.</span> <span class="toc-text">SafeSEH</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DEP"><span class="toc-number">1.3.</span> <span class="toc-text">DEP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ASLR"><span class="toc-number">1.4.</span> <span class="toc-text">ASLR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SEHOP"><span class="toc-number">1.5.</span> <span class="toc-text">SEHOP</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux平台"><span class="toc-number">2.</span> <span class="toc-text">Linux平台</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CANARY"><span class="toc-number">2.1.</span> <span class="toc-text">CANARY</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FORTIFY"><span class="toc-number">2.2.</span> <span class="toc-text">FORTIFY</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NX"><span class="toc-number">2.3.</span> <span class="toc-text">NX</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PIE"><span class="toc-number">2.4.</span> <span class="toc-text">PIE</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#PIC"><span class="toc-number">2.4.1.</span> <span class="toc-text">PIC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PIE-1"><span class="toc-number">2.4.2.</span> <span class="toc-text">PIE</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RELRO"><span class="toc-number">2.5.</span> <span class="toc-text">RELRO</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考链接"><span class="toc-number">3.</span> <span class="toc-text">参考链接</span></a></li></ol>
                 </div>
             </div>
             

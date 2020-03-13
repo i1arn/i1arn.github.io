@@ -5,13 +5,18 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>test - Hexo</title>
+    <title>植物大战僵尸破解魔改 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content="###haha这是一个简单的测试
-"> 
+    <meta name="description" content="闲来无事，学学网上破解植物大战僵尸  
+防守方阳光使用cheat engine反复查找与阳光值相同的位置，最终都指向了一个地址。  
+
+
+通过内存断点找到了增加阳光的代码位置  
+
+在附近查还找到了,"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -58,7 +63,7 @@
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
         <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
-        <h3 class="subtitle">test</h3>
+        <h3 class="subtitle">植物大战僵尸破解魔改</h3>
         <div class="social">
                    <!-- <div class="like-icon"> -->
                        <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
@@ -88,18 +93,19 @@
         <div class="else">
             <p class="animated fadeInDown">
                 
-                <a href="javascript:;"><b>「 </b>Article<b> 」</b></a>
+                <a href="/categories/软件魔改"><b>「
+                    </b>软件魔改<b> 」</b></a>
                 
-                March 01, 2020
+                March 10, 2020
             </p>
-            <h3 class="post-title animated fadeInDown"><a href="/2020/03/01/test/" title="test" class="">test</a>
+            <h3 class="post-title animated fadeInDown"><a href="/2020/03/10/%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8%E7%A0%B4%E8%A7%A3%E9%AD%94%E6%94%B9/" title="植物大战僵尸破解魔改" class="">植物大战僵尸破解魔改</a>
             </h3>
             
             <p class="post-count animated fadeInDown">
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    28
+                    1.2k
                 </span>
                 
                 
@@ -117,6 +123,8 @@
                 
             </p>
             
+            
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/reverse/" rel="tag">reverse</a></li></ul>
             
         </div>
     </div>
@@ -137,8 +145,19 @@
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <p>###haha<br>这是一个简单的测试</p>
+            <p>闲来无事，学学网上破解植物大战僵尸  </p>
+<h1 id="防守方"><a href="#防守方" class="headerlink" title="防守方"></a>防守方</h1><h2 id="阳光"><a href="#阳光" class="headerlink" title="阳光"></a>阳光</h2><p>使用<code>cheat engine</code>反复查找与阳光值相同的位置，最终都指向了一个地址。  </p>
+<div align=center><img src="./定位阳光.png" alt="定位阳光" width="70%" height="70%"  /></div>
 
+<p>通过内存断点找到了增加阳光的代码位置  </p>
+<div align=center><img src="./增加阳光.png" alt="增加阳光" width="70%" height="70%"  /></div>
+在附近查还找到了增加25阳光的位置。修改可用。但是换了个关卡之后，地址发生了变化。分析发现，阳光值的定位是通过`[edi+0x5578]`找到的，于是反复查找，发现edi又是通过`[esi+0x868]`找到的，再一次的反复查找，返现esi的位置在游戏过程中是不发生变化的，依次通过内存断点找到了游戏关卡阳光值归零的地方。  
+<div align=center><img src="./阳光归零.png" alt="阳光归零" width="70%" height="70%"  /></div>    
+顺蔓摸瓜找到了初始化阳光值的地方  
+<div align=center><img src="./阳光初始化.png" alt="阳光初始化" width="70%" height="70%"  /></div>   
+至此，阳光可以魔改了。  
+
+<h2 id="植物"><a href="#植物" class="headerlink" title="植物"></a>植物</h2><h3 id="种植消耗"><a href="#种植消耗" class="headerlink" title="种植消耗"></a>种植消耗</h3><h3 id="种植冷却"><a href="#种植冷却" class="headerlink" title="种植冷却"></a>种植冷却</h3><h3 id="技能冷却"><a href="#技能冷却" class="headerlink" title="技能冷却"></a>技能冷却</h3><h1 id="攻击方"><a href="#攻击方" class="headerlink" title="攻击方"></a>攻击方</h1>
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
                 data-autoplay="false">
@@ -181,13 +200,20 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">5 <p>Articles</p></a></li>
-                    <li><a href="/categories">2 <p>Categories</p></a></li>
-                    <li><a href="/tags">4 <p>Tags</p></a></li>
+                    <li><a href="/archives">8 <p>Articles</p></a></li>
+                    <li><a href="/categories">4 <p>Categories</p></a></li>
+                    <li><a href="/tags">5 <p>Tags</p></a></li>
                 </ul>
             </div>
             
             
+            
+            <div class="box sticky animated fadeInRight faster">
+                <div id="toc" class="subbox">
+                    <h4>Contents</h4>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#防守方"><span class="toc-number">1.</span> <span class="toc-text">防守方</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#阳光"><span class="toc-number">1.1.</span> <span class="toc-text">阳光</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#植物"><span class="toc-number">1.2.</span> <span class="toc-text">植物</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#种植消耗"><span class="toc-number">1.2.1.</span> <span class="toc-text">种植消耗</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#种植冷却"><span class="toc-number">1.2.2.</span> <span class="toc-text">种植冷却</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#技能冷却"><span class="toc-number">1.2.3.</span> <span class="toc-text">技能冷却</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#攻击方"><span class="toc-number">2.</span> <span class="toc-text">攻击方</span></a></li></ol>
+                </div>
+            </div>
             
             
         </div>

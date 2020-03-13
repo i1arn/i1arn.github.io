@@ -4,11 +4,89 @@
   
     
     <entry>
+      <title>调试与反调试</title>
+      <link href="/2020/03/13/%E8%B0%83%E8%AF%95%E4%B8%8E%E5%8F%8D%E8%B0%83%E8%AF%95/"/>
+      <url>/2020/03/13/%E8%B0%83%E8%AF%95%E4%B8%8E%E5%8F%8D%E8%B0%83%E8%AF%95/</url>
+      
+        <content type="html"><![CDATA[<h1 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h1><p>说到调试，最明显的工作就是将程序拖入、附加到调试器中，但是中间存在什么样的原理呢  </p><h2 id="创建附加被调试进程"><a href="#创建附加被调试进程" class="headerlink" title="创建附加被调试进程"></a>创建附加被调试进程</h2><h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>由<code>DbgUiConnectToDbg</code>函数调用<code>ZwCreateDebugObject</code>创建一个调试对象，并将调试对象句柄保存在调试器当前线程的TEB结构的DbgSsReserved[1]中。然后在<code>CreateProcess</code>创建进程时添加标志DEBUG_PROCESS即可完成创建被调试对象，也可以使用<code>DebugActiveProcess</code>附加到一个现有的进程上。  </p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">WaitForDebugEvent</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  LPDEBUG_EVENT lpDebugEvent,   <span class="comment">//指向DEBUG_EVENT结构的指针，该 结构接收有关调试事件的信息。</span></span></span></span><br><span class="line"><span class="function"><span class="params">  DWORD         dwMilliseconds  <span class="comment">//等待调试事件的毫秒数。如果此参数为零，则该函数将测试调试事件并立即返回。如果参数为INFINITE，则在发生调试事件之前该函数不会返回。</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure><p><code>WaitForDebugEvent</code>用于等待和接收调试事件,处理调试事件后，调试器调用<code>ContinueDebugEvent</code>将处理结果回复给调试子系统。</p><h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><p>Linux下的调试工具gdb主要依赖<code>ptrace</code>，<code>ptrace</code>可以让父进程观察子进程的执行，可以改变子进程的内存和寄存器</p><h2 id="断点"><a href="#断点" class="headerlink" title="断点"></a>断点</h2><h3 id="软件断点"><a href="#软件断点" class="headerlink" title="软件断点"></a>软件断点</h3><p>通过在代码中设置特定值的方式实现的，比如说Windows下断点处的指令将会被变为int3，到达断点处之后，调试器通过对比现有的断点列表得知其为用户断点，于是在程序被中断到调试器之前，将int3代码替换为原来的代码，再将控制权交给用户。当用户期望恢复执行被调试进程时，调试器通过API通知调试子系统，然后系统内核的异常分发函数将返回到异常处理函数，处理函数再通过<code>IRET/IRETD</code>指令发出异常返回工作，恢复CPU的上下文，从中断处继续执行。</p><h3 id="硬件断点"><a href="#硬件断点" class="headerlink" title="硬件断点"></a>硬件断点</h3><p>硬件中断主要通过DR0-DR3调试地址寄存器、DR6调试控制寄存器以及RD7调试状态寄存器实现的。DR0-DR3保存了制定断点的内存或IO地址.当调试发生时，DR6将用来报告调试器更加详细的信息。DR7则用来保存各个硬件断点的中断条件。</p><h2 id="单步执行"><a href="#单步执行" class="headerlink" title="单步执行"></a>单步执行</h2><p>单步执行主要是通过eflags寄存器上的TF位来实现的。当TF为1时，单步中断，执行完一条语句之后将发生异常，进入异常处理函数之后TF为将自动置0.</p><h3 id="单步进入"><a href="#单步进入" class="headerlink" title="单步进入"></a>单步进入</h3><p>在执行指令时，通过调试符号获取当前位置的行信息，再通过TF位单步异常之后对比前后位置行信息即可。</p><h3 id="单步跳过"><a href="#单步跳过" class="headerlink" title="单步跳过"></a>单步跳过</h3><p>执行不包含call的指令时，原理与单步进入是一样的。在执行包含call指令的语句时，则在下一条指令设置断点，然后继续运行，对比前后位置行信息即可。</p><h1 id="反调试"><a href="#反调试" class="headerlink" title="反调试"></a>反调试</h1><h2 id="Windows-1"><a href="#Windows-1" class="headerlink" title="Windows"></a>Windows</h2><h3 id="API"><a href="#API" class="headerlink" title="API"></a>API</h3><ol><li><code>IsDebuggerPresent</code></li><li><code>CheckRemoteDebuggerPresent</code> </li><li><code>NtQueryInformationProcess</code>在参数中可以要求返回调试端口</li><li><code>ZwSetInformationThread</code>可以要求分离，终止被调试的进程</li></ol><h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ol><li>窗口信息</li><li>注册表</li><li>代码校验和</li><li>硬件断点</li><li>时钟检测</li><li>……</li></ol><p>参考链接：</p><p><a href="https://b0ldfrev.gitbook.io/note/windows_operating_system/tiao-shi-yuan-li" target="_blank" rel="noopener">调试原理</a><br><a href="https://bbs.pediy.com/thread-225740.htm" target="_blank" rel="noopener">反调试技术总结</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> lol </category>
+          
+          <category> reverse </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 调试 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>植物大战僵尸破解魔改</title>
+      <link href="/2020/03/10/%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8%E7%A0%B4%E8%A7%A3%E9%AD%94%E6%94%B9/"/>
+      <url>/2020/03/10/%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8%E7%A0%B4%E8%A7%A3%E9%AD%94%E6%94%B9/</url>
+      
+        <content type="html"><![CDATA[<p>闲来无事，学学网上破解植物大战僵尸  </p><h1 id="防守方"><a href="#防守方" class="headerlink" title="防守方"></a>防守方</h1><h2 id="阳光"><a href="#阳光" class="headerlink" title="阳光"></a>阳光</h2><p>使用<code>cheat engine</code>反复查找与阳光值相同的位置，最终都指向了一个地址。  </p><div align=center><img src="./定位阳光.png" alt="定位阳光" width="70%" height="70%"  /></div><p>通过内存断点找到了增加阳光的代码位置  </p><div align=center><img src="./增加阳光.png" alt="增加阳光" width="70%" height="70%"  /></div>在附近查还找到了增加25阳光的位置。修改可用。但是换了个关卡之后，地址发生了变化。分析发现，阳光值的定位是通过`[edi+0x5578]`找到的，于是反复查找，发现edi又是通过`[esi+0x868]`找到的，再一次的反复查找，返现esi的位置在游戏过程中是不发生变化的，依次通过内存断点找到了游戏关卡阳光值归零的地方。  <div align=center><img src="./阳光归零.png" alt="阳光归零" width="70%" height="70%"  /></div>    顺蔓摸瓜找到了初始化阳光值的地方  <div align=center><img src="./阳光初始化.png" alt="阳光初始化" width="70%" height="70%"  /></div>   至此，阳光可以魔改了。  <h2 id="植物"><a href="#植物" class="headerlink" title="植物"></a>植物</h2><h3 id="种植消耗"><a href="#种植消耗" class="headerlink" title="种植消耗"></a>种植消耗</h3><h3 id="种植冷却"><a href="#种植冷却" class="headerlink" title="种植冷却"></a>种植冷却</h3><h3 id="技能冷却"><a href="#技能冷却" class="headerlink" title="技能冷却"></a>技能冷却</h3><h1 id="攻击方"><a href="#攻击方" class="headerlink" title="攻击方"></a>攻击方</h1>]]></content>
+      
+      
+      <categories>
+          
+          <category> 软件魔改 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> reverse </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>C++相关</title>
+      <link href="/2020/03/09/C++%E7%9B%B8%E5%85%B3/"/>
+      <url>/2020/03/09/C++%E7%9B%B8%E5%85%B3/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Windows、Linux下的异常处理机制</title>
+      <link href="/2020/03/09/Windows%E3%80%81Linux%E4%B8%8B%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/"/>
+      <url>/2020/03/09/Windows%E3%80%81Linux%E4%B8%8B%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Windows、Linux程序常见的保护机制</title>
       <link href="/2020/03/04/Windows%E3%80%81Linux%E7%A8%8B%E5%BA%8F%E5%B8%B8%E8%A7%81%E7%9A%84%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/"/>
       <url>/2020/03/04/Windows%E3%80%81Linux%E7%A8%8B%E5%BA%8F%E5%B8%B8%E8%A7%81%E7%9A%84%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/</url>
       
-        <content type="html"><![CDATA[<h1 id="栈的防护与攻击"><a href="#栈的防护与攻击" class="headerlink" title="栈的防护与攻击"></a>栈的防护与攻击</h1><p>在这里简单介绍Windows与Linux下的相关栈防护与基本突破办法。</p><h2 id="windows平台"><a href="#windows平台" class="headerlink" title="windows平台"></a>windows平台</h2><h3 id="GS"><a href="#GS" class="headerlink" title="GS"></a>GS</h3><p>调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。工作原理就是在函数返回之前，对cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。<br>怎么突破呢？  </p><ol><li>不可能爆破，但是可以爆破他的位置（拿不到程序调试的时候）。常规的办法就是尝试去打印出cookie，然后在溢出的时候在适当的位置填入Cookie，确保Cookie不会变</li><li>虚函数</li><li>GS并没有对SEH进行保护，利用SEH</li><li>难度最大的一种，</li></ol>]]></content>
+        <content type="html"><![CDATA[<h1 id="windows平台"><a href="#windows平台" class="headerlink" title="windows平台"></a>windows平台</h1><h2 id="GS与变量重排技术"><a href="#GS与变量重排技术" class="headerlink" title="GS与变量重排技术"></a>GS与变量重排技术</h2><h3 id="GS"><a href="#GS" class="headerlink" title="GS"></a>GS</h3><p>主要用于防止栈溢出。调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。该随机数由.data字节的第一个QWORD作为种子生成。在函数返回之前，对Cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。<br>编译选项为：vs中项目/**属性/配置属性/c++/代码生成/缓冲区安全检查  </p><h3 id="变量重排技术"><a href="#变量重排技术" class="headerlink" title="变量重排技术"></a>变量重排技术</h3><p>在编译时，根据局部变量的类型对变量在栈中的位置进行调整，将字符变量移动到高地址等等措施方式局部变量被溢出修改</p><h2 id="SafeSEH"><a href="#SafeSEH" class="headerlink" title="SafeSEH"></a>SafeSEH</h2><p>在程序调用异常处理函数之前，对要调用的函数进行一系列的有效性校验，当函数发现不可靠时将终止异常处理函数的调用，以防止SEH(Struct Exception Handler)的恶意利用。该功能需要操作系统与编译器的支持。<br>大致流程：  </p><ol><li>检查异常处理链是否在当前栈中</li><li>检查异常处理函数指针是否指向当前栈中</li><li>调用<code>RtlIsValidHandler()</code>函数进行相关检测</li></ol><div align=center><img src="./RtlIsVaildHandler校验流程.jpg" alt="RtlIsValidHandler校验流程" width="70%" height="70%"  /></div><h2 id="DEP"><a href="#DEP" class="headerlink" title="DEP"></a>DEP</h2><p>DEP(Data Execution Prevention)，数据执行保护，将数据页标记为不可执行，当去数据页执行时，引发异常。<br>系统提供<code>VirtualProtect</code>等等函数来让程序手动修改页属性<br>编译选项：vs中项目/**属性/配置属性/链接器/高级/数据执行保护  </p><h2 id="ASLR"><a href="#ASLR" class="headerlink" title="ASLR"></a>ASLR</h2><p>ASLR(Address Space Layout Randomization),内存随机化保护机制。在PE头中<code>IMAGE_DLL_CHARACTERISTICS_DYNAMIC_BASE</code>标志是否支持ASLR。<br>编译选项：vs中项目/**属性/配置属性/链接器/高级/随机基址<br>注册表中键值<code>\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\MoveImages</code>将影响系统ASLR支持：  </p><ol><li>0映像随机化将禁用</li><li>-1强制进行处理</li><li>其他正常工作，依赖标识选择处理</li></ol><h2 id="SEHOP"><a href="#SEHOP" class="headerlink" title="SEHOP"></a>SEHOP</h2><p>SEHOP(Structured Exception Handling Overwrite Protection),它将检查SEH链的完整性，其会检查SEH链的末端是否为系统固定的终极异常处理函数。<br>注册表中的键值<code>\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\kernel\DisableExceptionChainValidation</code>将影响系统SHEOP支持  </p><h1 id="Linux平台"><a href="#Linux平台" class="headerlink" title="Linux平台"></a>Linux平台</h1><h2 id="CANARY"><a href="#CANARY" class="headerlink" title="CANARY"></a>CANARY</h2><p>与Windows下的GS类似，通过验证canary的值来判断栈是否溢出。<br>gcc编译选项： </p><ol><li>默认不开启canary保护</li><li><code>-fstack-protector-all</code>为所有函数提供保护</li><li><code>-fstack-protector</code>为使用alloca或本地缓冲区大于8的函数提供保护</li><li><code>--param ssp-buffer-size=4</code>设定不提供保护的函数缓冲区下限</li><li><code>-fno-stack-protector</code>禁用canary保护</li></ol><h2 id="FORTIFY"><a href="#FORTIFY" class="headerlink" title="FORTIFY"></a>FORTIFY</h2><p>Fortify能够轻微的检测对内存和字符串操作的函数的缓冲区溢出问题，目前支持的一些函数有<code>memcpy</code>, <code>mempcpy</code>, <code>memmove</code>, <code>memset</code>, <code>strcpy</code>, <code>stpcpy</code>, <code>strncpy</code>, <code>strcat</code>, <code>strncat</code>, <code>sprintf</code>, <code>vsprintf</code>, <code>snprintf</code>, <code>vsnprintf</code>, <code>gets</code>等等<br>gcc编译选项：</p><ol><li>默认不开启</li><li><code>-D_FORTIFY_SOURCE=1</code>配合优化<code>-O1</code>使用，程序在编译时进行检查但是不改变程序功能</li><li><code>-D_FORTIFY_SOURCE=2</code>，添加新的检查功能，运行时检查，检查异常失败将运行时错误</li></ol><h2 id="NX"><a href="#NX" class="headerlink" title="NX"></a>NX</h2><p>类似Windows下的DEP，Linux下系统提供mprotect等函数来允许程序手动修改页的相关属性。<br>gcc编译选项：</p><ol><li>默认开启NX保护</li><li><code>-z execstack</code>禁用NX保护</li><li><code>-z noexecstack</code>开启NX保护</li></ol><h2 id="PIE"><a href="#PIE" class="headerlink" title="PIE"></a>PIE</h2><h3 id="PIC"><a href="#PIC" class="headerlink" title="PIC"></a>PIC</h3><p>PIC(Position-indenpendent Code),位置无关代码技术。PIC主要解决共享对象指令和可执行文件中对绝对地址的重定位问题</p><h3 id="PIE-1"><a href="#PIE-1" class="headerlink" title="PIE"></a>PIE</h3><p>PIE(Position-indenpendent Executable),类似ASLR，内存地址随机化机制，一个以地址无关方式编译的可执行文件被称作为地址无关可执行文件。<br>系统选项：<code>echo 0 &gt; /proc/sys/kernel/randomize_va_space</code>禁用PIE功能  </p><h2 id="RELRO"><a href="#RELRO" class="headerlink" title="RELRO"></a>RELRO</h2><p>RELRO( Relocation Read-Only),在动态链接的ELF文件中，往往使用got表来动态解析共享库中的函数，而延时绑定技术将在程序运行过程中根据需要查找定位函数，使得got在整个过程中是可写的，这样可能使得got表覆盖而执行任意代码。而RELRO将使程序在开始执行前，解析所有动态链接的函数，然后将got表设置为只读，如此为完全的RELRO保护。而部分的RELRO保护只保护非PLT部分（即.got只读，但是.got.plt可写）</p><h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ol><li><a href="https://introspelliam.github.io/2017/09/30/linux%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%B8%B8%E7%94%A8%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/" target="_blank" rel="noopener">linux程序的常用保护机制</a></li><li><a href="https://en.wikipedia.org/wiki/Buffer_overflow_protection" target="_blank" rel="noopener">Buffer overflow protection</a></li><li><a href="https://lwn.net/Articles/584225/" target="_blank" rel="noopener">“Strong” stack protection for GCC</a></li><li><a href="https://access.redhat.com/blogs/766093/posts/1976213" target="_blank" rel="noopener">Enhance application security with FORTIFY_SOURCE</a></li><li><a href="http://man7.org/linux/man-pages/man2/mprotect.2.html" target="_blank" rel="noopener">mprotect(2) - Linux manual page - man7.org</a></li><li><a href="https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualprotect" target="_blank" rel="noopener">VirtualProtect function</a></li><li></li></ol>]]></content>
       
       
       <categories>
@@ -39,7 +117,7 @@
       <link href="/2020/03/04/%E5%A0%86%E7%9B%B8%E5%85%B3/"/>
       <url>/2020/03/04/%E5%A0%86%E7%9B%B8%E5%85%B3/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h1 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h1><p>在程序运行过程中，堆可以提供动态分配的内存，允许程序申请大小未知的内存。堆其实就是程序虚拟地址空间的一块连续的线性区域，它由低地址向高地址方向增长。我们一般称管理堆的那部分程序为堆管理器。主要工作相应用户内存申请，向操作系统申请内存然后返回给用户。再就是管理用户所释放的内存</p>]]></content>
       
       
       <categories>
@@ -101,7 +179,7 @@
       <link href="/2020/03/01/%E5%B8%B8%E8%A7%81%E9%80%BB%E8%BE%91%E6%AE%B5/"/>
       <url>/2020/03/01/%E5%B8%B8%E8%A7%81%E9%80%BB%E8%BE%91%E6%AE%B5/</url>
       
-        <content type="html"><![CDATA[<h2 id="text-code"><a href="#text-code" class="headerlink" title=".text .code"></a>.text .code</h2><p>代码段，程序编译后的机器指令往往被放在了代码段。</p><h2 id="data"><a href="#data" class="headerlink" title=".data"></a>.data</h2><p>数据段，初始化了的全局变量和局部静态变量往往放在数据段。</p><h3 id="为啥需要将代码与数据分开？"><a href="#为啥需要将代码与数据分开？" class="headerlink" title="为啥需要将代码与数据分开？"></a>为啥需要将代码与数据分开？</h3><ol><li>指令区域对进程来说是只读的，数据区域需要读写，可以分别设置两者的权限，防止指令被修改</li><li>现代CPU中L1 cache一般设计指令缓存与数据缓存，如此分开，可以提高cache的命中率</li><li>当程序中运行多个该指令集的副本时，物理内存中只需保存一份指令集，再将其映射到不同进程的虚存即可，即共享指令</li></ol><h2 id="bss"><a href="#bss" class="headerlink" title=".bss"></a>.bss</h2><p>未初始化的全局变量和局部静态变量一般放在bss段里。由于数据都未进行初始化，所以没有必要在文件中为其保留空间，.bss段只是为未初始化的全局变量和局部静态变量预留位置，它记录来所有未初始化的全局变量和局部静态变量的大小总和，在文件中不占用空间。</p><h2 id="rodata"><a href="#rodata" class="headerlink" title=".rodata"></a>.rodata</h2><p>只读数据段，还可以在语义上支持C++ 的const关键字。</p><h2 id="comment"><a href="#comment" class="headerlink" title=".comment"></a>.comment</h2><p>存放编译器版本信息。</p><h2 id="rel-text，-rel-data"><a href="#rel-text，-rel-data" class="headerlink" title=".rel.text，.rel.data"></a>.rel.text，.rel.data</h2><p>针对.text、.data段的重定位表。</p><h2 id="got与-plt"><a href="#got与-plt" class="headerlink" title=".got与.plt"></a>.got与.plt</h2><p>got表为了解决在动态链接的时候模块中有绝对地址引用的问题，采用了PIC地址无关代码技术，而这个技术的中心思想就是got表。模块内部的函数调用跳转、数据的访问都可以通过相对地址进行，模块外部的访问函数、数据时就用到了got表。got表中包含了每个变量所在的地址，该地址由链接程序进行维护。通过got表实现了模块外部数据的间接访问。</p><p>plt 延时绑定技术，当函数第一次被用到时才进行符号查找，重定位。</p><p>绑定之后 <code>call test@plt</code> ,与 <code>call [test@got]</code> 执行效果相同。</p><h2 id="interp"><a href="#interp" class="headerlink" title=".interp"></a>.interp</h2><p>存放动态链接器的路径</p><h2 id="dynamic"><a href="#dynamic" class="headerlink" title=".dynamic"></a>.dynamic</h2><p>保存了动态链接器所需要的基本信息，如重定位表的位置，符号表的位置，共享对象初始化代码的地址等等</p><h2 id="dynsym"><a href="#dynsym" class="headerlink" title=".dynsym"></a>.dynsym</h2><p>保存了与动态链接相关的符号</p><h2 id="symtab"><a href="#symtab" class="headerlink" title=".symtab"></a>.symtab</h2><p>保存了该目标文件的所有符号的定义与引用</p><h2 id="init与-fini"><a href="#init与-fini" class="headerlink" title=".init与.fini"></a>.init与.fini</h2><p>.init段是一段属于共享对象的代码，装入共享对象时该代码将执行。例如，.init段由C++运行时系统用于调用.so 中的所有静态初始化函数。各个动态库的init执行顺序是按照依赖关系先后执行的，不是加载顺序。<br>.fini终止代码</p>]]></content>
+        <content type="html"><![CDATA[<h2 id="text-code"><a href="#text-code" class="headerlink" title=".text .code"></a>.text .code</h2><p>代码段，程序编译后的机器指令往往被放在了代码段。</p><h2 id="data"><a href="#data" class="headerlink" title=".data"></a>.data</h2><p>数据段，初始化了的全局变量和局部静态变量往往放在数据段。</p><h3 id="为啥需要将代码与数据分开？"><a href="#为啥需要将代码与数据分开？" class="headerlink" title="为啥需要将代码与数据分开？"></a>为啥需要将代码与数据分开？</h3><ol><li>指令区域对进程来说是只读的，数据区域需要读写，可以分别设置两者的权限，防止指令被修改</li><li>现代CPU中L1 cache一般设计指令缓存与数据缓存，如此分开，可以提高cache的命中率</li><li>当程序中运行多个该指令集的副本时，物理内存中只需保存一份指令集，再将其映射到不同进程的虚存即可，即共享指令</li></ol><h2 id="bss"><a href="#bss" class="headerlink" title=".bss"></a>.bss</h2><p>未初始化的全局变量和局部静态变量一般放在bss段里。由于数据都未进行初始化，所以没有必要在文件中为其保留空间，.bss段只是为未初始化的全局变量和局部静态变量预留位置，它记录来所有未初始化的全局变量和局部静态变量的大小总和，在文件中不占用空间。</p><h2 id="rodata"><a href="#rodata" class="headerlink" title=".rodata"></a>.rodata</h2><p>只读数据段，还可以在语义上支持C++ 的const关键字。</p><h2 id="comment"><a href="#comment" class="headerlink" title=".comment"></a>.comment</h2><p>存放编译器版本信息。</p><h2 id="rel-text，-rel-data"><a href="#rel-text，-rel-data" class="headerlink" title=".rel.text，.rel.data"></a>.rel.text，.rel.data</h2><p>针对.text、.data段的重定位表。</p><h2 id="got与-plt"><a href="#got与-plt" class="headerlink" title=".got与.plt"></a>.got与.plt</h2><p>got表为了解决在动态链接的时候模块中有绝对地址引用的问题，采用了PIC地址无关代码技术，而这个技术的中心思想就是got表。模块内部的函数调用跳转、数据的访问都可以通过相对地址进行，模块外部的访问函数、数据时就用到了got表。got表中包含了每个变量所在的地址，该地址由链接程序进行维护。通过got表实现了模块外部数据的间接访问。</p><p>plt延时绑定技术，当函数第一次被用到时才进行符号查找，重定位。</p><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">haha@plt:</span></span><br><span class="line"><span class="keyword">jmp</span> *(haha@got)</span><br><span class="line"><span class="keyword">push</span> n</span><br><span class="line"><span class="keyword">push</span> moduleID</span><br><span class="line">jump _dl_runtime_resolve</span><br></pre></td></tr></table></figure><p>在第一次调用haha时，<code>jmp *(haha@got)</code> 将跳转到下一条指令执行，此时<code>push n</code>将把haha在重定位表.rel.plt中的下表入栈，再压入moduleID，由_dl_runtime_resolve来完成符号解析与重定位工作，并把haha的实际存放到got表中。之后再调用时<code>jmp *(haha@got)</code> 将跳转到haha实际地址开始执行。<br>ELF中‘.got’存放全局变量引用地址，‘.got.plt’存放保存函数应用的地址。</p><p>绑定之后 <code>call test@plt</code> ,与 <code>call [test@got]</code> 执行效果相同。<br>ELF将GOT拆分成两个表“.got”和”.got.plt”,前者用来保存全局变量引用的地址，后者用来保存函数引用的地址。</p><h2 id="interp"><a href="#interp" class="headerlink" title=".interp"></a>.interp</h2><p>存放动态链接器的路径</p><h2 id="dynamic"><a href="#dynamic" class="headerlink" title=".dynamic"></a>.dynamic</h2><p>保存了动态链接器所需要的基本信息，如重定位表的位置，符号表的位置，共享对象初始化代码的地址等等</p><h2 id="dynsym"><a href="#dynsym" class="headerlink" title=".dynsym"></a>.dynsym</h2><p>保存了与动态链接相关的符号</p><h2 id="symtab"><a href="#symtab" class="headerlink" title=".symtab"></a>.symtab</h2><p>保存了该目标文件的所有符号的定义与引用</p><h2 id="init与-fini"><a href="#init与-fini" class="headerlink" title=".init与.fini"></a>.init与.fini</h2><p>.init段是一段属于共享对象的代码，装入共享对象时该代码将执行。例如，.init段由C++运行时系统用于调用.so 中的所有静态初始化函数。各个动态库的init执行顺序是按照依赖关系先后执行的，不是加载顺序。<br>.fini终止代码</p>]]></content>
       
       
       <categories>
@@ -122,19 +200,6 @@
             <tag> reverse </tag>
             
         </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>test</title>
-      <link href="/2020/03/01/test/"/>
-      <url>/2020/03/01/test/</url>
-      
-        <content type="html"><![CDATA[<p>###haha<br>这是一个简单的测试</p>]]></content>
-      
-      
       
     </entry>
     

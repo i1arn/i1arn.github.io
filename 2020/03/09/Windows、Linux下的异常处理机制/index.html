@@ -5,15 +5,12 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>常见逻辑段 - Hexo</title>
+    <title>Windows、Linux下的异常处理机制 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content=".text .code代码段，程序编译后的机器指令往往被放在了代码段。
-.data数据段，初始化了的全局变量和局部静态变量往往放在数据段。
-为啥需要将代码与数据分开？
-指令区域对进程来说是只读的，数,"> 
+    
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -60,7 +57,7 @@
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
         <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
-        <h3 class="subtitle">常见逻辑段</h3>
+        <h3 class="subtitle">Windows、Linux下的异常处理机制</h3>
         <div class="social">
                    <!-- <div class="like-icon"> -->
                        <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
@@ -90,25 +87,24 @@
         <div class="else">
             <p class="animated fadeInDown">
                 
-                <a href="/categories/lol"><b>「
-                    </b>LOL<b> 」</b></a>
+                <a href="javascript:;"><b>「 </b>Article<b> 」</b></a>
                 
-                March 01, 2020
+                March 09, 2020
             </p>
-            <h3 class="post-title animated fadeInDown"><a href="/2020/03/01/%E5%B8%B8%E8%A7%81%E9%80%BB%E8%BE%91%E6%AE%B5/" title="常见逻辑段" class="">常见逻辑段</a>
+            <h3 class="post-title animated fadeInDown"><a href="/2020/03/09/Windows%E3%80%81Linux%E4%B8%8B%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/" title="Windows、Linux下的异常处理机制" class="">Windows、Linux下的异常处理机制</a>
             </h3>
             
             <p class="post-count animated fadeInDown">
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    3.2k
+                    0
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    3 mins.
+                    1 mins.
                 </span>
                 
                 
@@ -120,8 +116,6 @@
                 
             </p>
             
-            
-            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/pwn/" rel="tag">pwn</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/reverse/" rel="tag">reverse</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a></li></ul>
             
         </div>
     </div>
@@ -142,28 +136,7 @@
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <h2 id="text-code"><a href="#text-code" class="headerlink" title=".text .code"></a>.text .code</h2><p>代码段，程序编译后的机器指令往往被放在了代码段。</p>
-<h2 id="data"><a href="#data" class="headerlink" title=".data"></a>.data</h2><p>数据段，初始化了的全局变量和局部静态变量往往放在数据段。</p>
-<h3 id="为啥需要将代码与数据分开？"><a href="#为啥需要将代码与数据分开？" class="headerlink" title="为啥需要将代码与数据分开？"></a>为啥需要将代码与数据分开？</h3><ol>
-<li>指令区域对进程来说是只读的，数据区域需要读写，可以分别设置两者的权限，防止指令被修改</li>
-<li>现代CPU中L1 cache一般设计指令缓存与数据缓存，如此分开，可以提高cache的命中率</li>
-<li>当程序中运行多个该指令集的副本时，物理内存中只需保存一份指令集，再将其映射到不同进程的虚存即可，即共享指令</li>
-</ol>
-<h2 id="bss"><a href="#bss" class="headerlink" title=".bss"></a>.bss</h2><p>未初始化的全局变量和局部静态变量一般放在bss段里。由于数据都未进行初始化，所以没有必要在文件中为其保留空间，.bss段只是为未初始化的全局变量和局部静态变量预留位置，它记录来所有未初始化的全局变量和局部静态变量的大小总和，在文件中不占用空间。</p>
-<h2 id="rodata"><a href="#rodata" class="headerlink" title=".rodata"></a>.rodata</h2><p>只读数据段，还可以在语义上支持C++ 的const关键字。</p>
-<h2 id="comment"><a href="#comment" class="headerlink" title=".comment"></a>.comment</h2><p>存放编译器版本信息。</p>
-<h2 id="rel-text，-rel-data"><a href="#rel-text，-rel-data" class="headerlink" title=".rel.text，.rel.data"></a>.rel.text，.rel.data</h2><p>针对.text、.data段的重定位表。</p>
-<h2 id="got与-plt"><a href="#got与-plt" class="headerlink" title=".got与.plt"></a>.got与.plt</h2><p>got表为了解决在动态链接的时候模块中有绝对地址引用的问题，采用了PIC地址无关代码技术，而这个技术的中心思想就是got表。模块内部的函数调用跳转、数据的访问都可以通过相对地址进行，模块外部的访问函数、数据时就用到了got表。got表中包含了每个变量所在的地址，该地址由链接程序进行维护。通过got表实现了模块外部数据的间接访问。</p>
-<p>plt延时绑定技术，当函数第一次被用到时才进行符号查找，重定位。</p>
-<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">haha@plt:</span></span><br><span class="line"><span class="keyword">jmp</span> *(haha@got)</span><br><span class="line"><span class="keyword">push</span> n</span><br><span class="line"><span class="keyword">push</span> moduleID</span><br><span class="line">jump _dl_runtime_resolve</span><br></pre></td></tr></table></figure>
-<p>在第一次调用haha时，<code>jmp *(haha@got)</code> 将跳转到下一条指令执行，此时<code>push n</code>将把haha在重定位表.rel.plt中的下表入栈，再压入moduleID，由_dl_runtime_resolve来完成符号解析与重定位工作，并把haha的实际存放到got表中。之后再调用时<code>jmp *(haha@got)</code> 将跳转到haha实际地址开始执行。<br>ELF中‘.got’存放全局变量引用地址，‘.got.plt’存放保存函数应用的地址。</p>
-<p>绑定之后 <code>call test@plt</code> ,与 <code>call [test@got]</code> 执行效果相同。<br>ELF将GOT拆分成两个表“.got”和”.got.plt”,前者用来保存全局变量引用的地址，后者用来保存函数引用的地址。</p>
-<h2 id="interp"><a href="#interp" class="headerlink" title=".interp"></a>.interp</h2><p>存放动态链接器的路径</p>
-<h2 id="dynamic"><a href="#dynamic" class="headerlink" title=".dynamic"></a>.dynamic</h2><p>保存了动态链接器所需要的基本信息，如重定位表的位置，符号表的位置，共享对象初始化代码的地址等等</p>
-<h2 id="dynsym"><a href="#dynsym" class="headerlink" title=".dynsym"></a>.dynsym</h2><p>保存了与动态链接相关的符号</p>
-<h2 id="symtab"><a href="#symtab" class="headerlink" title=".symtab"></a>.symtab</h2><p>保存了该目标文件的所有符号的定义与引用</p>
-<h2 id="init与-fini"><a href="#init与-fini" class="headerlink" title=".init与.fini"></a>.init与.fini</h2><p>.init段是一段属于共享对象的代码，装入共享对象时该代码将执行。例如，.init段由C++运行时系统用于调用.so 中的所有静态初始化函数。各个动态库的init执行顺序是按照依赖关系先后执行的，不是加载顺序。<br>.fini终止代码</p>
-
+            
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
                 data-autoplay="false">
@@ -213,13 +186,6 @@
             </div>
             
             
-            
-            <div class="box sticky animated fadeInRight faster">
-                <div id="toc" class="subbox">
-                    <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#text-code"><span class="toc-number">1.</span> <span class="toc-text">.text .code</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#data"><span class="toc-number">2.</span> <span class="toc-text">.data</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#为啥需要将代码与数据分开？"><span class="toc-number">2.1.</span> <span class="toc-text">为啥需要将代码与数据分开？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bss"><span class="toc-number">3.</span> <span class="toc-text">.bss</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rodata"><span class="toc-number">4.</span> <span class="toc-text">.rodata</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#comment"><span class="toc-number">5.</span> <span class="toc-text">.comment</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rel-text，-rel-data"><span class="toc-number">6.</span> <span class="toc-text">.rel.text，.rel.data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#got与-plt"><span class="toc-number">7.</span> <span class="toc-text">.got与.plt</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#interp"><span class="toc-number">8.</span> <span class="toc-text">.interp</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dynamic"><span class="toc-number">9.</span> <span class="toc-text">.dynamic</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dynsym"><span class="toc-number">10.</span> <span class="toc-text">.dynsym</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#symtab"><span class="toc-number">11.</span> <span class="toc-text">.symtab</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#init与-fini"><span class="toc-number">12.</span> <span class="toc-text">.init与.fini</span></a></li></ol>
-                </div>
-            </div>
             
             
         </div>
