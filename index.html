@@ -137,19 +137,18 @@
     <div id="post0" class="else">
         <p class="animated fadeInDown">
             
-            <a href="/categories/lol"><b>「
-                </b>LOL<b> 」</b></a>
+            <a href="javascript:;"><b>「 </b>Article<b> 」</b></a>
             
             March 13, 2020
         </p>
         <h3 class="post-title animated fadeInDown">
-            <a href="/2020/03/13/%E8%B0%83%E8%AF%95%E4%B8%8E%E5%8F%8D%E8%B0%83%E8%AF%95/" title="调试与反调试" class="posttitle">调试与反调试</a></h3>
+            <a href="/2020/03/13/%E5%8A%A0%E5%A3%B3%E8%84%B1%E5%A3%B3/" title="Windows下的加壳脱壳" class="posttitle">Windows下的加壳脱壳</a></h3>
         
         <p class="post-count animated fadeInDown">
             
             <span>
                 <b class="iconfont icon-text2"></b> <i>Words count</i>
-                3.6k
+                3.7k
             </span>
             
             
@@ -162,14 +161,11 @@
         </p>
         
         
-        <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/%E8%B0%83%E8%AF%95/" rel="tag">调试</a></li></ul>
-        
         <div class="md-content animated fadeIn">
             
-            <p>说到调试，最明显的工作就是将程序拖入、附加到调试器中，但是中间存在什么样的原理呢  </p>
-<h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>由...</p>
+            <p>IAT(Input Address Table),输入地址表。通俗的讲，IAT中存放了程序执行所用到...</p>
             
-            <span class="read-more"><a href="/2020/03/13/%E8%B0%83%E8%AF%95%E4%B8%8E%E5%8F%8D%E8%B0%83%E8%AF%95/" title="Read article" class="posttitle">Read article</a>
+            <span class="read-more"><a href="/2020/03/13/%E5%8A%A0%E5%A3%B3%E8%84%B1%E5%A3%B3/" title="Read article" class="posttitle">Read article</a>
                 <b class="iconfont icon-arrow-right- gradient-text"></b></span>
         </div>
     </div>
@@ -190,6 +186,53 @@
 
     <div id="primary">
         
+<div class="post" id="post">
+    <div class="post-cover animated fadeIn" style="
+            background-image:
+            radial-gradient(ellipse closest-side, rgba(0, 0, 0, 0.65), #100e17),
+            url(/img/welcome-cover.jpg);">
+    </div>
+    <div class="else">
+        <p class="animated fadeInDown">
+            
+                <a href="/categories/lol">
+                  <b>「 </b>LOL<b> 」</b>
+                </a>
+            
+            March 13, 2020
+        </p>
+        <h3 class="post-title animated fadeInDown"><a href="/2020/03/13/%E8%B0%83%E8%AF%95%E4%B8%8E%E5%8F%8D%E8%B0%83%E8%AF%95/" title="调试与反调试" class="posttitle">调试与反调试</a></h3>
+        
+            <p class="post-count animated fadeInDown">
+                
+                    <span>
+                        <b class="iconfont icon-text2"></b> <i>Words count</i>
+                        3.6k
+                    </span>
+                
+                
+                    <span>
+                        <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
+                        3 mins.
+                    </span>
+                
+                
+            </p>
+            
+                <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/%E8%B0%83%E8%AF%95/" rel="tag">调试</a></li></ul>
+            
+        
+        <div class="md-content animated fadeIn">
+            
+                <p>说到调试，最明显的工作就是将程序拖入、附加到调试器中，但是中间存在什么样的原理呢  </p>
+<h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>由<code>DbgUiConnectToDbg</code>函数调用<code>ZwCreateDebugObject</code>创建一个调试对象，并将调试对象句柄保存在调试器当前线程的TEB结构的DbgSsReserved[1]中。然后在<code>CreateProcess...</code></p>
+            
+            <span class="read-more"><a href="/2020/03/13/%E8%B0%83%E8%AF%95%E4%B8%8E%E5%8F%8D%E8%B0%83%E8%AF%95/" title="Read article" class="posttitle">Read article</a> <b class="iconfont icon-arrow-right- gradient-text"></b></span>
+        </div>
+    </div>
+</div>
+
+
 <div class="post" id="post">
     <div class="post-cover animated fadeIn" style="
             background-image:
