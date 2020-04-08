@@ -4,6 +4,29 @@
   
     
     <entry>
+      <title>gdb自动化调试</title>
+      <link href="/2020/04/08/gdb%E8%87%AA%E5%8A%A8%E5%8C%96%E8%B0%83%E8%AF%95/"/>
+      <url>/2020/04/08/gdb%E8%87%AA%E5%8A%A8%E5%8C%96%E8%B0%83%E8%AF%95/</url>
+      
+        <content type="html"><![CDATA[<h1 id="举例说明gdb脚本以及Python脚本的使用。"><a href="#举例说明gdb脚本以及Python脚本的使用。" class="headerlink" title="举例说明gdb脚本以及Python脚本的使用。"></a>举例说明gdb脚本以及Python脚本的使用。</h1><h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p>以攻防世界reverse中的hackme题目为例，题目思路比较简单。就是异或计算。  </p><div align=center><img src="./IDA反编译.png" alt="IDA反编译" width="50%" height="50%"  /></div>但是题目中有点陷阱，程序中只对字符串进行了10次比较，达不到其需要的字符串长度，需要更改循环次数以完成对输入的完整检查。  题中每次比较的位置是不定的，而且存在重复比较，若手动处理比较麻烦。<h2 id="gdb脚本"><a href="#gdb脚本" class="headerlink" title="gdb脚本"></a>gdb脚本</h2><p>预设了三个断点  </p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">def pos</span><br><span class="line">&gt; run</span><br><span class="line">&gt; <span class="built_in">set</span> <span class="variable">$i</span>=100</span><br><span class="line">&gt; <span class="keyword">while</span>(<span class="variable">$i</span>)</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$tmp</span>=<span class="variable">$rax</span></span><br><span class="line">  &gt; c</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$target</span>= <span class="variable">$al</span>;</span><br><span class="line">  &gt; c</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$tartget</span>= <span class="variable">$target</span> ^ <span class="variable">$dl</span>;</span><br><span class="line">  &gt; <span class="built_in">printf</span> <span class="string">"pos:%d,target:%d "</span>,<span class="variable">$tmp</span>,<span class="variable">$target</span></span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$i</span>--</span><br><span class="line">  &gt; c</span><br><span class="line">  &gt;end</span><br><span class="line">&gt;end</span><br><span class="line">pos</span><br></pre></td></tr></table></figure><h2 id="python脚本"><a href="#python脚本" class="headerlink" title="python脚本"></a>python脚本</h2><p>预设了三个断点  </p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> gdb</span><br><span class="line"></span><br><span class="line"><span class="comment">#用户自定义命令需要继承gdb.Command类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pos</span><span class="params">(gdb.Command)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(self.__class__,self).__init__(<span class="string">"pos"</span>,gdb.COMMAND_USER)  <span class="comment">#注册改命令的名字</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">invoke</span><span class="params">(self,args,from_tty)</span>:</span></span><br><span class="line">        ss=list(<span class="string">"01234567890123456789012"</span>)  <span class="comment">#生成一个随便的内容的列表</span></span><br><span class="line">        gdb.execute(<span class="string">"run"</span>)</span><br><span class="line">        i=<span class="number">100</span></span><br><span class="line">        <span class="keyword">while</span> i:</span><br><span class="line">            pos=gdb.parse_and_eval(<span class="string">"$eax"</span>) <span class="comment"># 获取寄存器的值</span></span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            target=gdb.parse_and_eval(<span class="string">"$al"</span>)</span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            target=target ^ gdb.parse_and_eval(<span class="string">"$dl"</span>)</span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            ss[pos]=chr(target)</span><br><span class="line">            i-=<span class="number">1</span></span><br><span class="line"></span><br><span class="line">        print(<span class="string">"flag: "</span>+<span class="string">""</span>.join(ss))</span><br><span class="line"></span><br><span class="line">Pos()  <span class="comment">#注册该命令</span></span><br></pre></td></tr></table></figure><p>两秒出结果，舒服。</p><div align=center><img src="./flag.png" alt="flag" width="50%" height="50%"  /></div>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> reverse </tag>
+            
+            <tag> gdb </tag>
+            
+            <tag> python </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Windows下的加壳脱壳</title>
       <link href="/2020/03/13/%E5%8A%A0%E5%A3%B3%E8%84%B1%E5%A3%B3/"/>
       <url>/2020/03/13/%E5%8A%A0%E5%A3%B3%E8%84%B1%E5%A3%B3/</url>
@@ -11,6 +34,14 @@
         <content type="html"><![CDATA[<h1 id="IAT"><a href="#IAT" class="headerlink" title="IAT"></a>IAT</h1><p>IAT(Input Address Table),输入地址表。通俗的讲，IAT中存放了程序执行所用到的外部API的地址。与之对应的显然就还有输出地址表，存放着文件给外部使用的API的地址。现阶段的加壳脱壳中，更多的关注的是IAT。</p><h1 id="加壳"><a href="#加壳" class="headerlink" title="加壳"></a>加壳</h1><p>一段专门负责保护软件不被非法修改或反编译的程序，一般先于程序运行。</p><h2 id="壳的分类"><a href="#壳的分类" class="headerlink" title="壳的分类"></a>壳的分类</h2><h3 id="压缩壳"><a href="#压缩壳" class="headerlink" title="压缩壳"></a>压缩壳</h3><p>压缩壳的主要目的是缩减软件大小，例如<code>upx</code>、<code>ASPack</code>等等，脱起来也比较简单，可利用现有的脚本脱，也可手动脱</p><h3 id="加密壳"><a href="#加密壳" class="headerlink" title="加密壳"></a>加密壳</h3><p>加密壳侧重于保护软件，例如加密核心算法，或者限制软件使用等等。</p><ol><li>常见的<code>ASprotect</code>通过强有力的加密算法，来加密程序，官方提供相关的SDK，倡导开发者尽量使用SDK来开发。</li><li><code>Armadillo穿山甲</code>将程序中的所有跳转指令替换为int3指令，当子进程遇到int3异常时，父进程截获异常并计算出跳转的目标地址，然后返回给子进程继续运行。</li></ol><h3 id="虚拟机保护"><a href="#虚拟机保护" class="headerlink" title="虚拟机保护"></a>虚拟机保护</h3><p>这个就最厉害了，虚拟机拥有一套自定义的指令系统，首先将已知的指令集替换为自己的指令集，然后在运行时，自定义的指令集将在虚拟的cpu中运行。</p><h2 id="壳的加载过程"><a href="#壳的加载过程" class="headerlink" title="壳的加载过程"></a>壳的加载过程</h2><h3 id="1-保存入口参数"><a href="#1-保存入口参数" class="headerlink" title="1. 保存入口参数"></a>1. 保存入口参数</h3><p>加壳程序在初始化之前会保存当前的运行环境，以便外壳执行完毕之后方便程序继续执行。</p><h3 id="2-获取外壳所需的API地址"><a href="#2-获取外壳所需的API地址" class="headerlink" title="2. 获取外壳所需的API地址"></a>2. 获取外壳所需的API地址</h3><p>一般情况下，外壳的输入表中只有<code>GetProcAddress</code>，<code>GetModuleHandle</code>，<code>LoadLibrary</code>三个函数，甚至只有<code>Kernel32.dll</code>和<code>GetProcAddress</code>，所需要的其他函数将通过现有的函数进行加载、查询使用。</p><h3 id="3-解密原程序各个区块的数据"><a href="#3-解密原程序各个区块的数据" class="headerlink" title="3. 解密原程序各个区块的数据"></a>3. 解密原程序各个区块的数据</h3><p>一般来说各个数据按照区块来进行解密，但是也有程序用到哪就解密哪，增加分析难度。</p><h3 id="4-IAT的初始化"><a href="#4-IAT的初始化" class="headerlink" title="4. IAT的初始化"></a>4. IAT的初始化</h3><p>外壳程序将PE头中的输入表指针指向自建的输入表，该表由PE装载器负责填充，原程序的输入表将由外壳程序来进行维护。</p><h3 id="5-重定位项的处理"><a href="#5-重定位项的处理" class="headerlink" title="5. 重定位项的处理"></a>5. 重定位项的处理</h3><p>外壳程序的重定位主要由系统的提供实现，但原程序的代码就可能需要修复重定位，可以取消原程序的重定位，或者原程序的重定位段交由外壳程序进行修复重定位。</p><h3 id="6-恢复原程序的执行环境"><a href="#6-恢复原程序的执行环境" class="headerlink" title="6. 恢复原程序的执行环境"></a>6. 恢复原程序的执行环境</h3><h3 id="7-跳转到原程序的入口开始执行"><a href="#7-跳转到原程序的入口开始执行" class="headerlink" title="7. 跳转到原程序的入口开始执行"></a>7. 跳转到原程序的入口开始执行</h3><h1 id="脱壳（一般情况）"><a href="#脱壳（一般情况）" class="headerlink" title="脱壳（一般情况）"></a>脱壳（一般情况）</h1><p>一般情况下的脱壳大致步骤如下</p><h2 id="1-寻找OEP"><a href="#1-寻找OEP" class="headerlink" title="1. 寻找OEP"></a>1. 寻找OEP</h2><p>OEP(Original Entry Point),程序入口点。简单的外壳程序跳转到OEP时意味着此时内存中的原程序已经完成了脱壳。那寻找OEP的方法一般如下：</p><ol><li>根据跨段指令。外壳程序的指令可能运行在自定义的段中，完成解密之后，将跳转到.text段开始执行原程序，由此可知跳转之后的地址即为OEP。</li><li>使用内存访问断点。外壳程序在解密过程中，将对原程序的所有内存进行一次访问解密，当再次访问原程序的.text段时，说明此时开始执行原程序代码。</li><li>根据栈平衡原理。原程序在运行之前，外壳程序必须先恢复之前原有的堆栈环境。通过观察明显的<code>pushad/popad</code>、<code>pushfd\pofd</code>等指令，或对ESP设置硬件访问断点，于是可找到OEP</li></ol><h2 id="2-抓取内存映像"><a href="#2-抓取内存映像" class="headerlink" title="2. 抓取内存映像"></a>2. 抓取内存映像</h2><p>完成了OEP的寻找之后，执行到OEP时，原程序已经完成了解密，通过抓取内存壳得到原程序。<br>这一操作更多的依赖于<code>LordPE</code>,<code>PETools</code>等工具，主要通过<code>Module32Next</code>函数获取进程的有关信息，然后选取数据保存。保存的数据其实包含了外壳程序。这些工具在保存时一般默认重建了PE头，修改了OEP。<br>当然有一些anti-dump操作，比如修改系统中<code>modBaseSize</code>的值，或是修改内存属性不让读取等等，可以通过手动纠正映像大小，修改内存属性等绕过。</p><h2 id="3-重建IAT"><a href="#3-重建IAT" class="headerlink" title="3. 重建IAT"></a>3. 重建IAT</h2><p>上述操作完成之后得到了新的PE文件，但是并不能执行，因为程序中所有使用的API的地址都未知，也就是说IAT表没有修复，程序无法使用API。<br>这一过程也是使用工具完成，如<code>ImportREC</code>。IAT是一般一块连续的数据，以00作为结尾，当遇到多块IAT时，工具只能检测到一块，其余可能需要手动调整IAT地址和大小获取各个IAT数据。</p><h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://bbs.pediy.com/thread-20366.htm" target="_blank" rel="noopener">脱壳入门初级教学</a><br>《加密与解密 第四版》</p>]]></content>
       
       
+      
+        <tags>
+            
+            <tag> reverse </tag>
+            
+            <tag> shelling </tag>
+            
+        </tags>
       
     </entry>
     
@@ -21,7 +52,7 @@
       <link href="/2020/03/13/%E8%B0%83%E8%AF%95%E4%B8%8E%E5%8F%8D%E8%B0%83%E8%AF%95/"/>
       <url>/2020/03/13/%E8%B0%83%E8%AF%95%E4%B8%8E%E5%8F%8D%E8%B0%83%E8%AF%95/</url>
       
-        <content type="html"><![CDATA[<h1 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h1><p>说到调试，最明显的工作就是将程序拖入、附加到调试器中，但是中间存在什么样的原理呢  </p><h2 id="创建附加被调试进程"><a href="#创建附加被调试进程" class="headerlink" title="创建附加被调试进程"></a>创建附加被调试进程</h2><h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>由<code>DbgUiConnectToDbg</code>函数调用<code>ZwCreateDebugObject</code>创建一个调试对象，并将调试对象句柄保存在调试器当前线程的TEB结构的DbgSsReserved[1]中。然后在<code>CreateProcess</code>创建进程时添加标志DEBUG_PROCESS即可完成创建被调试对象，也可以使用<code>DebugActiveProcess</code>附加到一个现有的进程上。  </p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">WaitForDebugEvent</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  LPDEBUG_EVENT lpDebugEvent,   <span class="comment">//指向DEBUG_EVENT结构的指针，该 结构接收有关调试事件的信息。</span></span></span></span><br><span class="line"><span class="function"><span class="params">  DWORD         dwMilliseconds  <span class="comment">//等待调试事件的毫秒数。如果此参数为零，则该函数将测试调试事件并立即返回。如果参数为INFINITE，则在发生调试事件之前该函数不会返回。</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure><p><code>WaitForDebugEvent</code>用于等待和接收调试事件,处理调试事件后，调试器调用<code>ContinueDebugEvent</code>将处理结果回复给调试子系统。</p><h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><p>Linux下的调试工具gdb主要依赖<code>ptrace</code>，<code>ptrace</code>可以让父进程观察子进程的执行，可以改变子进程的内存和寄存器</p><h2 id="断点"><a href="#断点" class="headerlink" title="断点"></a>断点</h2><h3 id="软件断点"><a href="#软件断点" class="headerlink" title="软件断点"></a>软件断点</h3><p>通过在代码中设置特定值的方式实现的，比如说Windows下断点处的指令将会被变为int3，到达断点处之后，调试器通过对比现有的断点列表得知其为用户断点，于是在程序被中断到调试器之前，将int3代码替换为原来的代码，再将控制权交给用户。当用户期望恢复执行被调试进程时，调试器通过API通知调试子系统，然后系统内核的异常分发函数将返回到异常处理函数，处理函数再通过<code>IRET/IRETD</code>指令发出异常返回工作，恢复CPU的上下文，从中断处继续执行。</p><h3 id="硬件断点"><a href="#硬件断点" class="headerlink" title="硬件断点"></a>硬件断点</h3><p>硬件中断主要通过DR0-DR3调试地址寄存器、DR6调试控制寄存器以及RD7调试状态寄存器实现的。DR0-DR3保存了制定断点的内存或IO地址.当调试发生时，DR6将用来报告调试器更加详细的信息。DR7则用来保存各个硬件断点的中断条件。</p><h2 id="单步执行"><a href="#单步执行" class="headerlink" title="单步执行"></a>单步执行</h2><p>单步执行主要是通过eflags寄存器上的TF位来实现的。当TF为1时，单步中断，执行完一条语句之后将发生异常，进入异常处理函数之后TF为将自动置0.</p><h3 id="单步进入"><a href="#单步进入" class="headerlink" title="单步进入"></a>单步进入</h3><p>在执行指令时，通过调试符号获取当前位置的行信息，再通过TF位单步异常之后对比前后位置行信息即可。</p><h3 id="单步跳过"><a href="#单步跳过" class="headerlink" title="单步跳过"></a>单步跳过</h3><p>执行不包含call的指令时，原理与单步进入是一样的。在执行包含call指令的语句时，则在下一条指令设置断点，然后继续运行，对比前后位置行信息即可。</p><h1 id="反调试"><a href="#反调试" class="headerlink" title="反调试"></a>反调试</h1><h2 id="Windows-1"><a href="#Windows-1" class="headerlink" title="Windows"></a>Windows</h2><h3 id="API"><a href="#API" class="headerlink" title="API"></a>API</h3><ol><li><code>IsDebuggerPresent</code></li><li><code>CheckRemoteDebuggerPresent</code> </li><li><code>NtQueryInformationProcess</code>在参数中可以要求返回调试端口</li><li><code>ZwSetInformationThread</code>可以要求分离，终止被调试的进程</li></ol><h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ol><li>窗口信息</li><li>注册表</li><li>代码校验和</li><li>硬件断点</li><li>时钟检测</li><li>……</li></ol><p>参考链接：</p><p><a href="https://b0ldfrev.gitbook.io/note/windows_operating_system/tiao-shi-yuan-li" target="_blank" rel="noopener">调试原理</a><br><a href="https://bbs.pediy.com/thread-225740.htm" target="_blank" rel="noopener">反调试技术总结</a></p>]]></content>
+        <content type="html"><![CDATA[<h1 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h1><p>说到调试，最明显的工作就是将程序拖入、附加到调试器中，但是中间存在什么样的原理呢  </p><h2 id="创建附加被调试进程"><a href="#创建附加被调试进程" class="headerlink" title="创建附加被调试进程"></a>创建附加被调试进程</h2><h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>由<code>DbgUiConnectToDbg</code>函数调用<code>ZwCreateDebugObject</code>创建一个调试对象，并将调试对象句柄保存在调试器当前线程的TEB结构的DbgSsReserved[1]中。然后在<code>CreateProcess</code>创建进程时添加标志DEBUG_PROCESS即可完成创建被调试对象，也可以使用<code>DebugActiveProcess</code>附加到一个现有的进程上。  </p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">WaitForDebugEvent</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  LPDEBUG_EVENT lpDebugEvent,   <span class="comment">//指向DEBUG_EVENT结构的指针，该 结构接收有关调试事件的信息。</span></span></span></span><br><span class="line"><span class="function"><span class="params">  DWORD         dwMilliseconds  <span class="comment">//等待调试事件的毫秒数。如果此参数为零，则该函数将测试调试事件并立即返回。如果参数为INFINITE，则在发生调试事件之前该函数不会返回。</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure><p><code>WaitForDebugEvent</code>用于等待和接收调试事件,处理调试事件后，调试器调用<code>ContinueDebugEvent</code>将处理结果回复给调试子系统。</p><h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><p>Linux下的调试工具gdb主要依赖<code>ptrace</code>，<code>ptrace</code>可以让父进程观察子进程的执行，可以改变子进程的内存和寄存器</p><h2 id="断点"><a href="#断点" class="headerlink" title="断点"></a>断点</h2><h3 id="软件断点"><a href="#软件断点" class="headerlink" title="软件断点"></a>软件断点</h3><p>通过在代码中设置特定值的方式实现的，比如说Windows下断点处的指令将会被变为int3，到达断点处之后，调试器通过对比现有的断点列表得知其为用户断点，于是在程序被中断到调试器之前，将int3代码替换为原来的代码，再将控制权交给用户。当用户期望恢复执行被调试进程时，调试器通过API通知调试子系统，然后系统内核的异常分发函数将返回到异常处理函数，处理函数再通过<code>IRET/IRETD</code>指令发出异常返回工作，恢复CPU的上下文，从中断处继续执行。</p><h3 id="硬件断点"><a href="#硬件断点" class="headerlink" title="硬件断点"></a>硬件断点</h3><p>硬件中断主要通过DR0-DR3调试地址寄存器、DR6调试控制寄存器以及RD7调试状态寄存器实现的。DR0-DR3保存了制定断点的内存或IO地址.当调试发生时，DR6将用来报告调试器更加详细的信息。DR7则用来保存各个硬件断点的中断条件。</p><h2 id="单步执行"><a href="#单步执行" class="headerlink" title="单步执行"></a>单步执行</h2><p>单步执行主要是通过eflags寄存器上的TF位来实现的。当TF为1时，单步中断，执行完一条语句之后将发生异常，进入异常处理函数之后TF为将自动置0.</p><h3 id="单步进入"><a href="#单步进入" class="headerlink" title="单步进入"></a>单步进入</h3><p>在执行指令时，通过调试符号获取当前位置的行信息，再通过TF位单步异常之后对比前后位置行信息即可。</p><h3 id="单步跳过"><a href="#单步跳过" class="headerlink" title="单步跳过"></a>单步跳过</h3><p>执行不包含call的指令时，原理与单步进入是一样的。在执行包含call指令的语句时，则在下一条指令设置断点，然后继续运行，对比前后位置行信息即可。</p><h1 id="反调试"><a href="#反调试" class="headerlink" title="反调试"></a>反调试</h1><h2 id="Windows-1"><a href="#Windows-1" class="headerlink" title="Windows"></a>Windows</h2><h3 id="API"><a href="#API" class="headerlink" title="API"></a>API</h3><ol><li><code>IsDebuggerPresent</code></li><li><code>CheckRemoteDebuggerPresent</code> </li><li><code>NtQueryInformationProcess</code>在参数中可以要求返回调试端口</li><li><code>ZwSetInformationThread</code>可以要求分离，终止被调试的进程</li></ol><h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ol><li>窗口信息</li><li>注册表</li><li>代码校验和</li><li>硬件断点</li><li>时钟检测</li><li>……</li></ol><h1 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h1><ol><li><a href="https://b0ldfrev.gitbook.io/note/windows_operating_system/tiao-shi-yuan-li" target="_blank" rel="noopener">调试原理</a></li><li><a href="https://bbs.pediy.com/thread-225740.htm" target="_blank" rel="noopener">反调试技术总结</a></li></ol>]]></content>
       
       
       <categories>
@@ -38,57 +69,6 @@
             <tag> 调试 </tag>
             
         </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>植物大战僵尸破解魔改</title>
-      <link href="/2020/03/10/%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8%E7%A0%B4%E8%A7%A3%E9%AD%94%E6%94%B9/"/>
-      <url>/2020/03/10/%E6%A4%8D%E7%89%A9%E5%A4%A7%E6%88%98%E5%83%B5%E5%B0%B8%E7%A0%B4%E8%A7%A3%E9%AD%94%E6%94%B9/</url>
-      
-        <content type="html"><![CDATA[<p>闲来无事，学学网上破解植物大战僵尸  </p><h1 id="防守方"><a href="#防守方" class="headerlink" title="防守方"></a>防守方</h1><h2 id="阳光"><a href="#阳光" class="headerlink" title="阳光"></a>阳光</h2><p>使用<code>cheat engine</code>反复查找与阳光值相同的位置，最终都指向了一个地址。  </p><div align=center><img src="./定位阳光.png" alt="定位阳光" width="70%" height="70%"  /></div><p>通过内存断点找到了增加阳光的代码位置  </p><div align=center><img src="./增加阳光.png" alt="增加阳光" width="70%" height="70%"  /></div>在附近查还找到了增加25阳光的位置。修改可用。但是换了个关卡之后，地址发生了变化。分析发现，阳光值的定位是通过`[edi+0x5578]`找到的，于是反复查找，发现edi又是通过`[esi+0x868]`找到的，再一次的反复查找，返现esi的位置在游戏过程中是不发生变化的，依次通过内存断点找到了游戏关卡阳光值归零的地方。  <div align=center><img src="./阳光归零.png" alt="阳光归零" width="70%" height="70%"  /></div>    顺蔓摸瓜找到了初始化阳光值的地方  <div align=center><img src="./阳光初始化.png" alt="阳光初始化" width="70%" height="70%"  /></div>   至此，阳光可以魔改了。  <h2 id="植物"><a href="#植物" class="headerlink" title="植物"></a>植物</h2><h3 id="种植消耗"><a href="#种植消耗" class="headerlink" title="种植消耗"></a>种植消耗</h3><h3 id="种植冷却"><a href="#种植冷却" class="headerlink" title="种植冷却"></a>种植冷却</h3><h3 id="技能冷却"><a href="#技能冷却" class="headerlink" title="技能冷却"></a>技能冷却</h3><h1 id="攻击方"><a href="#攻击方" class="headerlink" title="攻击方"></a>攻击方</h1>]]></content>
-      
-      
-      <categories>
-          
-          <category> 软件魔改 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> reverse </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>C++相关</title>
-      <link href="/2020/03/09/C++%E7%9B%B8%E5%85%B3/"/>
-      <url>/2020/03/09/C++%E7%9B%B8%E5%85%B3/</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Windows、Linux下的异常处理机制</title>
-      <link href="/2020/03/09/Windows%E3%80%81Linux%E4%B8%8B%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/"/>
-      <url>/2020/03/09/Windows%E3%80%81Linux%E4%B8%8B%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-      
       
     </entry>
     
@@ -118,37 +98,6 @@
             <tag> os </tag>
             
             <tag> pwn </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>堆相关</title>
-      <link href="/2020/03/04/%E5%A0%86%E7%9B%B8%E5%85%B3/"/>
-      <url>/2020/03/04/%E5%A0%86%E7%9B%B8%E5%85%B3/</url>
-      
-        <content type="html"><![CDATA[<h1 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h1><p>在程序运行过程中，堆可以提供动态分配的内存，允许程序申请大小未知的内存。堆其实就是程序虚拟地址空间的一块连续的线性区域，它由低地址向高地址方向增长。我们一般称管理堆的那部分程序为堆管理器。主要工作相应用户内存申请，向操作系统申请内存然后返回给用户。再就是管理用户所释放的内存</p>]]></content>
-      
-      
-      <categories>
-          
-          <category> lol </category>
-          
-          <category> 操作系统 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> 随笔 </tag>
-            
-            <tag> pwn </tag>
-            
-            <tag> reverse </tag>
             
         </tags>
       

@@ -5,12 +5,14 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Windows、Linux下的异常处理机制 - Hexo</title>
+    <title>gdb自动化调试 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    
+    <meta name="description" content="举例说明gdb脚本以及Python脚本的使用。题目以攻防世界reverse中的hackme题目为例，题目思路比较简单。就是异或计算。  
+
+但是题目中有点陷阱，程序中只对字符串进行了10次比较，达不,"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -57,7 +59,7 @@
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
         <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
-        <h3 class="subtitle">Windows、Linux下的异常处理机制</h3>
+        <h3 class="subtitle">gdb自动化调试</h3>
         <div class="social">
                    <!-- <div class="like-icon"> -->
                        <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
@@ -89,22 +91,22 @@
                 
                 <a href="javascript:;"><b>「 </b>Article<b> 」</b></a>
                 
-                March 09, 2020
+                April 08, 2020
             </p>
-            <h3 class="post-title animated fadeInDown"><a href="/2020/03/09/Windows%E3%80%81Linux%E4%B8%8B%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/" title="Windows、Linux下的异常处理机制" class="">Windows、Linux下的异常处理机制</a>
+            <h3 class="post-title animated fadeInDown"><a href="/2020/04/08/gdb%E8%87%AA%E5%8A%A8%E5%8C%96%E8%B0%83%E8%AF%95/" title="gdb自动化调试" class="">gdb自动化调试</a>
             </h3>
             
             <p class="post-count animated fadeInDown">
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    0
+                    5.8k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    1 mins.
+                    5 mins.
                 </span>
                 
                 
@@ -116,6 +118,8 @@
                 
             </p>
             
+            
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/python/" rel="tag">python</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/reverse/" rel="tag">reverse</a></li></ul>
             
         </div>
     </div>
@@ -136,7 +140,20 @@
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            
+            <h1 id="举例说明gdb脚本以及Python脚本的使用。"><a href="#举例说明gdb脚本以及Python脚本的使用。" class="headerlink" title="举例说明gdb脚本以及Python脚本的使用。"></a>举例说明gdb脚本以及Python脚本的使用。</h1><h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p>以攻防世界reverse中的hackme题目为例，题目思路比较简单。就是异或计算。  </p>
+<div align=center><img src="./IDA反编译.png" alt="IDA反编译" width="50%" height="50%"  /></div>
+但是题目中有点陷阱，程序中只对字符串进行了10次比较，达不到其需要的字符串长度，需要更改循环次数以完成对输入的完整检查。  
+题中每次比较的位置是不定的，而且存在重复比较，若手动处理比较麻烦。
+
+
+<h2 id="gdb脚本"><a href="#gdb脚本" class="headerlink" title="gdb脚本"></a>gdb脚本</h2><p>预设了三个断点  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">def pos</span><br><span class="line">&gt; run</span><br><span class="line">&gt; <span class="built_in">set</span> <span class="variable">$i</span>=100</span><br><span class="line">&gt; <span class="keyword">while</span>(<span class="variable">$i</span>)</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$tmp</span>=<span class="variable">$rax</span></span><br><span class="line">  &gt; c</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$target</span>= <span class="variable">$al</span>;</span><br><span class="line">  &gt; c</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$tartget</span>= <span class="variable">$target</span> ^ <span class="variable">$dl</span>;</span><br><span class="line">  &gt; <span class="built_in">printf</span> <span class="string">"pos:%d,target:%d "</span>,<span class="variable">$tmp</span>,<span class="variable">$target</span></span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$i</span>--</span><br><span class="line">  &gt; c</span><br><span class="line">  &gt;end</span><br><span class="line">&gt;end</span><br><span class="line">pos</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="python脚本"><a href="#python脚本" class="headerlink" title="python脚本"></a>python脚本</h2><p>预设了三个断点  </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> gdb</span><br><span class="line"></span><br><span class="line"><span class="comment">#用户自定义命令需要继承gdb.Command类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pos</span><span class="params">(gdb.Command)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(self.__class__,self).__init__(<span class="string">"pos"</span>,gdb.COMMAND_USER)  <span class="comment">#注册改命令的名字</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">invoke</span><span class="params">(self,args,from_tty)</span>:</span></span><br><span class="line">        ss=list(<span class="string">"01234567890123456789012"</span>)  <span class="comment">#生成一个随便的内容的列表</span></span><br><span class="line">        gdb.execute(<span class="string">"run"</span>)</span><br><span class="line">        i=<span class="number">100</span></span><br><span class="line">        <span class="keyword">while</span> i:</span><br><span class="line">            pos=gdb.parse_and_eval(<span class="string">"$eax"</span>) <span class="comment"># 获取寄存器的值</span></span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            target=gdb.parse_and_eval(<span class="string">"$al"</span>)</span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            target=target ^ gdb.parse_and_eval(<span class="string">"$dl"</span>)</span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            ss[pos]=chr(target)</span><br><span class="line">            i-=<span class="number">1</span></span><br><span class="line"></span><br><span class="line">        print(<span class="string">"flag: "</span>+<span class="string">""</span>.join(ss))</span><br><span class="line"></span><br><span class="line">Pos()  <span class="comment">#注册该命令</span></span><br></pre></td></tr></table></figure>
+<p>两秒出结果，舒服。</p>
+<div align=center><img src="./flag.png" alt="flag" width="50%" height="50%"  /></div>
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
                 data-autoplay="false">
@@ -179,13 +196,20 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">9 <p>Articles</p></a></li>
-                    <li><a href="/categories">4 <p>Categories</p></a></li>
-                    <li><a href="/tags">5 <p>Tags</p></a></li>
+                    <li><a href="/archives">6 <p>Articles</p></a></li>
+                    <li><a href="/categories">3 <p>Categories</p></a></li>
+                    <li><a href="/tags">8 <p>Tags</p></a></li>
                 </ul>
             </div>
             
             
+            
+            <div class="box sticky animated fadeInRight faster">
+                <div id="toc" class="subbox">
+                    <h4>Contents</h4>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#举例说明gdb脚本以及Python脚本的使用。"><span class="toc-number">1.</span> <span class="toc-text">举例说明gdb脚本以及Python脚本的使用。</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#题目"><span class="toc-number">1.1.</span> <span class="toc-text">题目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gdb脚本"><span class="toc-number">1.2.</span> <span class="toc-text">gdb脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#python脚本"><span class="toc-number">1.3.</span> <span class="toc-text">python脚本</span></a></li></ol></li></ol>
+                </div>
+            </div>
             
             
         </div>
