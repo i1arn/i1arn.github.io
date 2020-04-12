@@ -149,7 +149,7 @@
 </ol>
 <h3 id="cdecl举例"><a href="#cdecl举例" class="headerlink" title="__cdecl举例"></a>__cdecl举例</h3><ol>
 <li>常见的__cdecl为例，主调函数首先将参数从右往左压入栈</li>
-<li>call指令执行，将函数的返回地址，也就是EIP压入栈</li>
+<li>call指令执行，将函数的返回地址，也就是EIP压入栈，把EIP设置为函数的起始地址</li>
 <li>将主调函数的栈帧底压入栈</li>
 <li>将ESP赋值给EBP，设置帧基指针</li>
 <li>有需要的话将寄存器的值再进行保存</li>
@@ -214,8 +214,8 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">6 <p>Articles</p></a></li>
-                    <li><a href="/categories">3 <p>Categories</p></a></li>
+                    <li><a href="/archives">7 <p>Articles</p></a></li>
+                    <li><a href="/categories">4 <p>Categories</p></a></li>
                     <li><a href="/tags">8 <p>Tags</p></a></li>
                 </ul>
             </div>

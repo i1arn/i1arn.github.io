@@ -5,12 +5,14 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Windows下的加壳脱壳 - Hexo</title>
+    <title>gdb自动化调试举例 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content="IATIAT(Input Address Table),输入地址表。通俗的讲，IAT中存放了程序执行所用到的外部API的地址。与之对应的显然就还有输出地址表，存放着文件给外部使用的API的地址。现阶,"> 
+    <meta name="description" content="举例说明gdb脚本以及Python脚本的使用。题目以攻防世界reverse中的hackme题目为例，题目思路比较简单。就是异或计算。  
+
+但是题目中有点陷阱，程序中只对字符串进行了10次比较，达不,"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -57,7 +59,7 @@
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
         <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
-        <h3 class="subtitle">Windows下的加壳脱壳</h3>
+        <h3 class="subtitle">gdb自动化调试举例</h3>
         <div class="social">
                    <!-- <div class="like-icon"> -->
                        <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
@@ -89,22 +91,22 @@
                 
                 <a href="javascript:;"><b>「 </b>Article<b> 」</b></a>
                 
-                March 13, 2020
+                April 08, 2020
             </p>
-            <h3 class="post-title animated fadeInDown"><a href="/2020/03/13/%E5%8A%A0%E5%A3%B3%E8%84%B1%E5%A3%B3/" title="Windows下的加壳脱壳" class="">Windows下的加壳脱壳</a>
+            <h3 class="post-title animated fadeInDown"><a href="/2020/04/08/gdb%E8%87%AA%E5%8A%A8%E5%8C%96%E8%B0%83%E8%AF%95%E4%B8%BE%E4%BE%8B/" title="gdb自动化调试举例" class="">gdb自动化调试举例</a>
             </h3>
             
             <p class="post-count animated fadeInDown">
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    3.7k
+                    5.8k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    3 mins.
+                    5 mins.
                 </span>
                 
                 
@@ -117,7 +119,7 @@
             </p>
             
             
-            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/reverse/" rel="tag">reverse</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/shelling/" rel="tag">shelling</a></li></ul>
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/gdb/" rel="tag">gdb</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/python/" rel="tag">python</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/reverse/" rel="tag">reverse</a></li></ul>
             
         </div>
     </div>
@@ -138,31 +140,20 @@
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <h1 id="IAT"><a href="#IAT" class="headerlink" title="IAT"></a>IAT</h1><p>IAT(Input Address Table),输入地址表。通俗的讲，IAT中存放了程序执行所用到的外部API的地址。与之对应的显然就还有输出地址表，存放着文件给外部使用的API的地址。现阶段的加壳脱壳中，更多的关注的是IAT。</p>
-<h1 id="加壳"><a href="#加壳" class="headerlink" title="加壳"></a>加壳</h1><p>一段专门负责保护软件不被非法修改或反编译的程序，一般先于程序运行。</p>
-<h2 id="壳的分类"><a href="#壳的分类" class="headerlink" title="壳的分类"></a>壳的分类</h2><h3 id="压缩壳"><a href="#压缩壳" class="headerlink" title="压缩壳"></a>压缩壳</h3><p>压缩壳的主要目的是缩减软件大小，例如<code>upx</code>、<code>ASPack</code>等等，脱起来也比较简单，可利用现有的脚本脱，也可手动脱</p>
-<h3 id="加密壳"><a href="#加密壳" class="headerlink" title="加密壳"></a>加密壳</h3><p>加密壳侧重于保护软件，例如加密核心算法，或者限制软件使用等等。</p>
-<ol>
-<li>常见的<code>ASprotect</code>通过强有力的加密算法，来加密程序，官方提供相关的SDK，倡导开发者尽量使用SDK来开发。</li>
-<li><code>Armadillo穿山甲</code>将程序中的所有跳转指令替换为int3指令，当子进程遇到int3异常时，父进程截获异常并计算出跳转的目标地址，然后返回给子进程继续运行。</li>
-</ol>
-<h3 id="虚拟机保护"><a href="#虚拟机保护" class="headerlink" title="虚拟机保护"></a>虚拟机保护</h3><p>这个就最厉害了，虚拟机拥有一套自定义的指令系统，首先将已知的指令集替换为自己的指令集，然后在运行时，自定义的指令集将在虚拟的cpu中运行。</p>
-<h2 id="壳的加载过程"><a href="#壳的加载过程" class="headerlink" title="壳的加载过程"></a>壳的加载过程</h2><h3 id="1-保存入口参数"><a href="#1-保存入口参数" class="headerlink" title="1. 保存入口参数"></a>1. 保存入口参数</h3><p>加壳程序在初始化之前会保存当前的运行环境，以便外壳执行完毕之后方便程序继续执行。</p>
-<h3 id="2-获取外壳所需的API地址"><a href="#2-获取外壳所需的API地址" class="headerlink" title="2. 获取外壳所需的API地址"></a>2. 获取外壳所需的API地址</h3><p>一般情况下，外壳的输入表中只有<code>GetProcAddress</code>，<code>GetModuleHandle</code>，<code>LoadLibrary</code>三个函数，甚至只有<code>Kernel32.dll</code>和<code>GetProcAddress</code>，所需要的其他函数将通过现有的函数进行加载、查询使用。</p>
-<h3 id="3-解密原程序各个区块的数据"><a href="#3-解密原程序各个区块的数据" class="headerlink" title="3. 解密原程序各个区块的数据"></a>3. 解密原程序各个区块的数据</h3><p>一般来说各个数据按照区块来进行解密，但是也有程序用到哪就解密哪，增加分析难度。</p>
-<h3 id="4-IAT的初始化"><a href="#4-IAT的初始化" class="headerlink" title="4. IAT的初始化"></a>4. IAT的初始化</h3><p>外壳程序将PE头中的输入表指针指向自建的输入表，该表由PE装载器负责填充，原程序的输入表将由外壳程序来进行维护。</p>
-<h3 id="5-重定位项的处理"><a href="#5-重定位项的处理" class="headerlink" title="5. 重定位项的处理"></a>5. 重定位项的处理</h3><p>外壳程序的重定位主要由系统的提供实现，但原程序的代码就可能需要修复重定位，可以取消原程序的重定位，或者原程序的重定位段交由外壳程序进行修复重定位。</p>
-<h3 id="6-恢复原程序的执行环境"><a href="#6-恢复原程序的执行环境" class="headerlink" title="6. 恢复原程序的执行环境"></a>6. 恢复原程序的执行环境</h3><h3 id="7-跳转到原程序的入口开始执行"><a href="#7-跳转到原程序的入口开始执行" class="headerlink" title="7. 跳转到原程序的入口开始执行"></a>7. 跳转到原程序的入口开始执行</h3><h1 id="脱壳（一般情况）"><a href="#脱壳（一般情况）" class="headerlink" title="脱壳（一般情况）"></a>脱壳（一般情况）</h1><p>一般情况下的脱壳大致步骤如下</p>
-<h2 id="1-寻找OEP"><a href="#1-寻找OEP" class="headerlink" title="1. 寻找OEP"></a>1. 寻找OEP</h2><p>OEP(Original Entry Point),程序入口点。简单的外壳程序跳转到OEP时意味着此时内存中的原程序已经完成了脱壳。那寻找OEP的方法一般如下：</p>
-<ol>
-<li>根据跨段指令。外壳程序的指令可能运行在自定义的段中，完成解密之后，将跳转到.text段开始执行原程序，由此可知跳转之后的地址即为OEP。</li>
-<li>使用内存访问断点。外壳程序在解密过程中，将对原程序的所有内存进行一次访问解密，当再次访问原程序的.text段时，说明此时开始执行原程序代码。</li>
-<li>根据栈平衡原理。原程序在运行之前，外壳程序必须先恢复之前原有的堆栈环境。通过观察明显的<code>pushad/popad</code>、<code>pushfd\pofd</code>等指令，或对ESP设置硬件访问断点，于是可找到OEP</li>
-</ol>
-<h2 id="2-抓取内存映像"><a href="#2-抓取内存映像" class="headerlink" title="2. 抓取内存映像"></a>2. 抓取内存映像</h2><p>完成了OEP的寻找之后，执行到OEP时，原程序已经完成了解密，通过抓取内存壳得到原程序。<br>这一操作更多的依赖于<code>LordPE</code>,<code>PETools</code>等工具，主要通过<code>Module32Next</code>函数获取进程的有关信息，然后选取数据保存。保存的数据其实包含了外壳程序。这些工具在保存时一般默认重建了PE头，修改了OEP。<br>当然有一些anti-dump操作，比如修改系统中<code>modBaseSize</code>的值，或是修改内存属性不让读取等等，可以通过手动纠正映像大小，修改内存属性等绕过。</p>
-<h2 id="3-重建IAT"><a href="#3-重建IAT" class="headerlink" title="3. 重建IAT"></a>3. 重建IAT</h2><p>上述操作完成之后得到了新的PE文件，但是并不能执行，因为程序中所有使用的API的地址都未知，也就是说IAT表没有修复，程序无法使用API。<br>这一过程也是使用工具完成，如<code>ImportREC</code>。IAT是一般一块连续的数据，以00作为结尾，当遇到多块IAT时，工具只能检测到一块，其余可能需要手动调整IAT地址和大小获取各个IAT数据。</p>
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://bbs.pediy.com/thread-20366.htm" target="_blank" rel="noopener">脱壳入门初级教学</a><br>《加密与解密 第四版》</p>
+            <h1 id="举例说明gdb脚本以及Python脚本的使用。"><a href="#举例说明gdb脚本以及Python脚本的使用。" class="headerlink" title="举例说明gdb脚本以及Python脚本的使用。"></a>举例说明gdb脚本以及Python脚本的使用。</h1><h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p>以攻防世界reverse中的hackme题目为例，题目思路比较简单。就是异或计算。  </p>
+<div align=center><img src="./IDA反编译.png" alt="IDA反编译" width="50%" height="50%"  /></div>
+但是题目中有点陷阱，程序中只对字符串进行了10次比较，达不到其需要的字符串长度，需要更改循环次数以完成对输入的完整检查。  
+题中每次比较的位置是不定的，而且存在重复比较，若手动处理比较麻烦。
 
+
+<h2 id="gdb脚本"><a href="#gdb脚本" class="headerlink" title="gdb脚本"></a>gdb脚本</h2><p>预设了三个断点  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">def pos</span><br><span class="line">&gt; run</span><br><span class="line">&gt; <span class="built_in">set</span> <span class="variable">$i</span>=100</span><br><span class="line">&gt; <span class="keyword">while</span>(<span class="variable">$i</span>)</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$tmp</span>=<span class="variable">$rax</span></span><br><span class="line">  &gt; c</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$target</span>= <span class="variable">$al</span>;</span><br><span class="line">  &gt; c</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$tartget</span>= <span class="variable">$target</span> ^ <span class="variable">$dl</span>;</span><br><span class="line">  &gt; <span class="built_in">printf</span> <span class="string">"pos:%d,target:%d "</span>,<span class="variable">$tmp</span>,<span class="variable">$target</span></span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$i</span>--</span><br><span class="line">  &gt; c</span><br><span class="line">  &gt;end</span><br><span class="line">&gt;end</span><br><span class="line">pos</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="python脚本"><a href="#python脚本" class="headerlink" title="python脚本"></a>python脚本</h2><p>预设了三个断点  </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> gdb</span><br><span class="line"></span><br><span class="line"><span class="comment">#用户自定义命令需要继承gdb.Command类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pos</span><span class="params">(gdb.Command)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(self.__class__,self).__init__(<span class="string">"pos"</span>,gdb.COMMAND_USER)  <span class="comment">#注册改命令的名字</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">invoke</span><span class="params">(self,args,from_tty)</span>:</span></span><br><span class="line">        ss=list(<span class="string">"01234567890123456789012"</span>)  <span class="comment">#生成一个随便的内容的列表</span></span><br><span class="line">        gdb.execute(<span class="string">"run"</span>)</span><br><span class="line">        i=<span class="number">100</span></span><br><span class="line">        <span class="keyword">while</span> i:</span><br><span class="line">            pos=gdb.parse_and_eval(<span class="string">"$eax"</span>) <span class="comment"># 获取寄存器的值</span></span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            target=gdb.parse_and_eval(<span class="string">"$al"</span>)</span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            target=target ^ gdb.parse_and_eval(<span class="string">"$dl"</span>)</span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            ss[pos]=chr(target)</span><br><span class="line">            i-=<span class="number">1</span></span><br><span class="line"></span><br><span class="line">        print(<span class="string">"flag: "</span>+<span class="string">""</span>.join(ss))</span><br><span class="line"></span><br><span class="line">Pos()  <span class="comment">#注册该命令</span></span><br></pre></td></tr></table></figure>
+<p>两秒出结果，舒服。</p>
+<div align=center><img src="./flag.png" alt="flag" width="50%" height="50%"  /></div>
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
                 data-autoplay="false">
@@ -216,7 +207,7 @@
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#IAT"><span class="toc-number">1.</span> <span class="toc-text">IAT</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#加壳"><span class="toc-number">2.</span> <span class="toc-text">加壳</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#壳的分类"><span class="toc-number">2.1.</span> <span class="toc-text">壳的分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#压缩壳"><span class="toc-number">2.1.1.</span> <span class="toc-text">压缩壳</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#加密壳"><span class="toc-number">2.1.2.</span> <span class="toc-text">加密壳</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#虚拟机保护"><span class="toc-number">2.1.3.</span> <span class="toc-text">虚拟机保护</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#壳的加载过程"><span class="toc-number">2.2.</span> <span class="toc-text">壳的加载过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-保存入口参数"><span class="toc-number">2.2.1.</span> <span class="toc-text">1. 保存入口参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-获取外壳所需的API地址"><span class="toc-number">2.2.2.</span> <span class="toc-text">2. 获取外壳所需的API地址</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-解密原程序各个区块的数据"><span class="toc-number">2.2.3.</span> <span class="toc-text">3. 解密原程序各个区块的数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-IAT的初始化"><span class="toc-number">2.2.4.</span> <span class="toc-text">4. IAT的初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-重定位项的处理"><span class="toc-number">2.2.5.</span> <span class="toc-text">5. 重定位项的处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-恢复原程序的执行环境"><span class="toc-number">2.2.6.</span> <span class="toc-text">6. 恢复原程序的执行环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-跳转到原程序的入口开始执行"><span class="toc-number">2.2.7.</span> <span class="toc-text">7. 跳转到原程序的入口开始执行</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#脱壳（一般情况）"><span class="toc-number">3.</span> <span class="toc-text">脱壳（一般情况）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-寻找OEP"><span class="toc-number">3.1.</span> <span class="toc-text">1. 寻找OEP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-抓取内存映像"><span class="toc-number">3.2.</span> <span class="toc-text">2. 抓取内存映像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-重建IAT"><span class="toc-number">3.3.</span> <span class="toc-text">3. 重建IAT</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考链接"><span class="toc-number">4.</span> <span class="toc-text">参考链接</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#举例说明gdb脚本以及Python脚本的使用。"><span class="toc-number">1.</span> <span class="toc-text">举例说明gdb脚本以及Python脚本的使用。</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#题目"><span class="toc-number">1.1.</span> <span class="toc-text">题目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gdb脚本"><span class="toc-number">1.2.</span> <span class="toc-text">gdb脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#python脚本"><span class="toc-number">1.3.</span> <span class="toc-text">python脚本</span></a></li></ol></li></ol>
                 </div>
             </div>
             
