@@ -56,12 +56,12 @@
     <div class="bar" style="width: 0;"></div>
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
-        <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
+        <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div>
         <h3 class="subtitle">最小HelloWorld尝试</h3>
         <div class="social">
-                   <!-- <div class="like-icon"> -->
-                       <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
-                   <!-- </div> -->
+            <!--        <div class="like-icon">-->
+            <!--            <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+            <!--        </div>-->
             <div>
                 <div class="share">
                     
@@ -87,8 +87,8 @@
         <div class="else">
             <p class="animated fadeInDown">
                 
-                <a href="/categories/JustForFun"><b>「
-                    </b>JUSTFORFUN<b> 」</b></a>
+                <a href="/categories/基础编程"><b>「
+                    </b>基础编程<b> 」</b></a>
                 
                 April 21, 2020
             </p>
@@ -118,7 +118,7 @@
             </p>
             
             
-            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/C-C/" rel="tag">C/C++</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/asm/" rel="tag">asm</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/code/" rel="tag">code</a></li></ul>
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Asm/" rel="tag">Asm</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/C-C/" rel="tag">C\C++</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Code/" rel="tag">Code</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/PE/" rel="tag">PE</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Shell/" rel="tag">Shell</a></li></ul>
             
         </div>
     </div>
@@ -143,9 +143,9 @@
 <h2 id="第一版-最常见的写法"><a href="#第一版-最常见的写法" class="headerlink" title="第一版-最常见的写法"></a>第一版-最常见的写法</h2><p>先写一个最为常见的HelloWorld</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Hello,World\n"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>编译最后大小为5284字节</p>
-<h2 id="第二版-使用init段"><a href="#第二版-使用init段" class="headerlink" title="第二版-使用init段"></a>第二版-使用init段</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">tatic <span class="keyword">void</span> <span class="title">before_main</span><span class="params">(<span class="keyword">void</span>)</span> __<span class="title">attribute</span><span class="params">((constructor))</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">before_main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Hello,World\n"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="第二版-使用init段"><a href="#第二版-使用init段" class="headerlink" title="第二版-使用init段"></a>第二版-使用init段</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">tatic <span class="keyword">void</span> <span class="title">before_main</span><span class="params">(<span class="keyword">void</span>)</span> __<span class="title">attribute</span><span class="params">((constructor))</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">before_main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Hello,World\n"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
 <p>编译之后大小为5372字节，比常见的写法还大，但是比全局变量初始化时打印字符5652字节小</p>
-<h2 id="第三版"><a href="#第三版" class="headerlink" title="第三版-"></a>第三版-</h2>
+<h2 id="第三版-合并程序段"><a href="#第三版-合并程序段" class="headerlink" title="第三版-合并程序段"></a>第三版-合并程序段</h2>
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
                 data-autoplay="false">
@@ -188,9 +188,9 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">10 <p>Articles</p></a></li>
-                    <li><a href="/categories">8 <p>Categories</p></a></li>
-                    <li><a href="/tags">13 <p>Tags</p></a></li>
+                    <li><a href="/">12 <p>Articles</p></a></li>
+                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/tags">19 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -199,7 +199,7 @@
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C-C"><span class="toc-number">1.</span> <span class="toc-text">C&#x2F;C++</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#第一版-最常见的写法"><span class="toc-number">1.1.</span> <span class="toc-text">第一版-最常见的写法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第二版-使用init段"><span class="toc-number">1.2.</span> <span class="toc-text">第二版-使用init段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第三版"><span class="toc-number">1.3.</span> <span class="toc-text">第三版-</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C-C"><span class="toc-number">1.</span> <span class="toc-text">C&#x2F;C++</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#第一版-最常见的写法"><span class="toc-number">1.1.</span> <span class="toc-text">第一版-最常见的写法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第二版-使用init段"><span class="toc-number">1.2.</span> <span class="toc-text">第二版-使用init段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第三版-合并程序段"><span class="toc-number">1.3.</span> <span class="toc-text">第三版-合并程序段</span></a></li></ol></li></ol>
                 </div>
             </div>
             
@@ -221,8 +221,13 @@
         &copy; 2020
         <span class="gradient-text">
             熬夜脑阔疼
+        </span>.
+        Powered by <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a>
+        Theme
+        <span class="gradient-text">
+            <a href="https://github.com/TriDiamond/hexo-theme-obsidian" title="Obsidian" target="_blank" rel="noopener">Obsidian</a>
         </span>
-
+        <small><a href="https://github.com/TriDiamond/hexo-theme-obsidian/blob/master/CHANGELOG.md" title="v1.4.3" target="_blank" rel="noopener">v1.4.3</a></small>
     </p>
 </footer>
 
@@ -340,6 +345,14 @@
 
     
 <script src="//cdn.bootcss.com/codemirror/5.48.4/mode/python/python.min.js"></script>
+
+
+    
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/c/c.min.js"></script>
+
+
+    
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/c++/c++.min.js"></script>
 
 
 

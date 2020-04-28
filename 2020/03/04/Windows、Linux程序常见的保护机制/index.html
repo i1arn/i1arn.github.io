@@ -10,7 +10,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content="windows平台GS与变量重排技术GS主要用于防止栈溢出。调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。该随机数由.data字节的,"> 
+    <meta name="description" content="简单介绍一些Windows、Linux下的程序常见的保护机制对应的编译选项
+windows平台GS与变量重排技术GS主要用于防止栈溢出。调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放,"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -56,12 +57,12 @@
     <div class="bar" style="width: 0;"></div>
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
-        <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
+        <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div>
         <h3 class="subtitle">Windows、Linux程序常见的保护机制</h3>
         <div class="social">
-                   <!-- <div class="like-icon"> -->
-                       <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
-                   <!-- </div> -->
+            <!--        <div class="like-icon">-->
+            <!--            <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+            <!--        </div>-->
             <div>
                 <div class="share">
                     
@@ -87,8 +88,8 @@
         <div class="else">
             <p class="animated fadeInDown">
                 
-                <a href="/categories/lol"><b>「
-                    </b>LOL<b> 」</b></a>
+                <a href="/categories/漏洞挖掘"><b>「
+                    </b>漏洞挖掘<b> 」</b></a>
                 
                 March 04, 2020
             </p>
@@ -118,7 +119,7 @@
             </p>
             
             
-            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/os/" rel="tag">os</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/pwn/" rel="tag">pwn</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a></li></ul>
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/PWN/" rel="tag">PWN</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/SecurityTechnologies/" rel="tag">SecurityTechnologies</a></li></ul>
             
         </div>
     </div>
@@ -139,7 +140,8 @@
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <h1 id="windows平台"><a href="#windows平台" class="headerlink" title="windows平台"></a>windows平台</h1><h2 id="GS与变量重排技术"><a href="#GS与变量重排技术" class="headerlink" title="GS与变量重排技术"></a>GS与变量重排技术</h2><h3 id="GS"><a href="#GS" class="headerlink" title="GS"></a>GS</h3><p>主要用于防止栈溢出。调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。该随机数由.data字节的第一个QWORD作为种子生成。在函数返回之前，对Cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。<br>编译选项为：vs中项目/**属性/配置属性/c++/代码生成/缓冲区安全检查  </p>
+            <p>简单介绍一些Windows、Linux下的程序常见的保护机制对应的编译选项</p>
+<h1 id="windows平台"><a href="#windows平台" class="headerlink" title="windows平台"></a>windows平台</h1><h2 id="GS与变量重排技术"><a href="#GS与变量重排技术" class="headerlink" title="GS与变量重排技术"></a>GS与变量重排技术</h2><h3 id="GS"><a href="#GS" class="headerlink" title="GS"></a>GS</h3><p>主要用于防止栈溢出。调用函数时，在压入EBP之前，也就是紧邻EBP的低地址中将存放一个Security Cookie，即一个随机数。该随机数由.data字节的第一个QWORD作为种子生成。在函数返回之前，对Cookie进行检查，如果不对，则表明存在溢出，将发起异常，由对应的异常处理函数来进行处理，然后退出。<br>编译选项为：vs中项目/**属性/配置属性/c++/代码生成/缓冲区安全检查  </p>
 <h3 id="变量重排技术"><a href="#变量重排技术" class="headerlink" title="变量重排技术"></a>变量重排技术</h3><p>在编译时，根据局部变量的类型对变量在栈中的位置进行调整，将字符变量移动到高地址等等措施方式局部变量被溢出修改</p>
 <h2 id="SafeSEH"><a href="#SafeSEH" class="headerlink" title="SafeSEH"></a>SafeSEH</h2><p>在程序调用异常处理函数之前，对要调用的函数进行一系列的有效性校验，当函数发现不可靠时将终止异常处理函数的调用，以防止SEH(Struct Exception Handler)的恶意利用。该功能需要操作系统与编译器的支持。<br>大致流程：  </p>
 <ol>
@@ -230,9 +232,9 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">10 <p>Articles</p></a></li>
-                    <li><a href="/categories">8 <p>Categories</p></a></li>
-                    <li><a href="/tags">13 <p>Tags</p></a></li>
+                    <li><a href="/">12 <p>Articles</p></a></li>
+                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/tags">19 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -263,8 +265,13 @@
         &copy; 2020
         <span class="gradient-text">
             熬夜脑阔疼
+        </span>.
+        Powered by <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a>
+        Theme
+        <span class="gradient-text">
+            <a href="https://github.com/TriDiamond/hexo-theme-obsidian" title="Obsidian" target="_blank" rel="noopener">Obsidian</a>
         </span>
-
+        <small><a href="https://github.com/TriDiamond/hexo-theme-obsidian/blob/master/CHANGELOG.md" title="v1.4.3" target="_blank" rel="noopener">v1.4.3</a></small>
     </p>
 </footer>
 
@@ -382,6 +389,14 @@
 
     
 <script src="//cdn.bootcss.com/codemirror/5.48.4/mode/python/python.min.js"></script>
+
+
+    
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/c/c.min.js"></script>
+
+
+    
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/c++/c++.min.js"></script>
 
 
 
