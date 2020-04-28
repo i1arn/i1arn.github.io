@@ -59,12 +59,12 @@
     <div class="bar" style="width: 0;"></div>
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
-        <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div>
+        <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
         <h3 class="subtitle">常见逻辑段</h3>
         <div class="social">
-            <!--        <div class="like-icon">-->
-            <!--            <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
-            <!--        </div>-->
+                   <!-- <div class="like-icon"> -->
+                       <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
+                   <!-- </div> -->
             <div>
                 <div class="share">
                     
@@ -102,13 +102,13 @@
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    3.2k
+                    2.7k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    3 mins.
+                    2 mins.
                 </span>
                 
                 
@@ -155,7 +155,11 @@
 <h2 id="rel-text，-rel-data"><a href="#rel-text，-rel-data" class="headerlink" title=".rel.text，.rel.data"></a>.rel.text，.rel.data</h2><p>针对.text、.data段的重定位表。</p>
 <h2 id="got与-plt"><a href="#got与-plt" class="headerlink" title=".got与.plt"></a>.got与.plt</h2><p>got表为了解决在动态链接的时候模块中有绝对地址引用的问题，采用了PIC地址无关代码技术，而这个技术的中心思想就是got表。模块内部的函数调用跳转、数据的访问都可以通过相对地址进行，模块外部的访问函数、数据时就用到了got表。got表中包含了每个变量所在的地址，该地址由链接程序进行维护。通过got表实现了模块外部数据的间接访问。</p>
 <p>plt延时绑定技术，当函数第一次被用到时才进行符号查找，重定位。</p>
-<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">haha@plt:</span></span><br><span class="line"><span class="keyword">jmp</span> *(haha@got)</span><br><span class="line"><span class="keyword">push</span> n</span><br><span class="line"><span class="keyword">push</span> moduleID</span><br><span class="line">jump _dl_runtime_resolve</span><br></pre></td></tr></table></figure>
+<pre><code class="x86asm">haha@plt:
+jmp *(haha@got)
+push n
+push moduleID
+jump _dl_runtime_resolve</code></pre>
 <p>在第一次调用haha时，<code>jmp *(haha@got)</code> 将跳转到下一条指令执行，此时<code>push n</code>将把haha在重定位表.rel.plt中的下表入栈，再压入moduleID，由_dl_runtime_resolve来完成符号解析与重定位工作，并把haha的实际存放到got表中。之后再调用时<code>jmp *(haha@got)</code> 将跳转到haha实际地址开始执行。<br>ELF中‘.got’存放全局变量引用地址，‘.got.plt’存放保存函数应用的地址。</p>
 <p>绑定之后 <code>call test@plt</code> ,与 <code>call [test@got]</code> 执行效果相同。<br>ELF将GOT拆分成两个表“.got”和”.got.plt”,前者用来保存全局变量引用的地址，后者用来保存函数引用的地址。</p>
 <h2 id="interp"><a href="#interp" class="headerlink" title=".interp"></a>.interp</h2><p>存放动态链接器的路径</p>
@@ -206,8 +210,8 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/">12 <p>Articles</p></a></li>
-                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/archives">12 <p>Articles</p></a></li>
+                    <li><a href="/categories">11 <p>Categories</p></a></li>
                     <li><a href="/tags">19 <p>Tags</p></a></li>
                 </ul>
             </div>
@@ -239,13 +243,8 @@
         &copy; 2020
         <span class="gradient-text">
             熬夜脑阔疼
-        </span>.
-        Powered by <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a>
-        Theme
-        <span class="gradient-text">
-            <a href="https://github.com/TriDiamond/hexo-theme-obsidian" title="Obsidian" target="_blank" rel="noopener">Obsidian</a>
         </span>
-        <small><a href="https://github.com/TriDiamond/hexo-theme-obsidian/blob/master/CHANGELOG.md" title="v1.4.3" target="_blank" rel="noopener">v1.4.3</a></small>
+
     </p>
 </footer>
 
@@ -363,14 +362,6 @@
 
     
 <script src="//cdn.bootcss.com/codemirror/5.48.4/mode/python/python.min.js"></script>
-
-
-    
-<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/c/c.min.js"></script>
-
-
-    
-<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/c++/c++.min.js"></script>
 
 
 

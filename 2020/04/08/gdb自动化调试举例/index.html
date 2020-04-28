@@ -58,12 +58,12 @@
     <div class="bar" style="width: 0;"></div>
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
-        <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div>
+        <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
         <h3 class="subtitle">gdb自动化调试举例</h3>
         <div class="social">
-            <!--        <div class="like-icon">-->
-            <!--            <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
-            <!--        </div>-->
+                   <!-- <div class="like-icon"> -->
+                       <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
+                   <!-- </div> -->
             <div>
                 <div class="share">
                     
@@ -101,13 +101,13 @@
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    5.8k
+                    1.9k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    5 mins.
+                    2 mins.
                 </span>
                 
                 
@@ -148,11 +148,46 @@
 
 
 <h2 id="gdb脚本"><a href="#gdb脚本" class="headerlink" title="gdb脚本"></a>gdb脚本</h2><p>预设了三个断点  </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">def pos</span><br><span class="line">&gt; run</span><br><span class="line">&gt; <span class="built_in">set</span> <span class="variable">$i</span>=100</span><br><span class="line">&gt; <span class="keyword">while</span>(<span class="variable">$i</span>)</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$tmp</span>=<span class="variable">$rax</span></span><br><span class="line">  &gt; c</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$target</span>= <span class="variable">$al</span>;</span><br><span class="line">  &gt; c</span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$tartget</span>= <span class="variable">$target</span> ^ <span class="variable">$dl</span>;</span><br><span class="line">  &gt; <span class="built_in">printf</span> <span class="string">"pos:%d,target:%d "</span>,<span class="variable">$tmp</span>,<span class="variable">$target</span></span><br><span class="line">  &gt; <span class="built_in">set</span> <span class="variable">$i</span>--</span><br><span class="line">  &gt; c</span><br><span class="line">  &gt;end</span><br><span class="line">&gt;end</span><br><span class="line">pos</span><br></pre></td></tr></table></figure>
-
-
+<pre><code class="bash">def pos
+&gt; run
+&gt; set $i=100
+&gt; while($i)
+  &gt; set $tmp=$rax
+  &gt; c
+  &gt; set $target= $al;
+  &gt; c
+  &gt; set $tartget= $target ^ $dl;
+  &gt; printf &quot;pos:%d,target:%d &quot;,$tmp,$target
+  &gt; set $i--
+  &gt; c
+  &gt;end
+&gt;end
+pos</code></pre>
 <h2 id="python脚本"><a href="#python脚本" class="headerlink" title="python脚本"></a>python脚本</h2><p>预设了三个断点  </p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> gdb</span><br><span class="line"></span><br><span class="line"><span class="comment">#用户自定义命令需要继承gdb.Command类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pos</span><span class="params">(gdb.Command)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(self.__class__,self).__init__(<span class="string">"pos"</span>,gdb.COMMAND_USER)  <span class="comment">#注册改命令的名字</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">invoke</span><span class="params">(self,args,from_tty)</span>:</span></span><br><span class="line">        ss=list(<span class="string">"01234567890123456789012"</span>)  <span class="comment">#生成一个随便的内容的列表</span></span><br><span class="line">        gdb.execute(<span class="string">"run"</span>)</span><br><span class="line">        i=<span class="number">100</span></span><br><span class="line">        <span class="keyword">while</span> i:</span><br><span class="line">            pos=gdb.parse_and_eval(<span class="string">"$eax"</span>) <span class="comment"># 获取寄存器的值</span></span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            target=gdb.parse_and_eval(<span class="string">"$al"</span>)</span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            target=target ^ gdb.parse_and_eval(<span class="string">"$dl"</span>)</span><br><span class="line">            gdb.execute(<span class="string">"c"</span>)</span><br><span class="line">            ss[pos]=chr(target)</span><br><span class="line">            i-=<span class="number">1</span></span><br><span class="line"></span><br><span class="line">        print(<span class="string">"flag: "</span>+<span class="string">""</span>.join(ss))</span><br><span class="line"></span><br><span class="line">Pos()  <span class="comment">#注册该命令</span></span><br></pre></td></tr></table></figure>
+<pre><code class="python">import gdb
+
+#用户自定义命令需要继承gdb.Command类
+class Pos(gdb.Command):
+    def __init__(self):
+        super(self.__class__,self).__init__(&quot;pos&quot;,gdb.COMMAND_USER)  #注册改命令的名字
+
+    def invoke(self,args,from_tty):
+        ss=list(&quot;01234567890123456789012&quot;)  #生成一个随便的内容的列表
+        gdb.execute(&quot;run&quot;)
+        i=100
+        while i:
+            pos=gdb.parse_and_eval(&quot;$eax&quot;) # 获取寄存器的值
+            gdb.execute(&quot;c&quot;)
+            target=gdb.parse_and_eval(&quot;$al&quot;)
+            gdb.execute(&quot;c&quot;)
+            target=target ^ gdb.parse_and_eval(&quot;$dl&quot;)
+            gdb.execute(&quot;c&quot;)
+            ss[pos]=chr(target)
+            i-=1
+
+        print(&quot;flag: &quot;+&quot;&quot;.join(ss))
+
+Pos()  #注册该命令</code></pre>
 <p>两秒出结果，舒服。</p>
 <div align=center><img src="./flag.png" alt="flag" width="50%" height="50%"  /></div>
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
@@ -197,8 +232,8 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/">12 <p>Articles</p></a></li>
-                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/archives">12 <p>Articles</p></a></li>
+                    <li><a href="/categories">11 <p>Categories</p></a></li>
                     <li><a href="/tags">19 <p>Tags</p></a></li>
                 </ul>
             </div>
@@ -230,13 +265,8 @@
         &copy; 2020
         <span class="gradient-text">
             熬夜脑阔疼
-        </span>.
-        Powered by <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a>
-        Theme
-        <span class="gradient-text">
-            <a href="https://github.com/TriDiamond/hexo-theme-obsidian" title="Obsidian" target="_blank" rel="noopener">Obsidian</a>
         </span>
-        <small><a href="https://github.com/TriDiamond/hexo-theme-obsidian/blob/master/CHANGELOG.md" title="v1.4.3" target="_blank" rel="noopener">v1.4.3</a></small>
+
     </p>
 </footer>
 
@@ -354,14 +384,6 @@
 
     
 <script src="//cdn.bootcss.com/codemirror/5.48.4/mode/python/python.min.js"></script>
-
-
-    
-<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/c/c.min.js"></script>
-
-
-    
-<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/c++/c++.min.js"></script>
 
 
 
