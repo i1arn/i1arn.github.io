@@ -105,7 +105,7 @@
       <link href="/2020/04/21/SayHi/"/>
       <url>/2020/04/21/SayHi/</url>
       
-        <content type="html"><![CDATA[<p>项目地址：<a href="https://github.com/i1arn/SayHi" target="_blank" rel="noopener">github</a><br>本项目旨在构建一个能够构造TCP数据包的工具</p><h1 id="参考项目、链接"><a href="#参考项目、链接" class="headerlink" title="参考项目、链接"></a>参考项目、链接</h1><h2 id="hping"><a href="#hping" class="headerlink" title="hping"></a>hping</h2><h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><h2 id="OSI参考模型"><a href="#OSI参考模型" class="headerlink" title="OSI参考模型"></a>OSI参考模型</h2><div align=center><img src="./OSI七层参考模型.jpg" alt="OSI七层参考模型" width="70%" height="70%"  /></div>参考模型中，每一层使用邻近下层提供的接口，为临近的上层提供服务接口。  数据的封装是从上到下，由里到外，解析是从下往上，由外到里。 <pre><code class="javascript">var rebels = pilots.filter(function (pilot) {  return pilot.faction === &quot;Rebels&quot;;});var empire = pilots.filter(function (pilot) {  return pilot.faction === &quot;Empire&quot;;});</code></pre>]]></content>
+        <content type="html"><![CDATA[<p>项目地址：<a href="https://github.com/i1arn/SayHi" target="_blank" rel="noopener">github</a><br>本项目旨在构建一个能够构造TCP数据包的工具</p><h1 id="参考项目、链接"><a href="#参考项目、链接" class="headerlink" title="参考项目、链接"></a>参考项目、链接</h1><h2 id="hping"><a href="#hping" class="headerlink" title="hping"></a>hping</h2><h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><h2 id="OSI参考模型"><a href="#OSI参考模型" class="headerlink" title="OSI参考模型"></a>OSI参考模型</h2><div align=center><img src="./OSI七层参考模型.jpg" alt="OSI七层参考模型" width="70%" height="70%"  /></div>参考模型中，每一层使用邻近下层提供的接口，为临近的上层提供服务接口。  数据的封装是从上到下，由里到外，解析是从下往上，由外到里。 ]]></content>
       
       
       <categories>
