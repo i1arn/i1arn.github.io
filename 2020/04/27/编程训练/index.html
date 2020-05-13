@@ -10,9 +10,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content="更新编程训练中遇到的有趣的题目
-LeetCodeLeetCode面试题64求1+2+……+n，不可使用if、while、switch、for、else以及条件判断语句（A？B：C）  
-class ,"> 
+    <meta name="description" content="；# 类型（好题、难题、普通题目）；## 题号；### 首次解答；### 网上优解；### 优化改进
+好题面试题 02.03. 删除中间节点面试题 02.03. 删除中间节点相同题目，描述的更加清晰,"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -101,13 +100,13 @@ class ,">
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    719
+                    17k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    1 mins.
+                    16 mins.
                 </span>
                 
                 
@@ -141,24 +140,396 @@ class ,">
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <p>更新编程训练中遇到的有趣的题目</p>
-<h2 id="LeetCode"><a href="#LeetCode" class="headerlink" title="LeetCode"></a>LeetCode</h2><p><a href="https://leetcode-cn.com/problems/qiu-12n-lcof/" target="_blank" rel="noopener">LeetCode面试题64</a><br>求1+2+……+n，不可使用if、while、switch、for、else以及条件判断语句（A？B：C）  </p>
-<pre><code class="python">class Solution:
+            <p>；# 类型（好题、难题、普通题目）<br>；## 题号<br>；### 首次解答<br>；### 网上优解<br>；### 优化改进</p>
+<h1 id="好题"><a href="#好题" class="headerlink" title="好题"></a>好题</h1><h2 id="面试题-02-03-删除中间节点"><a href="#面试题-02-03-删除中间节点" class="headerlink" title="面试题 02.03. 删除中间节点"></a>面试题 02.03. 删除中间节点</h2><p><a href="https://leetcode-cn.com/problems/delete-middle-node-lcci/" target="_blank" rel="noopener">面试题 02.03. 删除中间节点</a><br>相同题目，描述的更加清晰<a href="https://leetcode-cn.com/problems/delete-node-in-a-linked-list/" target="_blank" rel="noopener">237. 删除链表中的节点</a><br>上来看了半天没有理解题目的意思，看了题解之后才明白，题目是想在单链表中，将当前访问的元素删除  </p>
+<h3 id="网上优解"><a href="#网上优解" class="headerlink" title="网上优解"></a>网上优解</h3><pre><code class="C++">class Solution {
+public:
+    void deleteNode(ListNode* node) {
+
+        //将next结点的值 赋值给 当前结点
+        node-&gt;val = node-&gt;next-&gt;val;
+        //干掉next结点
+        ListNode* tmp = node-&gt;next;
+        node-&gt;next = node-&gt;next-&gt;next;        
+        delete tmp;
+    }
+};
+
+//解法二
+class Solution {
+public:
+    void deleteNode(ListNode* node) {
+        *node = *(node-&gt;next);
+    }
+};</code></pre>
+<p>解法二是真的不错，利用了题目提供的复制构造函数，使用对象赋值给对象，覆盖掉了当前节点，为什么不是写<code>node = node-&gt;next</code>呢，调试发现了写<code>node = node-&gt;next</code>没有起到任何的作用，嘿嘿？还真不知道为什么。。。<code>node = node-&gt;next</code>调试发现是传址调用啊，但是不起作用，没有对原链表进行任何改动，如果写<code>node-&gt;next = (node-&gt;next-&gt;next)</code>的话，原链表的中传入的node的下一个节点确实被删除了<br>再调试发现了些许不同</p>
+<div align=center><img src="./修改node.png" alt="修改node" /></div>  
+<div align=center><img src="./修改node->next.png" alt="修改node->next" /></div>  
+确实是传址，但是修改node节点的时候，node的前节点的next指向并没有修改，所以原链表也没有改变  ～  
+
+<h3 id="个人改进"><a href="#个人改进" class="headerlink" title="个人改进"></a>个人改进</h3><p>是我写的话，肯定不会想到写<code>delete tmp；</code>了，他人的解答考虑的周全  </p>
+<pre><code class="Python">class Solution:
+    def deleteNode(self, node):
+        node.val=node.next.val
+        node.next=node.next.next</code></pre>
+<hr>
+<h1 id="难题"><a href="#难题" class="headerlink" title="难题"></a>难题</h1><h1 id="普通题目"><a href="#普通题目" class="headerlink" title="普通题目"></a>普通题目</h1><h2 id="202-快乐数"><a href="#202-快乐数" class="headerlink" title="202. 快乐数"></a>202. 快乐数</h2><p><a href="https://leetcode-cn.com/problems/happy-number/" target="_blank" rel="noopener">202. 快乐数</a>  </p>
+<blockquote>
+<p>输入：19<br>输出：true<br>解释：<br>12 + 92 = 82<br>82 + 22 = 68<br>62 + 82 = 100<br>12 + 02 + 02 = 1<br>能够等于1则为快乐数</p>
+</blockquote>
+<h3 id="个人首解"><a href="#个人首解" class="headerlink" title="个人首解"></a>个人首解</h3><p>主要思想就是循环计算下一个，判断是否为1，当出现循环的时候直接返回 False</p>
+<pre><code class="C++">class Solution {
+public:
+    bool isHappy(int n) {
+        unordered_map&lt;int,int&gt; tmp;
+        while(n!=1)
+        {
+            tmp[n]++;
+            string s=to_string(n);
+            n=0;
+            for(int i=0;i&lt;s.size();i++)
+                n+=(s[i]-&#39;0&#39;)*(s[i]-&#39;0&#39;);
+            if(tmp.count(n))
+                return false;
+        }
+        return true;
+    }
+};</code></pre>
+<h3 id="网上优解-1"><a href="#网上优解-1" class="headerlink" title="网上优解"></a>网上优解</h3><p>这里主要学习一下在判断虚幻的时候，使用快慢指针的做法，快指针在前，每次向前两步，慢指针每次向前一步，当出现循环时快指针一定可以追上慢指针<br><a href="https://leetcode-cn.com/problems/happy-number/solution/kuai-le-shu-by-leetcode-solution/" target="_blank" rel="noopener">官方解答</a></p>
+<h3 id="个人改进-1"><a href="#个人改进-1" class="headerlink" title="个人改进"></a>个人改进</h3><p>对循环判断进行改进</p>
+<pre><code class="C++">class Solution {
+public:
+
+    int calc(int n)
+    {
+        string tmp=to_string(n);
+        int result=0;
+        for(int i=0;i&lt;tmp.size();i++)
+        {
+            result+=(tmp[i]-&#39;0&#39;)*(tmp[i]-&#39;0&#39;);
+        }
+        return result;
+    }
+
+
+    bool isHappy(int n) {
+        unordered_map&lt;int,int&gt; tmp;
+        int fast=n,slow=n;
+        do
+        {
+            fast=calc(fast);
+            fast=calc(fast);
+            slow=calc(slow);
+        }while(slow!=fast);
+        if(slow==1)
+            return true;
+        else
+            return false;
+    }
+};</code></pre>
+<p>其实具体的做法听多的，也可以保存计算值避免重复计算  </p>
+<h2 id="1351-统计有序矩阵中的负数"><a href="#1351-统计有序矩阵中的负数" class="headerlink" title="1351. 统计有序矩阵中的负数"></a>1351. 统计有序矩阵中的负数</h2><p><a href="https://leetcode-cn.com/problems/count-negative-numbers-in-a-sorted-matrix/" target="_blank" rel="noopener">1351. 统计有序矩阵中的负数</a></p>
+<h3 id="个人解答"><a href="#个人解答" class="headerlink" title="个人解答"></a>个人解答</h3><p>做法挺多的，最简单的就是直接便利访问，但是没有利用到有序这个条件<br>于是乎  </p>
+<pre><code class="Python">class Solution:
+    def countNegatives(self, grid: List[List[int]]) -&gt; int:
+        result=0
+        transverselyin=len(grid[0])-1
+        for i in range(len(grid)):
+            left=0
+            right=transverselyin
+            while left &lt;= right:
+                //最左边的数是负数
+                if grid[i][left]&lt;0 :   
+                    result+=(transverselyin-left+1)*(len(grid)-i)
+                    transverselyin=left-1
+                    break
+                else:
+                    //最右边的数非负
+                    if grid[i][right]&gt;=0:
+                        break
+                    else:
+                        tmp=(right-left)//2+left
+                        if grid[i][tmp]&lt;0:
+                            right=tmp
+                        else:
+                            left=tmp+1
+        return result</code></pre>
+<p>利用矩阵中上下有序，利用上一行的结果缩小下一行的查找范围（类似于大佬说的下梯子），查找的时候利用二分法查找第一个出现的负数，因为可能初现一行全负或全正的情况，所以用了过多的if判断语句。</p>
+<h2 id="1436-旅行终点站"><a href="#1436-旅行终点站" class="headerlink" title="1436. 旅行终点站"></a>1436. 旅行终点站</h2><p><a href="https://leetcode-cn.com/problems/destination-city/" target="_blank" rel="noopener">1436. 旅行终点站</a><br>输入每次旅行的起点与终点，计算整个路程的终点  </p>
+<blockquote>
+<p>输入：paths = [[“London”,”New York”],[“New York”,”Lima”],[“Lima”,”Sao Paulo”]]<br>输出：”Sao Paulo”<br>解释：从 “London” 出发，最后抵达终点站 “Sao Paulo” 。本次旅行的路线是 “London” -&gt; “New York” -&gt; “Lima” -&gt; “Sao Paulo” 。</p>
+</blockquote>
+<h3 id="个人首解-1"><a href="#个人首解-1" class="headerlink" title="个人首解"></a>个人首解</h3><p>主要想法就是通过模仿Python的字典，一个一个往下查询。因为只需要查找终点，所以从第一个开始查询就行  </p>
+<pre><code class="C++">class Solution {
+public:
+    string destCity(vector&lt;vector&lt;string&gt;&gt;&amp; paths) {
+        string result = paths[0][1];
+        unordered_map&lt;string,string&gt; tmp;
+        for(auto i = paths.begin();i!=paths.end();i++)
+        {
+            tmp[(*i)[0]]=(*i)[1];
+        }
+        while(tmp.find(result)!=tmp.end())
+        {
+            result=tmp[result];
+        }
+
+        return result;
+    }
+};
+
+//Python代码类似， 但还是注意 Python3中字典不在提供has_key方法</code></pre>
+<h3 id="网上优解-2"><a href="#网上优解-2" class="headerlink" title="网上优解"></a>网上优解</h3><p>思路就是只有终点没有在 起点中出现过，于是乎</p>
+<pre><code class="C++">class Solution {
+public:
+    string destCity(vector&lt;vector&lt;string&gt;&gt;&amp; paths) {
+        unordered_map&lt;string,int&gt;  helper;
+        for(auto  p:paths){
+            helper[p[0]]+=1;
+            helper[p[1]]+=0;
+        }
+        for(auto  h:helper){
+            if(h.second==0){
+                return h.first;
+            }
+        }
+        return &quot;&quot;;
+    }
+};</code></pre>
+<pre><code class="Python">class Solution:
+    def destCity(self, paths: List[List[str]]) -&gt; str:
+        n = len(paths)
+        begin = set()  # 存储所有起点
+        end = set()  # 存储所有终点
+        for i in range(n):
+            begin.add(paths[i][0])
+            end.add(paths[i][1])
+        where = list(end - begin)  # 集合的差集运算
+        return where[0]
+</code></pre>
+<p>Python的写法比较多，但是思想基本一致，说明一下这里的集合差<code>begin - end</code>将返回begin中存在，但是end中不存在的内容，这样的话就可以查找起点了</p>
+<h3 id="个人改进-2"><a href="#个人改进-2" class="headerlink" title="个人改进"></a>个人改进</h3><p>上面的C++代码做了起点与终点区分，我们尝试改动一点点，就可以看出整个路线的起点，经过，终点</p>
+<pre><code class="C++">class Solution {
+public:
+    string destCity(vector&lt;vector&lt;string&gt;&gt;&amp; paths) {
+        unordered_map&lt;string,int&gt; tmp;
+        for(auto i : paths)
+        {
+            tmp[i[0]]+=1;
+            tmp[i[1]]-=1;
+        }
+        for(auto i : tmp)
+        {
+            if(i.second==-1)
+                return i.first;
+        }
+        return &quot;&quot;;
+    }
+};</code></pre>
+<hr>
+<h2 id="1431-拥有最多糖果的孩子"><a href="#1431-拥有最多糖果的孩子" class="headerlink" title="1431. 拥有最多糖果的孩子"></a>1431. 拥有最多糖果的孩子</h2><p><a href="https://leetcode-cn.com/problems/kids-with-the-greatest-number-of-candies/" target="_blank" rel="noopener">1431. 拥有最多糖果的孩子</a><br>给孩子一定的糖果，记录返回哪些孩子得到这些糖果之后成为数量最多</p>
+<h3 id="个人首解-2"><a href="#个人首解-2" class="headerlink" title="个人首解"></a>个人首解</h3><pre><code class="python">class Solution:
+    def kidsWithCandies(self, candies: List[int], extraCandies: int) -&gt; List[bool]:
+        result=[]
+        max=0
+        for i in candies:
+            if i&gt;max:
+                max=i       
+        for i in candies:
+            if i+extraCandies&gt;=max:
+                result.append(True)
+            else:
+                result.append(False)
+        return result</code></pre>
+<p>C++的思想与python一样，都是通过先寻找最大值然后在比较</p>
+<h3 id="网上优解-3"><a href="#网上优解-3" class="headerlink" title="网上优解"></a>网上优解</h3><pre><code class="python">class Solution:
+    def kidsWithCandies(self, candies: List[int], extraCandies: int) -&gt; List[bool]:
+        maxc = max(candies)
+        res = []
+        for i in candies:
+                res.append(i+extraCandies &gt;= maxc)
+        return res
+</code></pre>
+<p>思路是一样的，使用了max函数寻找的最大值，但是在写法上要比自己的简洁</p>
+<h3 id="个人改进-3"><a href="#个人改进-3" class="headerlink" title="个人改进"></a>个人改进</h3><pre><code class="python">class Solution:
+    def kidsWithCandies(self, candies: List[int], extraCandies: int) -&gt; List[bool]:
+        return [i + extraCandies &gt;= max(candies) for i in candies]
+</code></pre>
+<hr>
+<h2 id="1389-按既定顺序创建目标数组"><a href="#1389-按既定顺序创建目标数组" class="headerlink" title="1389. 按既定顺序创建目标数组"></a>1389. 按既定顺序创建目标数组</h2><p><a href="https://leetcode-cn.com/problems/create-target-array-in-the-given-order/" target="_blank" rel="noopener">1389. 按既定顺序创建目标数组</a><br>一个元素数组，一个下标数组（下标可重复，按先后插入）  </p>
+<h3 id="个人首解-3"><a href="#个人首解-3" class="headerlink" title="个人首解"></a>个人首解</h3><pre><code class="python">class Solution:
+    def createTargetArray(self, nums: List[int], index: List[int]) -&gt; List[int]:
+        result=[]
+        for i in range(len(nums)):
+            result.insert(index[i],nums[i])
+        return result</code></pre>
+<pre><code class="C++">class Solution {
+public:
+    vector&lt;int&gt; createTargetArray(vector&lt;int&gt;&amp; nums, vector&lt;int&gt;&amp; index) {
+        vector&lt;int&gt;result;
+        for(int i =0;i&lt;nums.size();i++)
+        {
+            if(index[i]&gt;result.size())
+                result.insert(result.end(),nums[i]);
+            else
+                result.insert(result.begin()+index[i],nums[i]);
+        }
+        return result;
+    }
+};</code></pre>
+<h3 id="网上优解-4"><a href="#网上优解-4" class="headerlink" title="网上优解"></a>网上优解</h3><p>没有见到Python的一句话写法，但是发现c++ insert的时候，没必要考虑插入的位置大于现有的数组长度</p>
+<h3 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h3><pre><code class="c++">class Solution {
+public:
+    vector&lt;int&gt; createTargetArray(vector&lt;int&gt;&amp; nums, vector&lt;int&gt;&amp; index) {
+        vector&lt;int&gt;result;
+        for(int i =0;i&lt;nums.size();i++)
+            result.insert(result.begin()+index[i],nums[i]);
+        return result;
+    }
+};</code></pre>
+<hr>
+<h2 id="面试题64"><a href="#面试题64" class="headerlink" title="面试题64"></a>面试题64</h2><p><a href="https://leetcode-cn.com/problems/qiu-12n-lcof/" target="_blank" rel="noopener">面试题64</a><br>求1+2+……+n，不可使用if、while、switch、for、else以及条件判断语句（A？B：C）  </p>
+<h3 id="首次解答"><a href="#首次解答" class="headerlink" title="首次解答"></a>首次解答</h3><pre><code class="python">class Solution:
     def sumNums(self, n: int) -&gt; int:
         return sum(range(1,n+1))</code></pre>
 <p>没想到C++的写法，参考他人答案</p>
-<pre><code class="c++">class Solution {
+<h3 id="他人优解"><a href="#他人优解" class="headerlink" title="他人优解"></a>他人优解</h3><pre><code class="c++">class Solution {
 public:
     int sumNums(int n) {
         n &amp;&amp; (n += sumNums(n-1));
         return n;
     }
 };</code></pre>
-<p>用到了 A&amp;&amp;B：  </p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>用到了 A&amp;&amp;B：  </p>
 <ol>
 <li>当A为True时，计算并返回B的bool值</li>
 <li>当A为False时，直接返回False<br>与以往的迭代不同，它没有写在return语句中</li>
 </ol>
+<hr>
+<h2 id="219存在重复元素Ⅱ"><a href="#219存在重复元素Ⅱ" class="headerlink" title="219存在重复元素Ⅱ"></a>219存在重复元素Ⅱ</h2><p><a href="https://leetcode-cn.com/problems/contains-duplicate-ii/" target="_blank" rel="noopener">219存在重复元素Ⅱ</a><br>判断某元素相邻的范围内是否存在相同元素  </p>
+<h3 id="首次解答-1"><a href="#首次解答-1" class="headerlink" title="首次解答"></a>首次解答</h3><pre><code class="C++">class Solution {
+public:
+    bool containsNearbyDuplicate(vector&lt;int&gt;&amp; nums, int k) {
+        unordered_map &lt;int,vector&lt;int&gt;&gt;hash;
+
+        for(int i=0;i&lt;nums.size();i++)
+        {
+            hash[nums[i]].push_back(i);
+        }
+        for(auto i=hash.begin();i!=hash.end();i++)
+        {
+            if(i-&gt;second.size()!=1)
+            {
+                for(auto j =0;j&lt;i-&gt;second.size()-1;j++)
+                    if ((i-&gt;second)[j+1]-(i-&gt;second)[j]&lt;=k)
+                        return true;
+            }
+        }
+        return false;
+    }   
+};</code></pre>
+<p>初期思路是将相同的元素的下标分开排列，再进行比较，但是后面一想，访问输入元素时，下标是不断增加的，判断相邻下标即可，即只保存最新的下标即可</p>
+<h3 id="优化改进"><a href="#优化改进" class="headerlink" title="优化改进"></a>优化改进</h3><pre><code class="C++">class Solution {
+public:
+    bool containsNearbyDuplicate(vector&lt;int&gt;&amp; nums, int k) {
+        unordered_map &lt;int,int&gt;hash;
+
+        for(int i=0;i&lt;nums.size();i++)
+        {
+            if(hash[nums[i]]!=0 &amp;&amp; ((i+1)-hash[nums[i]])&lt;=k)
+                return true;
+            hash[nums[i]]=i+1;   //抬高下标，与初始值0做区分
+        }
+        return false;
+    }   
+};</code></pre>
+<hr>
+<h2 id="1295统计位数为偶数的数字"><a href="#1295统计位数为偶数的数字" class="headerlink" title="1295统计位数为偶数的数字"></a>1295统计位数为偶数的数字</h2><p><a href="https://leetcode-cn.com/problems/find-numbers-with-even-number-of-digits/" target="_blank" rel="noopener">1295</a>  </p>
+<h3 id="首次解答-2"><a href="#首次解答-2" class="headerlink" title="首次解答"></a>首次解答</h3><pre><code class="Python">class Solution:
+    def findNumbers(self, nums: List[int]) -&gt; int:
+        return(sum(len(str(i))%2==0 for i in nums ))</code></pre>
+<pre><code class="C++">class Solution {
+public:
+    int findNumbers(vector&lt;int&gt;&amp; nums) {
+        int sum=0;
+        for(auto i=nums.begin();i!=nums.end();i++)
+        {
+            if(*i&gt;=10 &amp;&amp; *i&lt;=99 || *i&gt;=1000 &amp;&amp; *i&lt;=9999 || *i==100000 )
+                sum++;
+        }
+        return sum;
+    }
+};</code></pre>
+<p>我写的答案，做法比较简单，时间效率也比较高，但是C++有字符串相关的方法，记录一下</p>
+<h3 id="网上优解-5"><a href="#网上优解-5" class="headerlink" title="网上优解"></a>网上优解</h3><pre><code class="C++">//转为字符串，求长度比较
+class Solution1 {
+public:
+    int findNumbers(vector&lt;int&gt;&amp; nums) {
+        int ans = 0;
+        for (int num: nums) {
+            if (to_string(num).size() % 2 == 0) {
+                ++ans;
+            }
+        }
+        return ans;
+    }
+};
+//利用数学方法求解
+class Solution2 {
+public:
+    int findNumbers(vector&lt;int&gt;&amp; nums) {
+        int ans = 0;
+        for (int num: nums) {
+            if ((int)(log10(num) + 1) % 2 == 0) {
+                ++ans;
+            }
+        }
+        return ans;
+    }
+};</code></pre>
+<hr>
+<h2 id="1313解压缩编码列表"><a href="#1313解压缩编码列表" class="headerlink" title="1313解压缩编码列表"></a>1313解压缩编码列表</h2><p><a href="https://leetcode-cn.com/problems/decompress-run-length-encoded-list/" target="_blank" rel="noopener">1313解压缩编码列表</a></p>
+<blockquote>
+<p>数组中，每两个元素为一组，第一个元素表示后一个元素出现的次数，对输入的数组进行解压缩<br>输入：nums = [1,2,3,4]<br>输出：[2,4,4,4]</p>
+</blockquote>
+<h3 id="首次解答-3"><a href="#首次解答-3" class="headerlink" title="首次解答"></a>首次解答</h3><pre><code class="C++">class Solution {
+public:
+    vector&lt;int&gt; decompressRLElist(vector&lt;int&gt;&amp; nums) {
+        vector&lt;int&gt; result;
+        for(int i=0;i&lt;=nums.size()-2;i+=2)
+        {
+            while(nums[i])
+            {
+                result.push_back(nums[i+1]);
+                nums[i]--;
+            }
+        }
+        return result;
+    }
+};</code></pre>
+<pre><code class="Python">class Solution:
+    def decompressRLElist(self, nums: List[int]) -&gt; List[int]:
+        result=[]
+        for i in range(0,len(nums),2):
+            for j in range(nums[i]):
+                result.append(nums[i+1])
+        return  result;</code></pre>
+<p>主要是Python没有想到一句话的写法</p>
+<h3 id="网上优解-6"><a href="#网上优解-6" class="headerlink" title="网上优解"></a>网上优解</h3><pre><code class="Python">class Solution:
+    def decompressRLElist(self, nums: List[int]) -&gt; List[int]:
+        return [nums[i] for i in range(len(nums)) for j in range(nums[i-1]) if i % 2 == 1]
+
+class Solution:
+    def decompressRLElist(self, nums: List[int]) -&gt; List[int]:
+        return [i for i,j in zip(nums[1::2],nums[::2]) for _ in range(j)]
+
+class Solution:
+    def decompressRLElist(self, nums: List[int]) -&gt; List[int]:
+        return sum(([b] * a for a, b in zip(nums[::2], nums[1::2])), [])
+</code></pre>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p>Python的一句话第一种想法没有想到，可能是因为从来没有在一句话中使用过两个for，第二种写法主要是利用zip进行了迭代访问，第三种方法与第二种不同的地方在于没有循环的打印，而是先通过zip分组，相乘解压，然后通过sum来合并各个组的解压结果</p>
+<hr>
+<hr>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
@@ -202,9 +573,9 @@ public:
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">12 <p>Articles</p></a></li>
-                    <li><a href="/categories">11 <p>Categories</p></a></li>
-                    <li><a href="/tags">19 <p>Tags</p></a></li>
+                    <li><a href="/archives">16 <p>Articles</p></a></li>
+                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/tags">26 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -213,7 +584,7 @@ public:
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#LeetCode"><span class="toc-number">1.</span> <span class="toc-text">LeetCode</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#好题"><span class="toc-number">1.</span> <span class="toc-text">好题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#面试题-02-03-删除中间节点"><span class="toc-number">1.1.</span> <span class="toc-text">面试题 02.03. 删除中间节点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解"><span class="toc-number">1.1.1.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进"><span class="toc-number">1.1.2.</span> <span class="toc-text">个人改进</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#难题"><span class="toc-number">2.</span> <span class="toc-text">难题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#普通题目"><span class="toc-number">3.</span> <span class="toc-text">普通题目</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#202-快乐数"><span class="toc-number">3.1.</span> <span class="toc-text">202. 快乐数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解"><span class="toc-number">3.1.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-1"><span class="toc-number">3.1.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进-1"><span class="toc-number">3.1.3.</span> <span class="toc-text">个人改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1351-统计有序矩阵中的负数"><span class="toc-number">3.2.</span> <span class="toc-text">1351. 统计有序矩阵中的负数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答"><span class="toc-number">3.2.1.</span> <span class="toc-text">个人解答</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1436-旅行终点站"><span class="toc-number">3.3.</span> <span class="toc-text">1436. 旅行终点站</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解-1"><span class="toc-number">3.3.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-2"><span class="toc-number">3.3.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进-2"><span class="toc-number">3.3.3.</span> <span class="toc-text">个人改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1431-拥有最多糖果的孩子"><span class="toc-number">3.4.</span> <span class="toc-text">1431. 拥有最多糖果的孩子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解-2"><span class="toc-number">3.4.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-3"><span class="toc-number">3.4.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进-3"><span class="toc-number">3.4.3.</span> <span class="toc-text">个人改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1389-按既定顺序创建目标数组"><span class="toc-number">3.5.</span> <span class="toc-text">1389. 按既定顺序创建目标数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解-3"><span class="toc-number">3.5.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-4"><span class="toc-number">3.5.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进"><span class="toc-number">3.5.3.</span> <span class="toc-text">改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#面试题64"><span class="toc-number">3.6.</span> <span class="toc-text">面试题64</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答"><span class="toc-number">3.6.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#他人优解"><span class="toc-number">3.6.2.</span> <span class="toc-text">他人优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">3.6.3.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#219存在重复元素Ⅱ"><span class="toc-number">3.7.</span> <span class="toc-text">219存在重复元素Ⅱ</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答-1"><span class="toc-number">3.7.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优化改进"><span class="toc-number">3.7.2.</span> <span class="toc-text">优化改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1295统计位数为偶数的数字"><span class="toc-number">3.8.</span> <span class="toc-text">1295统计位数为偶数的数字</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答-2"><span class="toc-number">3.8.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-5"><span class="toc-number">3.8.2.</span> <span class="toc-text">网上优解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1313解压缩编码列表"><span class="toc-number">3.9.</span> <span class="toc-text">1313解压缩编码列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答-3"><span class="toc-number">3.9.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-6"><span class="toc-number">3.9.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结-1"><span class="toc-number">3.9.3.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li></ol>
                 </div>
             </div>
             

@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content="C/C++实验环境：Ubuntu、GCC7.5.0gcc编译选项：-m32 -fno-stack-protector -z execstack -z norelro -O0，关闭常见的防护，关闭优化,"> 
+    <meta name="description" content="C/C++实验环境：Ubuntu、GCC7.5.0gcc编译选项：-m32 -fno-stack-protector -z execstack -z norelro -fno-builtin -O0,"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -99,7 +99,7 @@
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    941
+                    963
                 </span>
                 
                 
@@ -139,7 +139,7 @@
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <h1 id="C-C"><a href="#C-C" class="headerlink" title="C/C++"></a>C/C++</h1><p>实验环境：Ubuntu、GCC7.5.0<br>gcc编译选项：<code>-m32 -fno-stack-protector -z execstack -z norelro -O0</code>，关闭常见的防护，关闭优化，动态链接，生成32位可执行程序</p>
+            <h1 id="C-C"><a href="#C-C" class="headerlink" title="C/C++"></a>C/C++</h1><p>实验环境：Ubuntu、GCC7.5.0<br>gcc编译选项：<code>-m32 -fno-stack-protector -z execstack -z norelro -fno-builtin -O0</code>，关闭常见的防护，关闭内置函数优化,关闭优化，动态链接，生成64位可执行程序</p>
 <h2 id="第一版-最常见的写法"><a href="#第一版-最常见的写法" class="headerlink" title="第一版-最常见的写法"></a>第一版-最常见的写法</h2><p>先写一个最为常见的HelloWorld</p>
 <pre><code class="c">#include&lt;stdio.h&gt;
 int main()
@@ -203,9 +203,9 @@ int main()
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">12 <p>Articles</p></a></li>
-                    <li><a href="/categories">11 <p>Categories</p></a></li>
-                    <li><a href="/tags">19 <p>Tags</p></a></li>
+                    <li><a href="/archives">16 <p>Articles</p></a></li>
+                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/tags">26 <p>Tags</p></a></li>
                 </ul>
             </div>
             

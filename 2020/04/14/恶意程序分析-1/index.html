@@ -102,7 +102,7 @@
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    15k
+                    14k
                 </span>
                 
                 
@@ -121,7 +121,7 @@
             </p>
             
             
-            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Backdoor/" rel="tag">Backdoor</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Reverse/" rel="tag">Reverse</a></li></ul>
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Backdoor/" rel="tag">Backdoor</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Malware/" rel="tag">Malware</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Reverse/" rel="tag">Reverse</a></li></ul>
             
         </div>
     </div>
@@ -144,17 +144,17 @@
         <div class="content markdown animated fadeIn">
             <p><a href="./GeforceExpirience.bin.zip">后门程序,解压密码：infected</a></p>
 <h1 id="程序"><a href="#程序" class="headerlink" title="程序"></a>程序</h1><p><a href="https://app.any.run/tasks/af63aed4-dfc0-4312-9d69-ae7502a2cb3b/" target="_blank" rel="noopener">app.any.run</a><br>程序来源于在线沙箱runany，在沙箱对程序进行了简单的运行，最直观的反应是不断的在打开cmd窗口。</p>
-<div align=center><img src="./运行流程.png" alt="运行流程" width="70%" height="70%"  /></div>
+<div align=center><img src="./运行流程.png" alt="运行流程"   /></div>
 `Geforce Expirience.exe`图标与显卡程序驱动相似。PEID显示存在upx压缩壳,而DetectItEasily分析过后个人怀疑是个自解压运行程序，于是后缀改成rar得到了一些其他程序。在解压缩软件打开之后确认了该文件为自解压程序。  
 
-<div align=center><img src="./自解压程序.png" alt="自解压程序" width="70%" height="70%"  /></div>
+<div align=center><img src="./自解压程序.png" alt="自解压程序"   /></div>
 而dclib文件夹中的文件是一些库   
-<div align=center><img src="./dclib文件夹.png" alt="dclib文件夹" width="70%" height="70%"  /></div>
+<div align=center><img src="./dclib文件夹.png" alt="dclib文件夹"   /></div>
 
 <p>所谓的<code>vmcheck32.dll</code>文件也并不是dll文件，其中保存了一些base64编码，解码之后看到了与anyrun中相同的域名。</p>
 <h1 id="开始分析"><a href="#开始分析" class="headerlink" title="开始分析"></a>开始分析</h1><p>沙箱中的开始于<code>System.vbe</code>和<code>Starter.exe</code>，程序都使用了<code>.net reactor</code>加壳保护，我们尝试使用了<code>de4dot</code>进行脱壳。</p>
 <h2 id="System-vbe"><a href="#System-vbe" class="headerlink" title="System.vbe"></a>System.vbe</h2><p>Google知vbe是vbs编码之后的代码，为的就是防止识别，于是尝试利用一些现有的脚本来直接解码<br><a href="./scriptDecode.vbs">vbe-decoder</a></p>
-<div align=center><img src="./Systemvbe解码之后.png" alt="System.vbe解码之后" width="70%" height="70%"  /></div>
+<div align=center><img src="./Systemvbe解码之后.png" alt="System.vbe解码之后"   /></div>
 很明显的看出，vbs脚本创建了一个快捷方式并运行了一个bat脚本与一个程序
 
 <h3 id="e6ee5674bb9446c78bbc5729af6e2c28-exe"><a href="#e6ee5674bb9446c78bbc5729af6e2c28-exe" class="headerlink" title="e6ee5674bb9446c78bbc5729af6e2c28.exe"></a>e6ee5674bb9446c78bbc5729af6e2c28.exe</h3><pre><code class="c#">using (RegistryKey registryKey = Registry.LocalMachine.OpenSubKey(&quot;SYSTEM\\CurrentControlSet\\Control\\Class\\{6BDD1FC6-810F-11D0-BEC7-08002BE2092F}&quot;))
@@ -185,17 +185,17 @@ token=connect(TargetUrl+&quot;?&quot;+&quot;some unknown args&quot;)
 #之后的所有网络交互都有参数“11b7d19ccf1147a7a18c5d8cb8fb6bc4 = reverse(base64(token))”
 </code></pre>
 <p>在了解了参数内容为base64编码之后，手动解析了几个参数，发现了上传系统进程等等一些内容，同时在请求的结果中也发现了base64编码之后的一些命令。</p>
-<div align=center><img src="./逆序base64解码.png" alt="逆序base64解码" width="70%" height="70%"  /></div>
+<div align=center><img src="./逆序base64解码.png" alt="逆序base64解码"   /></div>
 
 <p>几天之后再尝试去分析时，发现原本的服务器已经挂了，无奈为了继续分析程序，手动搭建了一个简单的web服务。好在请求返回的结果基本上不多，在host文件中将恶意网址指向本地（使用AtapeDNS后导致恶意程序的其他网络请求失败）。<br>程序中运行这多个线程，采用不断冻结线程的方法一个一个去观察，同时呢为了使命令执行的效果更加方便且不产生更多的线程，返回中的command命令选用了forkbomb。经过多日努力跟踪分析，终于有了进展。。。  </p>
-<div align=center><img src="./程序运行的多个线程.png" alt="程序运行的多个线程" width="70%" height="70%"  /></div>
-<div align=center><img src="./FrokBomb命令执行.png" alt="FrokBomb命令执行" width="70%" height="70%"  /></div>
+<div align=center><img src="./程序运行的多个线程.png" alt="程序运行的多个线程"   /></div>
+<div align=center><img src="./FrokBomb命令执行.png" alt="FrokBomb命令执行"   /></div>
 通过断点Base64解码与正则匹配，逐个分析了线程之后找到了命令执行的关键线程  
-<div align=center><img src="./命令匹配.png" alt="命令匹配" width="70%" height="70%"  /></div>
+<div align=center><img src="./命令匹配.png" alt="命令匹配"   /></div>
 找到了命令匹配的地方，很快就有了命令的执行的过程了，首先是将命令按照一定的计算方法转换为整数  
-<div align=center><img src="./命令转换.png" alt="命令转换" width="70%" height="70%"  /></div>
+<div align=center><img src="./命令转换.png" alt="命令转换"   /></div>
 紧接着，根据转换结果来选择执行代码  
-<div align=center><img src="./根据命令转换结果执行.png" alt="根据命令转换结果执行" width="70%" height="70%"  /></div>
+<div align=center><img src="./根据命令转换结果执行.png" alt="根据命令转换结果执行"   /></div>
 
 <p>分析过程中发现，请求的返回结果解码之后至少包含三种数据格式，至于已经发现的另外两种就没精力研究是啥作用了。。。</p>
 <h5 id="注册表"><a href="#注册表" class="headerlink" title="注册表"></a>注册表</h5><p><code>HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System</code>的操作是将任务管理器禁用了，其中<code>HKCU</code>就是<code>HKEY_CURRNET_USER</code><br>补充一条相关路径： <code>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\policies\system</code></p>
@@ -240,7 +240,7 @@ for i in packets:
             argname,argval=arg.split(&quot;=&quot;)
             argval=base64.b64decode(parse.unquote(argval)[::-1]).decode()
             if argval not in args[argname]:
-                args[argname].append(argval)  #旨在去除重复参数值。无法使用set，格式化打印时出错
+                args[argname].append(argval)  #旨在去除重复参数值。无法使用set，否则格式化打印时出错
     except Exception as e:
         pass
 
@@ -353,11 +353,11 @@ print(args)</code></pre>
       &quot;fd4fbcdbaa1148ef9963f5e0be6ac85a&quot;
    ]
 }</code></pre>
-<p>其他参数值的计算方法就不过多的关注了，还是想看看具体能执行一些什么命令，有什么效果。</p>
+<p>其他参数名都是通过’srv164667.hoster-test.ru’拼接’token_uid’、’filename’等等之后md5或者sha1计算的结果。</p>
 <h1 id="说在最后"><a href="#说在最后" class="headerlink" title="说在最后"></a>说在最后</h1><p>程序的每一次运行效果并不完全相同，怀疑与后台设定的telegram机器人相关。第一次沙箱中运行之后开启了大量cmd窗口，在数据包中同时发现了<code>COMMAND::&lt;forkbomb&gt;-DATA::&lt;&gt;</code>编码之后的数据，之后重新运行未发生大量cmd窗口的情况，数据包中也未出现“forkbomb”相关字样。下图为某次本地运行之后的效果，恶意程序启动了系统中的一些程序来试图转移注意力</p>
-<div align=center><img src="./本地某次运行效果.png" alt="本地某次运行效果" width="70%" height="70%"  /></div>
+<div align=center><img src="./本地某次运行效果.png" alt="本地某次运行效果"   /></div>
 
-<h2 id="最后的最后"><a href="#最后的最后" class="headerlink" title="最后的最后"></a>最后的最后</h2><p>按照常理来说恶意软件分析应该重点关注程序的执行效果，带来的影响，但是此次分析研究了很多细节，ennn，第一次吧<br>现在已知的效果是修改了相关的注册表，复制了一个守护进程到了一些随机的目录，在本地数据库中写入了某些东西，盲猜与keylogger等相关吧。能否写一个专杀工具？。？</p>
+<h2 id="最后的最后"><a href="#最后的最后" class="headerlink" title="最后的最后"></a>最后的最后</h2><p>按照常理来说恶意软件分析应该重点关注程序的执行效果，带来的影响，但是第一次的分析感觉有点偏，总结写的也不是太好，思路混乱</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
@@ -401,9 +401,9 @@ print(args)</code></pre>
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">12 <p>Articles</p></a></li>
-                    <li><a href="/categories">11 <p>Categories</p></a></li>
-                    <li><a href="/tags">19 <p>Tags</p></a></li>
+                    <li><a href="/archives">16 <p>Articles</p></a></li>
+                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/tags">26 <p>Tags</p></a></li>
                 </ul>
             </div>
             

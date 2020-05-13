@@ -10,10 +10,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content="项目地址：github本项目旨在构建一个能够构造TCP数据包的工具
-参考项目、链接hping基础知识OSI参考模型
-参考模型中，每一层使用邻近下层提供的接口，为临近的上层提供服务接口。  
-数据的封,"> 
+    <meta name="description" content="说明想法来源于恶意软件分析(1)，尝试站在恶意软件开发者的角度去了解研究现在的恶意软件开发以及相关的反病毒技术，完整源码不公开，本文只记录相关总结，作为学习交流之用  
+恶意程序样本既然是站在开发者,"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -102,7 +100,7 @@
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    618
+                    555
                 </span>
                 
                 
@@ -121,7 +119,7 @@
             </p>
             
             
-            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/C-C/" rel="tag">C\C++</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Code/" rel="tag">Code</a></li></ul>
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/AntiDebug/" rel="tag">AntiDebug</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/AntiVm/" rel="tag">AntiVm</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/C-C/" rel="tag">C\C++</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Code/" rel="tag">Code</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Msalware/" rel="tag">Msalware</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Pack/" rel="tag">Pack</a></li></ul>
             
         </div>
     </div>
@@ -142,16 +140,9 @@
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <p>项目地址：<a href="https://github.com/i1arn/SayHi" target="_blank" rel="noopener">github</a><br>本项目旨在构建一个能够构造TCP数据包的工具</p>
-<h1 id="参考项目、链接"><a href="#参考项目、链接" class="headerlink" title="参考项目、链接"></a>参考项目、链接</h1><h2 id="hping"><a href="#hping" class="headerlink" title="hping"></a>hping</h2><h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><h2 id="OSI参考模型"><a href="#OSI参考模型" class="headerlink" title="OSI参考模型"></a>OSI参考模型</h2><div align=center><img src="./OSI七层参考模型.jpg" alt="OSI七层参考模型" width="70%" height="70%"  /></div>
-参考模型中，每一层使用邻近下层提供的接口，为临近的上层提供服务接口。  
-数据的封装是从上到下，由里到外，解析是从下往上，由外到里。 
-
-
-
-
-
-
+            <h1 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h1><p>想法来源于<a href="https://i1arn.github.io/2020/04/14/%E6%81%B6%E6%84%8F%E7%A8%8B%E5%BA%8F%E5%88%86%E6%9E%90-1/">恶意软件分析(1)</a>，尝试站在恶意软件开发者的角度去了解研究现在的恶意软件开发以及相关的反病毒技术，完整源码不公开，本文只记录相关总结，作为学习交流之用  </p>
+<h1 id="恶意程序样本"><a href="#恶意程序样本" class="headerlink" title="恶意程序样本"></a>恶意程序样本</h1><p>既然是站在开发者的角度去看反病毒，那手上一定得有恶意程序样本，为了更好的展开后面的学习，此时我们自己尝试手动编写一个最简单的恶意程序</p>
+<h2 id="命令执行"><a href="#命令执行" class="headerlink" title="命令执行"></a>命令执行</h2><h2 id=""><a href="#" class="headerlink" title=""></a></h2>
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
                 data-autoplay="false">
@@ -194,9 +185,9 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">12 <p>Articles</p></a></li>
-                    <li><a href="/categories">11 <p>Categories</p></a></li>
-                    <li><a href="/tags">19 <p>Tags</p></a></li>
+                    <li><a href="/archives">16 <p>Articles</p></a></li>
+                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/tags">26 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -205,7 +196,7 @@
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#参考项目、链接"><span class="toc-number">1.</span> <span class="toc-text">参考项目、链接</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#hping"><span class="toc-number">1.1.</span> <span class="toc-text">hping</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基础知识"><span class="toc-number">2.</span> <span class="toc-text">基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#OSI参考模型"><span class="toc-number">2.1.</span> <span class="toc-text">OSI参考模型</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#说明"><span class="toc-number">1.</span> <span class="toc-text">说明</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#恶意程序样本"><span class="toc-number">2.</span> <span class="toc-text">恶意程序样本</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#命令执行"><span class="toc-number">2.1.</span> <span class="toc-text">命令执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#null"><span class="toc-number">2.2.</span> <span class="toc-text"></span></a></li></ol></li></ol>
                 </div>
             </div>
             

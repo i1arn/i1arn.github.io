@@ -149,7 +149,7 @@ windows平台GS与变量重排技术GS主要用于防止栈溢出。调用函数
 <li>检查异常处理函数指针是否指向当前栈中</li>
 <li>调用<code>RtlIsValidHandler()</code>函数进行相关检测</li>
 </ol>
-<div align=center><img src="./RtlIsVaildHandler校验流程.jpg" alt="RtlIsValidHandler校验流程" width="70%" height="70%"  /></div>
+<div align=center><img src="./RtlIsVaildHandler校验流程.jpg" alt="RtlIsValidHandler校验流程"  /></div>
 
 <h2 id="DEP"><a href="#DEP" class="headerlink" title="DEP"></a>DEP</h2><p>DEP(Data Execution Prevention)，数据执行保护，将数据页标记为不可执行，当去数据页执行时，引发异常。<br>系统提供<code>VirtualProtect</code>等等函数来让程序手动修改页属性<br>编译选项：vs中项目/**属性/配置属性/链接器/高级/数据执行保护  </p>
 <h2 id="ASLR"><a href="#ASLR" class="headerlink" title="ASLR"></a>ASLR</h2><p>ASLR(Address Space Layout Randomization),内存随机化保护机制。在PE头中<code>IMAGE_DLL_CHARACTERISTICS_DYNAMIC_BASE</code>标志是否支持ASLR。<br>编译选项：vs中项目/**属性/配置属性/链接器/高级/随机基址<br>注册表中键值<code>\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\MoveImages</code>将影响系统ASLR支持：  </p>
@@ -232,9 +232,9 @@ windows平台GS与变量重排技术GS主要用于防止栈溢出。调用函数
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">12 <p>Articles</p></a></li>
-                    <li><a href="/categories">11 <p>Categories</p></a></li>
-                    <li><a href="/tags">19 <p>Tags</p></a></li>
+                    <li><a href="/archives">16 <p>Articles</p></a></li>
+                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/tags">26 <p>Tags</p></a></li>
                 </ul>
             </div>
             
