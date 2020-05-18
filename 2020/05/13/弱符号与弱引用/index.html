@@ -142,7 +142,7 @@
     <div class='main'>
         <div class="content markdown animated fadeIn">
             <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>《程序员的自我修养》3.5链接的接口-符号，中提到了弱符号与强符号，弱引用与强引用，针对与书中给出的例程，在实际中出现了完全不同的效果 </p>
-<pre><code class="c">#include&lt;stdio.h&gt;
+<pre><code class="c++">#include&lt;stdio.h&gt;
 #include&lt;pthread.h&gt;
 
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
@@ -160,13 +160,13 @@ int main()
 <h2 id="原程序编译"><a href="#原程序编译" class="headerlink" title="原程序编译"></a>原程序编译</h2><h3 id="问题1-ptread-create始终没有定义"><a href="#问题1-ptread-create始终没有定义" class="headerlink" title="问题1 ptread_create始终没有定义"></a>问题1 ptread_create始终没有定义</h3><p>两种编译选项编译之后执行结果都是“single-thread”，<code>pthread_create</code>在符号表中的表现一致</p>
 <div align=center><img src="./pthread_create在符号表与重定位表中.png" alt="pthread_create在符号表与重定位表中"  /></div>
 
-<h2 id="跟换为弱引用编译"><a href="#跟换为弱引用编译" class="headerlink" title="跟换为弱引用编译"></a>跟换为弱引用编译</h2><pre><code class="c">int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
+<h2 id="跟换为弱引用编译"><a href="#跟换为弱引用编译" class="headerlink" title="跟换为弱引用编译"></a>跟换为弱引用编译</h2><pre><code class="c++">int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
                           void *(*start_routine) (void *), void *arg)  __attribute__((weakref));</code></pre>
 <h3 id="问题1-if判断去了哪里"><a href="#问题1-if判断去了哪里" class="headerlink" title="问题1 if判断去了哪里"></a>问题1 if判断去了哪里</h3><p>gcc最终生成的可执行文件中，main函数调用puts函数打印了字符串，<code>if(pthread_create)</code>的判断被“优化”掉了，采用编译选项禁用优化<code>-O0</code>也没有用  </p>
 <div align=center><img src="./if判断语句去哪了.png" alt="if判断语句去哪了"  /></div>
 
 <h3 id="问题2-找不到pthread-create符号"><a href="#问题2-找不到pthread-create符号" class="headerlink" title="问题2 找不到pthread_create符号"></a>问题2 找不到pthread_create符号</h3><p>最终的执行结果都是“multi-thread”，但是符号表中都未找到<code>pthread_create</code>符号  </p>
-<pre><code class="c">printf(&quot;multi-thread\n，%x&quot;，pthread_create);                 </code></pre>
+<pre><code class="c++">printf(&quot;multi-thread\n，%x&quot;，pthread_create);                 </code></pre>
 <p>我们尝试去打印<code>pthread_create</code>的值，<code>gcc pthread.c -l pthread -o pt</code>能够成功编译，执行打印出pthread_create地址，同时在符号表中也找到了该符号，但是<code>gcc pthread.c -o pt</code>编译出错，显示<code>undefined reference to &#39;pthread_create&#39;</code></p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
@@ -212,8 +212,8 @@ int main()
                 </div>
                 <ul>
                     <li><a href="/archives">16 <p>Articles</p></a></li>
-                    <li><a href="/categories">12 <p>Categories</p></a></li>
-                    <li><a href="/tags">26 <p>Tags</p></a></li>
+                    <li><a href="/categories">11 <p>Categories</p></a></li>
+                    <li><a href="/tags">23 <p>Tags</p></a></li>
                 </ul>
             </div>
             

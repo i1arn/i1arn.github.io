@@ -5,13 +5,13 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SayHi - Hexo</title>
+    <title>程序员的自我修养(2)--装载与动态链接 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content="说明想法来源于恶意软件分析(1)，尝试站在恶意软件开发者的角度去了解研究现在的恶意软件开发以及相关的反病毒技术，完整源码不公开，本文只记录相关总结，作为学习交流之用  
-恶意程序样本既然是站在开发者,"> 
+    <meta name="description" content="可执行文件的装载与进程6.2装载的方式动态装入:根据程序的局部性原理,将常用的部分驻留在内存中,不常用的存放在磁盘  
+覆盖装入程序员手动将程序分块,并自行设计覆盖管理器来管理模块的换入换出覆盖管理,"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -58,7 +58,7 @@
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
         <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
-        <h3 class="subtitle">SayHi</h3>
+        <h3 class="subtitle">程序员的自我修养(2)--装载与动态链接</h3>
         <div class="social">
                    <!-- <div class="like-icon"> -->
                        <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
@@ -88,25 +88,25 @@
         <div class="else">
             <p class="animated fadeInDown">
                 
-                <a href="/categories/基础编程"><b>「
-                    </b>基础编程<b> 」</b></a>
+                <a href="/categories/读书笔记"><b>「
+                    </b>读书笔记<b> 」</b></a>
                 
-                April 21, 2020
+                May 17, 2020
             </p>
-            <h3 class="post-title animated fadeInDown"><a href="/2020/04/21/SayHi/" title="SayHi" class="">SayHi</a>
+            <h3 class="post-title animated fadeInDown"><a href="/2020/05/17/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB-2/" title="程序员的自我修养(2)--装载与动态链接" class="">程序员的自我修养(2)--装载与动态链接</a>
             </h3>
             
             <p class="post-count animated fadeInDown">
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    555
+                    3.7k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    1 mins.
+                    3 mins.
                 </span>
                 
                 
@@ -119,7 +119,7 @@
             </p>
             
             
-            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/AntiDebug/" rel="tag">AntiDebug</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/AntiVm/" rel="tag">AntiVm</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/C-C/" rel="tag">C\C++</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Code/" rel="tag">Code</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Msalware/" rel="tag">Msalware</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Pack/" rel="tag">Pack</a></li></ul>
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/%E7%BC%96%E8%AF%91%E3%80%81%E9%93%BE%E6%8E%A5/" rel="tag">编译、链接</a></li></ul>
             
         </div>
     </div>
@@ -140,9 +140,51 @@
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <h1 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h1><p>想法来源于<a href="https://i1arn.github.io/2020/04/14/%E6%81%B6%E6%84%8F%E7%A8%8B%E5%BA%8F%E5%88%86%E6%9E%90-1/">恶意软件分析(1)</a>，尝试站在恶意软件开发者的角度去了解研究现在的恶意软件开发以及相关的反病毒技术，完整源码不公开，本文只记录相关总结，作为学习交流之用  </p>
-<h1 id="恶意程序样本"><a href="#恶意程序样本" class="headerlink" title="恶意程序样本"></a>恶意程序样本</h1><p>既然是站在开发者的角度去看反病毒，那手上一定得有恶意程序样本，为了更好的展开后面的学习，此时我们自己尝试手动编写一个最简单的恶意程序</p>
-<h2 id="命令执行"><a href="#命令执行" class="headerlink" title="命令执行"></a>命令执行</h2><h2 id=""><a href="#" class="headerlink" title=""></a></h2>
+            <h1 id="可执行文件的装载与进程"><a href="#可执行文件的装载与进程" class="headerlink" title="可执行文件的装载与进程"></a>可执行文件的装载与进程</h1><h2 id="6-2装载的方式"><a href="#6-2装载的方式" class="headerlink" title="6.2装载的方式"></a>6.2装载的方式</h2><p>动态装入:根据程序的局部性原理,将常用的部分驻留在内存中,不常用的存放在磁盘  </p>
+<h3 id="覆盖装入"><a href="#覆盖装入" class="headerlink" title="覆盖装入"></a>覆盖装入</h3><p>程序员手动将程序分块,并自行设计覆盖管理器来管理模块的换入换出<br>覆盖管理器的设计主要考虑的问题就是模块之间的调用依赖关系  </p>
+<h3 id="页映射"><a href="#页映射" class="headerlink" title="页映射"></a>页映射</h3><p>虚拟内存被划分为大小相同的页,同时物理内存划分为与页同等大小的块,通过页映射建立页与块之间的关系,充分利用程序运行的局部性原理,避免程序大量数据的进出交换</p>
+<h2 id="6-3从操作系统看可执行文件的装载"><a href="#6-3从操作系统看可执行文件的装载" class="headerlink" title="6.3从操作系统看可执行文件的装载"></a>6.3从操作系统看可执行文件的装载</h2><p>进程的建立主要分为3步:</p>
+<ol>
+<li>创建独立的虚拟地址空间<br> 虚拟地址空间的初始化,并没有创建空间,而是创建映射函数所需要的数据结构</li>
+<li>读取可执行文件头,并建立虚拟空间与可执行文件的映射关系</li>
+<li>将CPU指令寄存器设置为可执行文件入口,启动运行</li>
+</ol>
+<p>启动运行之时,程序并没有被真正的加载到内存中,操作系统只是依赖可执行文件头信息建立了可执行文件与虚拟内存之间的映射关系。当出现页错误时,CPU将控制权交给操作系统,操作系统依靠之前映射关系的数据结构,找到空页面所在的VMA(Virtual Memory Area,虚拟内存区域),计算出页面在可执行文件中的偏移,然后在物理内存中分配一个物理页面并建立该物理页面与对应虚拟页面的映射关系,再把控制权交给进程,进程得以继续执行  </p>
+<h2 id="6-4进程虚拟空间分布"><a href="#6-4进程虚拟空间分布" class="headerlink" title="6.4进程虚拟空间分布"></a>6.4进程虚拟空间分布</h2><p>Linux下,系统把相同权限的段合并到一起当做一个Segment进行映射  </p>
+<div align=center><img src="./1/物理地址与虚拟地址转换.png" alt="物理地址与虚拟地址转换"   /></div>
+
+<p>这里的<code>Segment</code>指文件的执行视图,<code>Section</code>☞文件的链接视图。而Segment信息被保存在<code>Elf32_Phdr</code>数据结构中  </p>
+<pre><code class="C++">typedef struct{
+    Elf32_Word    p_type;        //Segment类型，当为“LOAD”即1时，才会被映射
+    Elf32_Off    p_offset;      
+    Elf32_Addr    p_vaddr;       //虚拟空间的起始地址
+    Elf32_Addr    p_paddr;       //物理装载地址
+    Elf32_Word    p_filesz;      //在文件中所占的长度
+    Elf32_Word    p_memsz;       //在虚拟地址空间中的长度
+    Elf32_Word    p_flags;       //属性，可读可写可执行
+    Elf32_Word    p_align;       //对齐属性
+} Elf32_Phdr;</code></pre>
+<h3 id="段地址对齐"><a href="#段地址对齐" class="headerlink" title="段地址对齐"></a>段地址对齐</h3><p>在可执行文件装载中，如果采用段分别对应各个页，长度不足则独占一页的办法来装载，则会出现大量的内部碎片，空间使用效率底下。于是出现了各个段衔接部分共享一个物理页面的办法，即将该物理页面映射两次，其他的页则按照正常的页粒度进行映射。看上去像是可执行文件被逻辑上分成了以4096字节为单位的若干块，每个块都被装载到物理内存中。采用段地址对齐使得程序在虚拟内存中看上去是连续一整块  </p>
+<h2 id="6-5Linux内核装载ELF过程简介"><a href="#6-5Linux内核装载ELF过程简介" class="headerlink" title="6.5Linux内核装载ELF过程简介"></a>6.5Linux内核装载ELF过程简介</h2><p><code>bash</code>下执行ELF文件过程：</p>
+<ol>
+<li><code>bash</code>会调用<code>fork</code>系统调用创建新进程，新进程调用<code>execve</code>系统调用来执行制定的elf文件，父进程会等待新进程结束</li>
+<li><code>execve</code>的入口是<code>sys_execve</code>,它将完成参数的检查复制，调用<code>do_execve</code></li>
+<li><code>do_execve</code>读取文件的前128字节用以判断文件格式，然后调用<code>search_binary_handle</code>来搜索匹配合适的装载处理过程，将由其完成elf文件的检查、映射、运行环境初始化、返回程序入口点等等工作</li>
+<li>一路返回，<code>sys_execve</code>从内核态切换到用户态，EIP跳转到返回地址即入口点，开始执行</li>
+</ol>
+<h2 id="6-6Windows-PE-的装载"><a href="#6-6Windows-PE-的装载" class="headerlink" title="6.6Windows PE 的装载"></a>6.6Windows PE 的装载</h2><p>RVA(Relative Virtual Address，相对虚拟地址)，相对于虚拟基地址的偏移地址<br>PE装载过程：</p>
+<ol>
+<li>读取文件的第一个页，目的就是读取DOS头，PE头，段表</li>
+<li>检查进程地址空间中，目标地址是否存在，该检查主要针对DLL文件</li>
+<li>通过段表将PE中的段都映射到地址空间中相应的位置</li>
+<li>如果装载地址不是目标地址，进行Rebasing</li>
+<li>装载PE文件所需要的DLL文件</li>
+<li>对PE文件中的导入符号进行解析</li>
+<li>根据PE头中指定的参数，建立初始化堆栈</li>
+<li>建立主线程并启动进程</li>
+</ol>
+<p>与装载相关的信息都保存在<code>IMAGE_OPTIONAL_HEADER</code>中，具体参考<a href="https://i1arn.github.io/2020/04/27/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB-1/#IMAGE_OPTIONAL_HEADER">IMAGE_OPTIONAL_HEADER</a></p>
+<h1 id="动态链接"><a href="#动态链接" class="headerlink" title="动态链接"></a>动态链接</h1><h1 id="Linux共享库的组织"><a href="#Linux共享库的组织" class="headerlink" title="Linux共享库的组织"></a>Linux共享库的组织</h1><h1 id="Windows下的动态链接"><a href="#Windows下的动态链接" class="headerlink" title="Windows下的动态链接"></a>Windows下的动态链接</h1>
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
                 data-autoplay="false">
@@ -186,8 +228,8 @@
                 </div>
                 <ul>
                     <li><a href="/archives">16 <p>Articles</p></a></li>
-                    <li><a href="/categories">12 <p>Categories</p></a></li>
-                    <li><a href="/tags">26 <p>Tags</p></a></li>
+                    <li><a href="/categories">11 <p>Categories</p></a></li>
+                    <li><a href="/tags">23 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -196,7 +238,7 @@
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#说明"><span class="toc-number">1.</span> <span class="toc-text">说明</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#恶意程序样本"><span class="toc-number">2.</span> <span class="toc-text">恶意程序样本</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#命令执行"><span class="toc-number">2.1.</span> <span class="toc-text">命令执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#null"><span class="toc-number">2.2.</span> <span class="toc-text"></span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#可执行文件的装载与进程"><span class="toc-number">1.</span> <span class="toc-text">可执行文件的装载与进程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-2装载的方式"><span class="toc-number">1.1.</span> <span class="toc-text">6.2装载的方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#覆盖装入"><span class="toc-number">1.1.1.</span> <span class="toc-text">覆盖装入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#页映射"><span class="toc-number">1.1.2.</span> <span class="toc-text">页映射</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-3从操作系统看可执行文件的装载"><span class="toc-number">1.2.</span> <span class="toc-text">6.3从操作系统看可执行文件的装载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-4进程虚拟空间分布"><span class="toc-number">1.3.</span> <span class="toc-text">6.4进程虚拟空间分布</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#段地址对齐"><span class="toc-number">1.3.1.</span> <span class="toc-text">段地址对齐</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-5Linux内核装载ELF过程简介"><span class="toc-number">1.4.</span> <span class="toc-text">6.5Linux内核装载ELF过程简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-6Windows-PE-的装载"><span class="toc-number">1.5.</span> <span class="toc-text">6.6Windows PE 的装载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#动态链接"><span class="toc-number">2.</span> <span class="toc-text">动态链接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux共享库的组织"><span class="toc-number">3.</span> <span class="toc-text">Linux共享库的组织</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows下的动态链接"><span class="toc-number">4.</span> <span class="toc-text">Windows下的动态链接</span></a></li></ol>
                 </div>
             </div>
             

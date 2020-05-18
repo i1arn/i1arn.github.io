@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>程序员的自我修养 - Hexo</title>
+    <title>程序员的自我修养(1)--静态链接 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
@@ -58,7 +58,7 @@
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
         <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
-        <h3 class="subtitle">程序员的自我修养</h3>
+        <h3 class="subtitle">程序员的自我修养(1)--静态链接</h3>
         <div class="social">
                    <!-- <div class="like-icon"> -->
                        <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
@@ -88,25 +88,25 @@
         <div class="else">
             <p class="animated fadeInDown">
                 
-                <a href="/categories/其他相关"><b>「
-                    </b>其他相关<b> 」</b></a>
+                <a href="/categories/读书笔记"><b>「
+                    </b>读书笔记<b> 」</b></a>
                 
                 April 27, 2020
             </p>
-            <h3 class="post-title animated fadeInDown"><a href="/2020/04/27/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB/" title="程序员的自我修养" class="">程序员的自我修养</a>
+            <h3 class="post-title animated fadeInDown"><a href="/2020/04/27/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB-1/" title="程序员的自我修养(1)--静态链接" class="">程序员的自我修养(1)--静态链接</a>
             </h3>
             
             <p class="post-count animated fadeInDown">
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    31k
+                    38k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    28 mins.
+                    35 mins.
                 </span>
                 
                 
@@ -230,7 +230,7 @@ CR3寄存器中保存着进程的PGD地址（Page Global Directory），每个�
 <li>目标代码优化<br> 由目标代码优化器对目标代码进行优化</li>
 </ol>
 </li>
-<li>汇编<code>gcc -c hello.s -o hello.o</code><br> 汇编的处理对象是汇编程序文本，结果是将汇编代码转换为机器可以执行的指令，生成目标文件，文件拓展名是<code>.o</code><pre><code class="bash"> hello.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped</code></pre>
+<li>汇编<code>gcc -c hello.s -o hello.o</code><br> 汇编的处理对象是汇编程序文本，结果是将汇编代码转换为机器可以执行的指令，生成目标文件，文件拓展名是<code>.o</code><pre><code class="console"> hello.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped</code></pre>
 </li>
 <li>链接<br> 链接的处理对象是可以重定位的二进制程序。经过上述过程的程序还不能够执行,程序中使用到的一些外部函数未能找到正确的地址。而生成可执行文件的最后一步便是链接</li>
 </ol>
@@ -256,7 +256,7 @@ CR3寄存器中保存着进程的PGD地址（Page Global Directory），每个�
 <h3 id="其他常见段"><a href="#其他常见段" class="headerlink" title="其他常见段"></a>其他常见段</h3><p><a href="https://i1arn.github.io/2020/03/01/%E5%B8%B8%E8%A7%81%E9%80%BB%E8%BE%91%E6%AE%B5/">参看</a><br>gcc中可以通过在函数、变量定义前加上<code>__attribute__((section(&quot;name&quot;)))</code>来指定程序、变量所在的程序段</p>
 <h2 id="ELF文件结构描述"><a href="#ELF文件结构描述" class="headerlink" title="ELF文件结构描述"></a>ELF文件结构描述</h2><p>ELF的文件结构依次大致是ELF头，各个逻辑段，段表，调试信息；</p>
 <h3 id="文件头"><a href="#文件头" class="headerlink" title="文件头"></a>文件头</h3><p>文件头的格式定义如下：</p>
-<pre><code class="c">#define EI_NIDENT 16
+<pre><code class="c++">#define EI_NIDENT 16
 
 typedef struct {
         unsigned char   e_ident[EI_NIDENT];   //16字节标识ELF文件的平台属性  
@@ -298,7 +298,7 @@ ELF Header:
   Section header string table index: 33
 </code></pre>
 <h3 id="段表"><a href="#段表" class="headerlink" title="段表"></a>段表</h3><p>段描述符的定义</p>
-<pre><code class="c">//! ELF32 Section header.
+<pre><code class="c++">//! ELF32 Section header.
 typedef struct elf32_shdr
 {
         Elf32_Word      sh_name;              //Section name,段名，存储的是字符串在.shstrtab段中的偏移量
@@ -445,7 +445,7 @@ typedef struct elf32_shdr
 </tbody></table>
 <h3 id="字符串表"><a href="#字符串表" class="headerlink" title="字符串表"></a>字符串表</h3><p>字符串表：保存普通字符串<br>段表字符串表：用来保存段表中使用到的字符串，常见的如段名  </p>
 <h2 id="符号"><a href="#符号" class="headerlink" title="符号"></a>符号</h2><p>链接中，函数与变量统称为符号  </p>
-<h3 id="ELF符号表结构"><a href="#ELF符号表结构" class="headerlink" title="ELF符号表结构"></a>ELF符号表结构</h3><pre><code class="c">typedef struct {
+<h3 id="ELF符号表结构"><a href="#ELF符号表结构" class="headerlink" title="ELF符号表结构"></a>ELF符号表结构</h3><pre><code class="c++">typedef struct {
     Elf32_Word     st_name;        //符号名，存储该符号在字符串表中的下标
     Elf32_Addr     st_value;       //符号对应值
     Elf32_Word     st_size;        //符号大小
@@ -479,7 +479,7 @@ typedef struct elf32_shdr
 <td align="left">若引用</td>
 </tr>
 </tbody></table>
-<h4 id="符号类型"><a href="#符号类型" class="headerlink" title="符号类型"></a>符号类型</h4><table>
+<h4 id="符号类型"><a href="#符号类型" class="headerlink" title="符号类型"></a><span id = "符号类型">符号类型</span></h4><table>
 <thead>
 <tr>
 <th align="left">宏定义名</th>
@@ -603,7 +603,7 @@ Symbol table &#39;.symtab&#39; contains 69 entries:
 </ol>
 <h4 id="弱引用与强引用"><a href="#弱引用与强引用" class="headerlink" title="弱引用与强引用"></a>弱引用与强引用</h4><p>弱引用：GCC中通过在引用时加上<code>__attribute__((weakref))</code>来说明弱引用，若该符号有定义则链接器将该符号的引用决议，如没有定义，则链接器不报错<br>强引用：没有找到该符号定义，则链接器报错  </p>
 <p>书中给定的例子，实际出现了些许不同</p>
-<pre><code class="c">#include&lt;stdio.h&gt;
+<pre><code class="c++">#include&lt;stdio.h&gt;
 #include&lt;pthread.h&gt;
 
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
@@ -619,7 +619,7 @@ int main()
         printf(&quot;single-thread.\n&quot;);
     return 1;
 }</code></pre>
-<p>按照书中给出的两种编译选项<code>gcc pthread.c -o pt</code>与<code>gcc pthread -lpthread -o pt</code>，执行之后应该出现两种不通的结果，但是并没有，都是打印的“single-thread”，再将<code>pthread_create</code>更换为弱引用之后，执行结果都是”multi-thread”. 若直接取消弱符号声明，则都打印”multi-thread”。<br>满脑子的困惑，gcc直接优化（？）掉了if判断，生成的main函数直接执行了puts打印<br><a href="">跳转到专题</a></p>
+<p>按照书中给出的两种编译选项<code>gcc pthread.c -o pt</code>与<code>gcc pthread -lpthread -o pt</code>，执行之后应该出现两种不通的结果，但是并没有，都是打印的“single-thread”，再将<code>pthread_create</code>更换为弱引用之后，执行结果都是”multi-thread”. 若直接取消弱符号声明，则都打印”multi-thread”。<br>满脑子的困惑，gcc直接优化（？）掉了if判断，生成的main函数直接执行了puts打印<br><a href="https://i1arn.github.io/2020/05/13/%E5%BC%B1%E7%AC%A6%E5%8F%B7%E4%B8%8E%E5%BC%B1%E5%BC%95%E7%94%A8/">跳转到专题</a></p>
 <h1 id="4-静态链接"><a href="#4-静态链接" class="headerlink" title="4.静态链接"></a>4.静态链接</h1><h2 id="4-1空间与地址分配"><a href="#4-1空间与地址分配" class="headerlink" title="4.1空间与地址分配"></a>4.1空间与地址分配</h2><h3 id="相似段合并"><a href="#相似段合并" class="headerlink" title="相似段合并"></a>相似段合并</h3><p>两步连接：</p>
 <ol>
 <li>空间与地址分配<br> 空间指虚拟地址空间分配，将相似段合并，对符号定义与符号引用进行收集，放入全局符号表</li>
@@ -628,7 +628,7 @@ int main()
 <h3 id="符号地址的确定"><a href="#符号地址的确定" class="headerlink" title="符号地址的确定"></a>符号地址的确定</h3><p>各个符号在段内的相对地址是确定的，通过链接器给符号加上一个偏移量就可以使它们调整到正确的虚拟地址了</p>
 <h2 id="4-2符号解析与重定位"><a href="#4-2符号解析与重定位" class="headerlink" title="4.2符号解析与重定位"></a>4.2符号解析与重定位</h2><h3 id="重定位"><a href="#重定位" class="headerlink" title="重定位"></a>重定位</h3><p>call指令是一条近址相对位移调用指令，他后面跟的是调用指令的下一条指令的偏移量</p>
 <h3 id="重定位表"><a href="#重定位表" class="headerlink" title="重定位表"></a>重定位表</h3><p>结构：</p>
-<pre><code class="c">typedef struct {
+<pre><code class="c++">typedef struct {
         Elf32_Addr      r_offset;  //重定位入口的偏移量
         Elf32_Word      r_info;    //重定位入口的类型与符号，低8位为类型，高24位为重定位入口的符号在符号表中的下标
 } Elf32_Rel;
@@ -663,35 +663,17 @@ typedef struct {
 <p>A：保存在被修正位置的值<br>P：被修正的位置（相对于段开始的偏移量或者虚拟地址），可通过<code>r_offset</code>计算得到，也就是偏移量<br>S：符号的实际地址，就是<code>r_info</code>的高24位</p>
 </blockquote>
 <p>实际中肯定不止这两种类型，还有  </p>
-<pre><code class="c">/* No reloc */
-#define R_X86_64_NONE 0  
-
-/* Direct 64 bit */
-#define R_X86_64_64 1   
-
-/* PC relative 32 bit signed */
-#define R_X86_64_PC32 2  
-
-/* 32 bit GOT entry */
-#define R_X86_64_GOT32 3 
-
-/* 32 bit PLT address */
-#define R_X86_64_PLT32 4
-
-/* Copy symbol at runtime */
-#define R_X86_64_COPY 5
-
-/* Create GOT entry */
-#define R_X86_64_GLOB_DAT 6
-
-/* Create PLT entry */
-#define R_X86_64_JUMP_SLOT 7
-
-/* Adjust by program base */
-#define R_X86_64_RELATIVE 8
-
-/* 32 bit signed pc relative offset to GOT */
-#define R_X86_64_GOTPCREL 9</code></pre>
+<pre><code class="c++">
+#define R_X86_64_NONE 0         /* No reloc */
+#define R_X86_64_64 1           /* Direct 64 bit */
+#define R_X86_64_PC32 2         /* PC relative 32 bit signed */
+#define R_X86_64_GOT32 3        /* 32 bit GOT entry */
+#define R_X86_64_PLT32 4        /* 32 bit PLT address */
+#define R_X86_64_COPY 5         /* Copy symbol at runtime */
+#define R_X86_64_GLOB_DAT 6     /* Create GOT entry */
+#define R_X86_64_JUMP_SLOT 7    /* Create PLT entry */
+#define R_X86_64_RELATIVE 8     /* Adjust by program base */
+#define R_X86_64_GOTPCREL 9     /* 32 bit signed pc relative offset to GOT */</code></pre>
 <p>参考：<br><a href="https://bbs.pediy.com/thread-246373.htm" target="_blank" rel="noopener">32位elf格式中的10种重定位类型</a>  </p>
 <h3 id="COMMON块"><a href="#COMMON块" class="headerlink" title="COMMON块"></a>COMMON块</h3><p>不同于未初始化的局部静态变量，编译器在处理未初始化的全局变量时，将其视为弱符号，由于可能存在多个编译单元定义该符号，无法确定最终符号占用空间大小，所以无法为弱符号在BSS段分配空间。但链接器在完成了所有输入文件的扫描之后，弱符号的最终大小可以确定，于是在最终输出文件的BSS段为其分配了空间</p>
 <h2 id="4-4C-相关"><a href="#4-4C-相关" class="headerlink" title="4.4C++相关"></a>4.4C++相关</h2><h3 id="全局构造与析构"><a href="#全局构造与析构" class="headerlink" title="全局构造与析构"></a>全局构造与析构</h3><p>.init段，main函数执行前，glib的初始化部分安排执行这个段中的代码<br>.fini段，main函数正常退出时，glib安排执行这个段中的代码  </p>
@@ -740,8 +722,96 @@ COLLECT_GCC_OPTIONS=&#39;-static&#39; &#39;-v&#39; &#39;-g&#39; &#39;-o&#39; &#3
  /usr/lib/gcc/x86_64-linux-gnu/7/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/7/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/7/lto-wrapper -plugin-opt=-fresolution=/tmp/ccvnXkjw.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lc --build-id -m elf_x86_64 --hash-style=gnu --as-needed -static -z relro -o pt /usr/lib/gcc/x86_64-linux-gnu/7/../../../x86_64-linux-gnu/crt1.o /usr/lib/gcc/x86_64-linux-gnu/7/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/7/crtbeginT.o -L/usr/lib/gcc/x86_64-linux-gnu/7 -L/usr/lib/gcc/x86_64-linux-gnu/7/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/7/../../.. /tmp/cc4JN3R6.o -lpthread --start-group -lgcc -lgcc_eh -lc --end-group /usr/lib/gcc/x86_64-linux-gnu/7/crtend.o /usr/lib/gcc/x86_64-linux-gnu/7/../../../x86_64-linux-gnu/crtn.o
 COLLECT_GCC_OPTIONS=&#39;-static&#39; &#39;-v&#39; &#39;-g&#39; &#39;-o&#39; &#39;pt&#39; &#39;-mtune=generic&#39; &#39;-march=x86-64&#39;</code></pre>
 <p>中间关键的程序有：C语言编译器cc1，Gun汇编器as，链接器collect2</p>
-<h2 id="4-6链接过程控制"><a href="#4-6链接过程控制" class="headerlink" title="4.6链接过程控制"></a>4.6链接过程控制</h2><h3 id="最小HelloWorld"><a href="#最小HelloWorld" class="headerlink" title="最小HelloWorld"></a>最小HelloWorld</h3><p>专题：<a href="">最小HelloWorld尝试</a></p>
-<h1 id="5-WindowsPE-COFF"><a href="#5-WindowsPE-COFF" class="headerlink" title="5.WindowsPE/COFF"></a>5.WindowsPE/COFF</h1><h2 id="5-1Windows的二进制文件格式PE-COFF"><a href="#5-1Windows的二进制文件格式PE-COFF" class="headerlink" title="5.1Windows的二进制文件格式PE/COFF"></a>5.1Windows的二进制文件格式PE/COFF</h2><h2 id="5-2PE的前身–COFF"><a href="#5-2PE的前身–COFF" class="headerlink" title="5.2PE的前身–COFF"></a>5.2PE的前身–COFF</h2><h2 id="5-3链接提示信息"><a href="#5-3链接提示信息" class="headerlink" title="5.3链接提示信息"></a>5.3链接提示信息</h2><h2 id="5-4调试信息"><a href="#5-4调试信息" class="headerlink" title="5.4调试信息"></a>5.4调试信息</h2><h2 id="5-5大家都有符号表"><a href="#5-5大家都有符号表" class="headerlink" title="5.5大家都有符号表"></a>5.5大家都有符号表</h2><h2 id="5-6Windows下的ELF–PE"><a href="#5-6Windows下的ELF–PE" class="headerlink" title="5.6Windows下的ELF–PE"></a>5.6Windows下的ELF–PE</h2>
+<h2 id="4-6链接过程控制"><a href="#4-6链接过程控制" class="headerlink" title="4.6链接过程控制"></a>4.6链接过程控制</h2><h3 id="最小HelloWorld"><a href="#最小HelloWorld" class="headerlink" title="最小HelloWorld"></a>最小HelloWorld</h3><p>专题：<a href="https://i1arn.github.io/2020/04/21/%E6%9C%80%E5%B0%8FHelloWorld%E5%B0%9D%E8%AF%95/">最小HelloWorld尝试</a></p>
+<h1 id="5-WindowsPE-COFF"><a href="#5-WindowsPE-COFF" class="headerlink" title="5.WindowsPE/COFF"></a>5.WindowsPE/COFF</h1><p><a href="https://docs.microsoft.com/en-us/windows/win32/debug/pe-format" target="_blank" rel="noopener">PE Format</a></p>
+<h2 id="5-1Windows的二进制文件格式PE-COFF"><a href="#5-1Windows的二进制文件格式PE-COFF" class="headerlink" title="5.1Windows的二进制文件格式PE/COFF"></a>5.1Windows的二进制文件格式PE/COFF</h2><p>与gcc不同，vc指定存放段使用的是<code>#pragma data_seg(&quot;SectionName&quot;)</code></p>
+<h2 id="5-2PE的前身–COFF"><a href="#5-2PE的前身–COFF" class="headerlink" title="5.2PE的前身–COFF"></a><span id = "COFF">5.2PE的前身–COFF</span></h2><p>COFF文件属性主要通过<code>IMAGE_FILE_HEADER</code>来描述   </p>
+<pre><code class="c++">typedef struct _IMAGE_FILE_HEADER {
+  WORD  Machine;                    //指定运行平台
+  WORD  NumberOfSections;           //Section数量，最大96
+  DWORD TimeDateStamp;              //文件的创建时间标示,此时间非文件系统显示的创建时间
+  DWORD PointerToSymbolTable;       //符号表地址
+  DWORD NumberOfSymbols;            //符号表的数量
+  WORD  SizeOfOptionalHeader;       //OptionalHeader的大小,只存在于PE可执行文件  
+  WORD  Characteristics;            //文件属性
+} IMAGE_FILE_HEADER, *PIMAGE_FILE_HEADER;</code></pre>
+<p>映像头后面紧跟的是COFF文件的段表<code>IMAGE_SECTION_HEADER</code></p>
+<pre><code class="c++">typedef struct _IMAGE_SECTION_HEADER {
+  BYTE  Name[IMAGE_SIZEOF_SHORT_NAME];      //
+  union {
+    DWORD PhysicalAddress;                  //文件地址
+    DWORD VirtualSize;                      //文件被加载之后的大小,即展开之后的大小,仅适用于可执行文件
+  } Misc;
+  DWORD VirtualAddress;                     //文件被加载之后的基地址
+  DWORD SizeOfRawData;                      //文件被存储时的大小,即未展开之前的大小,原始数据大小
+  DWORD PointerToRawData;                   //段在[文件]中的位置
+  DWORD PointerToRelocations;               //段的重定位表在文件中的位置
+  DWORD PointerToLinenumbers;               //段的行号表在文件中的位置
+  WORD  NumberOfRelocations;                //段中重定位的数量
+  WORD  NumberOfLinenumbers;                //段中的行号数量
+  DWORD Characteristics;                    //段的属性,主要包含段的类型,对其方式,访问权限等等
+} IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;</code></pre>
+<p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_file_header" target="_blank" rel="noopener">IMAGE_FILE_HEADER structure</a><br><a href="https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_section_header" target="_blank" rel="noopener">IMAGE_SECTION_HEADER structure</a></p>
+<h2 id="5-3链接提示信息"><a href="#5-3链接提示信息" class="headerlink" title="5.3链接提示信息"></a>5.3链接提示信息</h2><p><code>.drectve</code>段,”directive”的缩写,内容是编译器传递给连接器的指令,即编译器希望告诉链接器该怎样链接这个目标文件,该段只是存在于目标文件中   </p>
+<h2 id="5-4调试信息"><a href="#5-4调试信息" class="headerlink" title="5.4调试信息"></a>5.4调试信息</h2><p>所有以<code>.debug</code>开始的段,例如<code>.debug$F</code>,<code>.debug$P</code>等等,都包含这调试信息,这些段只存在于目标文件中.</p>
+<h2 id="5-5大家都有符号表"><a href="#5-5大家都有符号表" class="headerlink" title="5.5大家都有符号表"></a>5.5大家都有符号表</h2><pre><code class="console">COFF SYMBOL TABLE
+000 01016FC6 ABS    notype       Static       | @comp.id
+001 00000000 SECT2  notype       External     | IHttpD_NULL_THUNK_DATA</code></pre>
+<p>|符号表中的下标|符号大小|符号所在的位置|<a href="#符号类型">符号类型</a>|可见范围|符号名|</p>
+<h2 id="5-6Windows下的ELF–PE"><a href="#5-6Windows下的ELF–PE" class="headerlink" title="5.6Windows下的ELF–PE"></a>5.6Windows下的ELF–PE</h2><div align=center><img src="./5/PE文件布局.png" alt="PE文件布局"   /></div>  
+PE是COFF的拓展,主要表现在两点不同:
+
+<ol>
+<li>PE文件的开始<code>Dos MZ</code>可执行文件格式的文件头与代码桩</li>
+<li>拓展<code>IMAGE_FILE_HEADER</code>成<code>IMAGE_NT_HEADERS</code> </li>
+</ol>
+<p><code>Dos Header</code>与<code>Dos Stub</code>主要是为了兼容早期的DOS系统而设计,DOS系统会根据在<code>IMAGE_DOS_HEADER</code>中的<code>e_cs</code>与<code>e_ip</code>来跳转到程序的入口地址,但是在PE文件中该地址将指向<code>DOS Stub</code>,在DOS系统中执行一段代码,打印”This program cannot be run in DOS mode”,然后退出。但是在该头在PE中并不是毫无用处,DOS头中<code>e_lfanew</code>保存着<code>IMAGE_NT_HEADER</code>在文件中的偏移量,如果该成员值为0,则启用DOS系统执行,否则为PE文件  </p>
+<h3 id="IMAGE-NT-HEADER"><a href="#IMAGE-NT-HEADER" class="headerlink" title="IMAGE_NT_HEADER"></a>IMAGE_NT_HEADER</h3><pre><code class="C++">typedef struct _IMAGE_NT_HEADERS {
+  DWORD                   Signature;            //四个字节,表明是PE文件,固定位&quot;PE\0\0&quot;
+  IMAGE_FILE_HEADER       FileHeader;           
+  IMAGE_OPTIONAL_HEADER32 OptionalHeader;
+} IMAGE_NT_HEADERS32, *PIMAGE_NT_HEADERS32;</code></pre>
+<p><a href="#COFF">IMAGE_FILE_HEADER参考前文</a></p>
+<h3 id="IMAGE-OPTIONAL-HEADER"><a href="#IMAGE-OPTIONAL-HEADER" class="headerlink" title="IMAGE_OPTIONAL_HEADER"></a><span id = "IMAGE_OPTIONAL_HEADER">IMAGE_OPTIONAL_HEADER</span></h3><pre><code class="C++">typedef struct _IMAGE_OPTIONAL_HEADER {
+  WORD                 Magic;                               //文件类型,可执行映像、ROM映像等等
+  BYTE                 MajorLinkerVersion;                  //链接器的主要版本
+  BYTE                 MinorLinkerVersion;                  //链接器的次要版本
+  DWORD                SizeOfCode;                          //代码段或此类段的数据大小总和
+  DWORD                SizeOfInitializedData;               //初始化数据段或此类段的大小总和
+  DWORD                SizeOfUninitializedData;             //未初始化
+  DWORD                AddressOfEntryPoint;                 //程序的入口地址,即第一条指令地址   
+  DWORD                BaseOfCode;                          //代码段开头偏移量RVA
+  DWORD                BaseOfData;                          //数据段开头偏移量RVA
+  DWORD                ImageBase;                           //文件的优先装载地址
+  DWORD                SectionAlignment;                    //内存中段对齐粒度,一般是系统页面大小,常见4K
+  DWORD                FileAlignment;                       //文件中段对齐粒度,必须是2的倍数,默认512字节
+  WORD                 MajorOperatingSystemVersion;         //需要的系统主版本号    
+  WORD                 MinorOperatingSystemVersion;         //次版本
+  WORD                 MajorImageVersion;
+  WORD                 MinorImageVersion;
+  WORD                 MajorSubsystemVersion;               //子系统主版本号
+  WORD                 MinorSubsystemVersion;
+  DWORD                Win32VersionValue;                   //保留
+  DWORD                SizeOfImage;                         //整个文件的大小,必须是内存对齐粒度的倍数
+  DWORD                SizeOfHeaders;                       //所有文件头,包含magic魔数 ,或者说 文件大小减去所有section的大小
+  DWORD                CheckSum;                            //文件校验和
+  WORD                 Subsystem;                           //需要的子系统,GUI、CUI等等
+  WORD                 DllCharacteristics;                  //DLL文件属性
+  DWORD                SizeOfStackReserve;                  //Stack保留大小,依赖于SizeOfStackCommit而存在
+  DWORD                SizeOfStackCommit;                   //Stack需要的大小
+  DWORD                SizeOfHeapReserve;                   
+  DWORD                SizeOfHeapCommit;
+  DWORD                LoaderFlags;                         //淘汰!
+  DWORD                NumberOfRvaAndSizes;                 //指明DataDirectory的数目
+  IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];      //数据目录,保存着导入表,资源表,重定位表等等地址与长度
+} IMAGE_OPTIONAL_HEADER32, *PIMAGE_OPTIONAL_HEADER32;</code></pre>
+<p>参考<a href="https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header32" target="_blank" rel="noopener">IMAGE_OPTIONAL_HEADER</a></p>
+<h3 id="IMAGE-DATA-DIRECTORY"><a href="#IMAGE-DATA-DIRECTORY" class="headerlink" title="IMAGE_DATA_DIRECTORY"></a><a href="#IMAGE_DATA_DIRECTORY">IMAGE_DATA_DIRECTORY</a></h3><p><code>IMAGE_DATA_DIRECTORY</code>的定义比较简单,各个数据保存的顺序进行了明确的说明,具体参考<a href="https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_data_directory" target="_blank" rel="noopener">IMAGE_DATA_DIRECTORY</a></p>
+<pre><code class="C++">typedef struct _IMAGE_DATA_DIRECTORY {
+  DWORD VirtualAddress;
+  DWORD Size;
+} IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;</code></pre>
+
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
                 data-autoplay="false">
@@ -785,8 +855,8 @@ COLLECT_GCC_OPTIONS=&#39;-static&#39; &#39;-v&#39; &#39;-g&#39; &#39;-o&#39; &#3
                 </div>
                 <ul>
                     <li><a href="/archives">16 <p>Articles</p></a></li>
-                    <li><a href="/categories">12 <p>Categories</p></a></li>
-                    <li><a href="/tags">26 <p>Tags</p></a></li>
+                    <li><a href="/categories">11 <p>Categories</p></a></li>
+                    <li><a href="/tags">23 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -795,7 +865,7 @@ COLLECT_GCC_OPTIONS=&#39;-static&#39; &#39;-v&#39; &#39;-g&#39; &#39;-o&#39; &#3
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-温故而知新"><span class="toc-number">1.</span> <span class="toc-text">1.温故而知新</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#分段与分页"><span class="toc-number">1.1.</span> <span class="toc-text">分段与分页</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#分段与分页-1"><span class="toc-number">1.1.1.</span> <span class="toc-text">分段与分页</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#物理地址、逻辑地址、虚拟地址"><span class="toc-number">1.1.2.</span> <span class="toc-text">物理地址、逻辑地址、虚拟地址</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#众人拾柴火焰高"><span class="toc-number">1.2.</span> <span class="toc-text">众人拾柴火焰高</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#进程、线程、协程"><span class="toc-number">1.2.1.</span> <span class="toc-text">进程、线程、协程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#程序状态"><span class="toc-number">1.2.2.</span> <span class="toc-text">程序状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#僵死进程与孤儿进程"><span class="toc-number">1.2.3.</span> <span class="toc-text">僵死进程与孤儿进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux的多线程"><span class="toc-number">1.2.4.</span> <span class="toc-text">Linux的多线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#线程同步"><span class="toc-number">1.2.5.</span> <span class="toc-text">线程同步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可重入函数"><span class="toc-number">1.2.6.</span> <span class="toc-text">可重入函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#volatile关键字与barrier"><span class="toc-number">1.2.7.</span> <span class="toc-text">volatile关键字与barrier</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-编译与链接"><span class="toc-number">2.</span> <span class="toc-text">2.编译与链接</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#整个过程"><span class="toc-number">2.1.</span> <span class="toc-text">整个过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#静态链接基本过程"><span class="toc-number">2.2.</span> <span class="toc-text">静态链接基本过程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-目标文件"><span class="toc-number">3.</span> <span class="toc-text">3.目标文件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#目标文件格式"><span class="toc-number">3.1.</span> <span class="toc-text">目标文件格式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#bss段"><span class="toc-number">3.1.1.</span> <span class="toc-text">bss段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他常见段"><span class="toc-number">3.1.2.</span> <span class="toc-text">其他常见段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ELF文件结构描述"><span class="toc-number">3.2.</span> <span class="toc-text">ELF文件结构描述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#文件头"><span class="toc-number">3.2.1.</span> <span class="toc-text">文件头</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#段表"><span class="toc-number">3.2.2.</span> <span class="toc-text">段表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字符串表"><span class="toc-number">3.2.3.</span> <span class="toc-text">字符串表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#符号"><span class="toc-number">3.3.</span> <span class="toc-text">符号</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ELF符号表结构"><span class="toc-number">3.3.1.</span> <span class="toc-text">ELF符号表结构</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-静态链接"><span class="toc-number">4.</span> <span class="toc-text">4.静态链接</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1空间与地址分配"><span class="toc-number">4.1.</span> <span class="toc-text">4.1空间与地址分配</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#相似段合并"><span class="toc-number">4.1.1.</span> <span class="toc-text">相似段合并</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#符号地址的确定"><span class="toc-number">4.1.2.</span> <span class="toc-text">符号地址的确定</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2符号解析与重定位"><span class="toc-number">4.2.</span> <span class="toc-text">4.2符号解析与重定位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#重定位"><span class="toc-number">4.2.1.</span> <span class="toc-text">重定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#重定位表"><span class="toc-number">4.2.2.</span> <span class="toc-text">重定位表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#符号解析"><span class="toc-number">4.2.3.</span> <span class="toc-text">符号解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#指令修正方式"><span class="toc-number">4.2.4.</span> <span class="toc-text">指令修正方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#COMMON块"><span class="toc-number">4.2.5.</span> <span class="toc-text">COMMON块</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-4C-相关"><span class="toc-number">4.3.</span> <span class="toc-text">4.4C++相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#全局构造与析构"><span class="toc-number">4.3.1.</span> <span class="toc-text">全局构造与析构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-与ABI"><span class="toc-number">4.3.2.</span> <span class="toc-text">C++与ABI</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-5静态库链接"><span class="toc-number">4.4.</span> <span class="toc-text">4.5静态库链接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-6链接过程控制"><span class="toc-number">4.5.</span> <span class="toc-text">4.6链接过程控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#最小HelloWorld"><span class="toc-number">4.5.1.</span> <span class="toc-text">最小HelloWorld</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-WindowsPE-COFF"><span class="toc-number">5.</span> <span class="toc-text">5.WindowsPE&#x2F;COFF</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-1Windows的二进制文件格式PE-COFF"><span class="toc-number">5.1.</span> <span class="toc-text">5.1Windows的二进制文件格式PE&#x2F;COFF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-2PE的前身–COFF"><span class="toc-number">5.2.</span> <span class="toc-text">5.2PE的前身–COFF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-3链接提示信息"><span class="toc-number">5.3.</span> <span class="toc-text">5.3链接提示信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-4调试信息"><span class="toc-number">5.4.</span> <span class="toc-text">5.4调试信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-5大家都有符号表"><span class="toc-number">5.5.</span> <span class="toc-text">5.5大家都有符号表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-6Windows下的ELF–PE"><span class="toc-number">5.6.</span> <span class="toc-text">5.6Windows下的ELF–PE</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-温故而知新"><span class="toc-number">1.</span> <span class="toc-text">1.温故而知新</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#分段与分页"><span class="toc-number">1.1.</span> <span class="toc-text">分段与分页</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#分段与分页-1"><span class="toc-number">1.1.1.</span> <span class="toc-text">分段与分页</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#物理地址、逻辑地址、虚拟地址"><span class="toc-number">1.1.2.</span> <span class="toc-text">物理地址、逻辑地址、虚拟地址</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#众人拾柴火焰高"><span class="toc-number">1.2.</span> <span class="toc-text">众人拾柴火焰高</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#进程、线程、协程"><span class="toc-number">1.2.1.</span> <span class="toc-text">进程、线程、协程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#程序状态"><span class="toc-number">1.2.2.</span> <span class="toc-text">程序状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#僵死进程与孤儿进程"><span class="toc-number">1.2.3.</span> <span class="toc-text">僵死进程与孤儿进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux的多线程"><span class="toc-number">1.2.4.</span> <span class="toc-text">Linux的多线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#线程同步"><span class="toc-number">1.2.5.</span> <span class="toc-text">线程同步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可重入函数"><span class="toc-number">1.2.6.</span> <span class="toc-text">可重入函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#volatile关键字与barrier"><span class="toc-number">1.2.7.</span> <span class="toc-text">volatile关键字与barrier</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-编译与链接"><span class="toc-number">2.</span> <span class="toc-text">2.编译与链接</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#整个过程"><span class="toc-number">2.1.</span> <span class="toc-text">整个过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#静态链接基本过程"><span class="toc-number">2.2.</span> <span class="toc-text">静态链接基本过程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-目标文件"><span class="toc-number">3.</span> <span class="toc-text">3.目标文件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#目标文件格式"><span class="toc-number">3.1.</span> <span class="toc-text">目标文件格式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#bss段"><span class="toc-number">3.1.1.</span> <span class="toc-text">bss段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他常见段"><span class="toc-number">3.1.2.</span> <span class="toc-text">其他常见段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ELF文件结构描述"><span class="toc-number">3.2.</span> <span class="toc-text">ELF文件结构描述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#文件头"><span class="toc-number">3.2.1.</span> <span class="toc-text">文件头</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#段表"><span class="toc-number">3.2.2.</span> <span class="toc-text">段表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字符串表"><span class="toc-number">3.2.3.</span> <span class="toc-text">字符串表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#符号"><span class="toc-number">3.3.</span> <span class="toc-text">符号</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ELF符号表结构"><span class="toc-number">3.3.1.</span> <span class="toc-text">ELF符号表结构</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-静态链接"><span class="toc-number">4.</span> <span class="toc-text">4.静态链接</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1空间与地址分配"><span class="toc-number">4.1.</span> <span class="toc-text">4.1空间与地址分配</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#相似段合并"><span class="toc-number">4.1.1.</span> <span class="toc-text">相似段合并</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#符号地址的确定"><span class="toc-number">4.1.2.</span> <span class="toc-text">符号地址的确定</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2符号解析与重定位"><span class="toc-number">4.2.</span> <span class="toc-text">4.2符号解析与重定位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#重定位"><span class="toc-number">4.2.1.</span> <span class="toc-text">重定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#重定位表"><span class="toc-number">4.2.2.</span> <span class="toc-text">重定位表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#符号解析"><span class="toc-number">4.2.3.</span> <span class="toc-text">符号解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#指令修正方式"><span class="toc-number">4.2.4.</span> <span class="toc-text">指令修正方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#COMMON块"><span class="toc-number">4.2.5.</span> <span class="toc-text">COMMON块</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-4C-相关"><span class="toc-number">4.3.</span> <span class="toc-text">4.4C++相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#全局构造与析构"><span class="toc-number">4.3.1.</span> <span class="toc-text">全局构造与析构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-与ABI"><span class="toc-number">4.3.2.</span> <span class="toc-text">C++与ABI</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-5静态库链接"><span class="toc-number">4.4.</span> <span class="toc-text">4.5静态库链接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-6链接过程控制"><span class="toc-number">4.5.</span> <span class="toc-text">4.6链接过程控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#最小HelloWorld"><span class="toc-number">4.5.1.</span> <span class="toc-text">最小HelloWorld</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-WindowsPE-COFF"><span class="toc-number">5.</span> <span class="toc-text">5.WindowsPE&#x2F;COFF</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-1Windows的二进制文件格式PE-COFF"><span class="toc-number">5.1.</span> <span class="toc-text">5.1Windows的二进制文件格式PE&#x2F;COFF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-2PE的前身–COFF"><span class="toc-number">5.2.</span> <span class="toc-text">5.2PE的前身–COFF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-3链接提示信息"><span class="toc-number">5.3.</span> <span class="toc-text">5.3链接提示信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-4调试信息"><span class="toc-number">5.4.</span> <span class="toc-text">5.4调试信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-5大家都有符号表"><span class="toc-number">5.5.</span> <span class="toc-text">5.5大家都有符号表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-6Windows下的ELF–PE"><span class="toc-number">5.6.</span> <span class="toc-text">5.6Windows下的ELF–PE</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IMAGE-NT-HEADER"><span class="toc-number">5.6.1.</span> <span class="toc-text">IMAGE_NT_HEADER</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IMAGE-OPTIONAL-HEADER"><span class="toc-number">5.6.2.</span> <span class="toc-text">IMAGE_OPTIONAL_HEADER</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IMAGE-DATA-DIRECTORY"><span class="toc-number">5.6.3.</span> <span class="toc-text">IMAGE_DATA_DIRECTORY</span></a></li></ol></li></ol></li></ol>
                 </div>
             </div>
             

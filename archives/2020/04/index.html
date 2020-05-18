@@ -75,6 +75,22 @@
                                 
                                 <li class="timeline-item">
                                     <div class="timeline-info">
+                                        <span class="gradient-text">May 17, 2020</span>
+                                    </div>
+                                    <div class="timeline-marker"></div>
+                                    <div class="timeline-content">
+                                        <a class="timeline-title" target="_self" href="/2020/05/17/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB-2/">程序员的自我修养(2)--装载与动态链接</a>
+                                        <p>
+                                            可执行文件的装载与进程6.2装载的方式动态装入:根据程序的局部性原理,将常用的部分驻留在内存中,不常用的存放在磁盘  
+覆盖装入程序员手动将程序分块,并自行设计覆盖管理器来管理模块的换入换出覆盖管理器的设计主要考虑的问题就是模块之间的调用依赖关系  
+页映射虚拟内存被划分为大小相同的页,同时物理内存划分为与页同等大小的块,通过页映射建立页与块之间的关系,充分利用程序运行的局部性原理,避免程序...
+                                        </p>
+                                    </div>
+                                </li>
+                            
+                                
+                                <li class="timeline-item">
+                                    <div class="timeline-info">
                                         <span class="gradient-text">May 13, 2020</span>
                                     </div>
                                     <div class="timeline-marker"></div>
@@ -176,7 +192,7 @@ public:
                                     </div>
                                     <div class="timeline-marker"></div>
                                     <div class="timeline-content">
-                                        <a class="timeline-title" target="_self" href="/2020/04/27/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB/">程序员的自我修养</a>
+                                        <a class="timeline-title" target="_self" href="/2020/04/27/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB-1/">程序员的自我修养(1)--静态链接</a>
                                         <p>
                                             1.温故而知新
 计算机科学领域的任何一个问题都可以通过增加一个间接的中间层来解决Any Problem in Computer science can be solved by another layer of indirection.
@@ -195,26 +211,12 @@ public:
                                     <div class="timeline-content">
                                         <a class="timeline-title" target="_self" href="/2020/04/21/%E6%9C%80%E5%B0%8FHelloWorld%E5%B0%9D%E8%AF%95/">最小HelloWorld尝试</a>
                                         <p>
-                                            C/C++实验环境：Ubuntu、GCC7.5.0gcc编译选项：-m32 -fno-stack-protector -z execstack -z norelro -fno-builtin -O0，关闭常见的防护，关闭内置函数优化,关闭优化，动态链接，生成64位可执行程序
-第一版-最常见的写法先写一个最为常见的HelloWorld
+                                            C/C++实验环境：Ubuntu、GCC7.5.0gcc编译选项：-fno-stack-protector -z execstack -z norelro -fno-builtin -O0，关闭常见的防护，关闭内置函数优化,关闭优化，动态链接，生成64位可执行程序
+最常见的写法先写一个最为常见的HelloWorld
 #include&lt;stdio.h&gt;
-int m...
-                                        </p>
-                                    </div>
-                                </li>
-                            
-                                
-                                <li class="timeline-item">
-                                    <div class="timeline-info">
-                                        <span class="gradient-text">April 21, 2020</span>
-                                    </div>
-                                    <div class="timeline-marker"></div>
-                                    <div class="timeline-content">
-                                        <a class="timeline-title" target="_self" href="/2020/04/21/SayHi/">SayHi</a>
-                                        <p>
-                                            说明想法来源于恶意软件分析(1)，尝试站在恶意软件开发者的角度去了解研究现在的恶意软件开发以及相关的反病毒技术，完整源码不公开，本文只记录相关总结，作为学习交流之用  
-恶意程序样本既然是站在开发者的角度去看反病毒，那手上一定得有恶意程序样本，为了更好的展开后面的学习，此时我们自己尝试手动编写一个最简单的恶意程序
-命令执行
+int main()
+{
+ ...
                                         </p>
                                     </div>
                                 </li>
