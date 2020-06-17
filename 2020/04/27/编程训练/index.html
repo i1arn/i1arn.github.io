@@ -100,13 +100,13 @@
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    17k
+                    55k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    16 mins.
+                    50 mins.
                 </span>
                 
                 
@@ -163,8 +163,8 @@ public:
     }
 };</code></pre>
 <p>解法二是真的不错，利用了题目提供的复制构造函数，使用对象赋值给对象，覆盖掉了当前节点，为什么不是写<code>node = node-&gt;next</code>呢，调试发现了写<code>node = node-&gt;next</code>没有起到任何的作用，嘿嘿？还真不知道为什么。。。<code>node = node-&gt;next</code>调试发现是传址调用啊，但是不起作用，没有对原链表进行任何改动，如果写<code>node-&gt;next = (node-&gt;next-&gt;next)</code>的话，原链表的中传入的node的下一个节点确实被删除了<br>再调试发现了些许不同</p>
-<div align=center><img src="./修改node.png" alt="修改node" /></div>  
-<div align=center><img src="./修改node->next.png" alt="修改node->next" /></div>  
+<div align=center><img src="./面试题 02.03. 删除中间节点/修改node.png" alt="修改node" /></div>  
+<div align=center><img src="./面试题 02.03. 删除中间节点/修改node->next.png" alt="修改node->next" /></div>  
 确实是传址，但是修改node节点的时候，node的前节点的next指向并没有修改，所以原链表也没有改变  ～  
 
 <h3 id="个人改进"><a href="#个人改进" class="headerlink" title="个人改进"></a>个人改进</h3><p>是我写的话，肯定不会想到写<code>delete tmp；</code>了，他人的解答考虑的周全  </p>
@@ -172,12 +172,942 @@ public:
     def deleteNode(self, node):
         node.val=node.next.val
         node.next=node.next.next</code></pre>
-<hr>
-<h1 id="难题"><a href="#难题" class="headerlink" title="难题"></a>难题</h1><h1 id="普通题目"><a href="#普通题目" class="headerlink" title="普通题目"></a>普通题目</h1><h2 id="202-快乐数"><a href="#202-快乐数" class="headerlink" title="202. 快乐数"></a>202. 快乐数</h2><p><a href="https://leetcode-cn.com/problems/happy-number/" target="_blank" rel="noopener">202. 快乐数</a>  </p>
+<h2 id="509-斐波那契数"><a href="#509-斐波那契数" class="headerlink" title="509. 斐波那契数"></a>509. 斐波那契数</h2><p><a href="https://leetcode-cn.com/problems/fibonacci-number/" target="_blank" rel="noopener">本题</a>与题目<a href="https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/" target="_blank" rel="noopener">面试题10- I. 斐波那契数列</a>大致相同，拿来作为动画规划学习之用</p>
+<h3 id="个人首解"><a href="#个人首解" class="headerlink" title="个人首解"></a>个人首解</h3><pre><code class="C++">class Solution {
+public:
+    int fib(int n) {
+        vector&lt;long long int&gt; result;
+        result.push_back(0);
+        result.push_back(1);
+        for(int i=2;i&lt;=n;i++)
+        {
+            result.push_back(result[i-1]+result[i-2]);
+        }
+        return result[n];
+
+    }
+};</code></pre>
+<h3 id="网上优解-1"><a href="#网上优解-1" class="headerlink" title="网上优解"></a>网上优解</h3><p>这里主要学习一下动态规划的概念与做法，<a href="https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/solution/mian-shi-ti-10-i-fei-bo-na-qi-shu-lie-dong-tai-gui/" target="_blank" rel="noopener">参考链接1</a>、<a href="https://leetcode-cn.com/problems/fibonacci-number/solution/dong-tai-gui-hua-tao-lu-xiang-jie-by-labuladong/" target="_blank" rel="noopener">参考链接2</a>  </p>
+<ol>
+<li>啥是『自顶向下』、『自底向上』<br> 自顶向下，类似与二叉树，将问题一个一个向下分解为已知条件；自底向上就是从已知条件出发，一步一步往上推导，找出问题的答案；迭代的办法就是『自顶向下』，而动态规划就是『自底向上』</li>
+<li>啥是『动态规划』<br> 动态规划问题的形式一般是求最值，求解的关键就是穷举，但是穷举的过程中可能存在重叠子问题，例如这里0+1可能被计算多次；所以在求解过程中需要编写合适的状态转移过程即问题转换方法来优化子结构<br>由于斐波那契数列的值只与前面两者相关，所以代码可以继续优化<pre><code class="C++">int fib(int n) {
+ if (n == 2 || n == 1) 
+     return 1;
+ int prev = 1, curr = 1;
+ for (int i = 3; i &lt;= n; i++) {
+     int sum = prev + curr;
+     prev = curr;
+     curr = sum;
+ }
+ return curr;
+}</code></pre>
+<h3 id="个人改进-1"><a href="#个人改进-1" class="headerlink" title="个人改进"></a>个人改进</h3>个人代码在中间备忘录的做法上可能不太友好，可以直接依据输入直接初始化访问；上面的代码不是很满足题目需要，因为题目输入可以为0，于是乎<pre><code class="C++">class Solution {
+public:
+ int fib(int n) {
+     if(n==0)
+         return 0;
+     else if(n==1)
+         return 1;
+     int curr,first=0,last=1;
+     for( int i=2;i&lt;=n;i++) {
+         curr=first+last;
+         first=last;
+         last=curr;
+     }
+     return curr;
+ }
+};</code></pre>
+<h2 id="8-字符串转换整数-atoi-–-有限状态机"><a href="#8-字符串转换整数-atoi-–-有限状态机" class="headerlink" title="8. 字符串转换整数 (atoi) – 有限状态机"></a>8. 字符串转换整数 (atoi) – 有限状态机</h2><a href="https://leetcode-cn.com/problems/string-to-integer-atoi/" target="_blank" rel="noopener">题目链接</a></li>
+</ol>
+<h3 id="个人解答"><a href="#个人解答" class="headerlink" title="个人解答"></a>个人解答</h3><p>偷懒了，使用了库函数。开始使用<code>stoi</code>函数，但是发现无法检查空字符串，无法返回超过int范围的数值，于是查看定义，发现<code>stoi</code>其实是<code>strtol</code>的包装，于是……</p>
+<pre><code class="C++">class Solution {
+public:
+    int myAtoi(string str) {
+        long int result=strtol(str.c_str(),nullptr,10);
+        if(result &gt;INT_MAX)
+            return INT_MAX;
+        if(result &lt; INT_MIN)
+            return INT_MIN;
+        return result;    
+    }
+};</code></pre>
+<h3 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h3><p>官网解答给出了确定有限状态机的相关解法，其状态转移过程如下：</p>
+<div align=center><img src="./8. 字符串转换整数 (atoi)/状态转移过程.png" alt="状态转移过程" /></div>  
+<div align=center><img src="./8. 字符串转换整数 (atoi)/状态转移过程2.png" alt="状态转移过程2" /></div>
+
+<pre><code class="C++">class Automaton {
+    string state = &quot;start&quot;;
+    unordered_map&lt;string, vector&lt;string&gt;&gt; table = {
+        {&quot;start&quot;, {&quot;start&quot;, &quot;signed&quot;, &quot;in_number&quot;, &quot;end&quot;}},
+        {&quot;signed&quot;, {&quot;end&quot;, &quot;end&quot;, &quot;in_number&quot;, &quot;end&quot;}},
+        {&quot;in_number&quot;, {&quot;end&quot;, &quot;end&quot;, &quot;in_number&quot;, &quot;end&quot;}},
+        {&quot;end&quot;, {&quot;end&quot;, &quot;end&quot;, &quot;end&quot;, &quot;end&quot;}}
+    };
+
+    int get_col(char c) {
+        if (isspace(c)) return 0;
+        if (c == &#39;+&#39; or c == &#39;-&#39;) return 1;
+        if (isdigit(c)) return 2;
+        return 3;
+    }
+public:
+    int sign = 1;
+    long long ans = 0;
+
+    void get(char c) {
+        state = table[state][get_col(c)];
+        if (state == &quot;in_number&quot;) {   //下一个状态还是in_number，则加上该数字
+            ans = ans * 10 + c - &#39;0&#39;;
+            ans = sign == 1 ? min(ans, (long long)INT_MAX) : min(ans, -(long long)INT_MIN);
+        }
+        else if (state == &quot;signed&quot;)   //正负号只有出现在开头的时候，才有效
+            sign = c == &#39;+&#39; ? 1 : -1;
+    }
+};
+
+class Solution {
+public:
+    int myAtoi(string str) {
+        Automaton automaton;
+        for (char c : str)
+            automaton.get(c);
+        return automaton.sign * automaton.ans;
+    }
+};</code></pre>
+<p>上述代码比较好理解，但是臃肿，比如说对每一个字符都进行了判断</p>
+<pre><code class="C++">class Solution {
+public:
+    int myAtoi(string str) {
+        int  sign=1;
+        long long result=0;
+        if(str.size()==0) return 0;
+        int pos=0;
+        while(str[pos]==&#39; &#39;&amp;&amp; pos&lt;str.size()) {
+            pos++;
+        }
+        if(pos==str.size()) return 0;
+        if(str[pos]==&#39;-&#39;) sign=-1;
+        if(str[pos]==&#39;-&#39; || str[pos]==&#39;+&#39;) pos++;
+        while(isdigit(str[pos]) &amp;&amp; pos&lt;str.size()) {
+            result=result*10+(str[pos]-&#39;0&#39;)*sign;
+            if(result&gt;INT_MAX) return INT_MAX;
+            if(result&lt;INT_MIN) return INT_MIN;
+            pos++;
+        }
+        return result;
+    }
+};</code></pre>
+<h2 id="28-实现-strStr-–-Sunday"><a href="#28-实现-strStr-–-Sunday" class="headerlink" title="28. 实现 strStr() – Sunday"></a>28. 实现 strStr() – Sunday</h2><p><a href="https://leetcode-cn.com/problems/implement-strstr/" target="_blank" rel="noopener">题目链接</a><br>比较直接的办法就是直接一个一个对比查询</p>
+<pre><code class="C++">class Solution {
+public:
+    int strStr(string haystack, string needle) {
+        int ne_size=needle.size();
+        int hay_size=haystack.size();
+        if(ne_size==0) return 0;
+
+        int 
+
+        int i;
+        for(i=0;i&lt;=hay_size-ne_size;i++) {
+            int j=0;
+            int m=i;
+            for(;j&lt;ne_size;j++,m++) {
+                if(haystack[m]!=needle[j])
+                    break;
+            }
+            if(j==ne_size)
+                return i;
+        }        
+        return -1;     
+    }
+};</code></pre>
+<p>但是其中很明显的问题就是中间存在这大量重复的查找，代码中使用<code>int m=i</code>就相当于遍历指针的回退操作。</p>
+<h3 id="Sunday"><a href="#Sunday" class="headerlink" title="Sunday"></a>Sunday</h3><p>KMP（Knuth-Morris-Pratt）算法感觉比较复杂，先看Sunday算法。可以理解Sunday算法就是先对比，然后将下标为needle.size()的字符串对齐，然后判断比较，若对不齐则移动needle.size()+1个单位再匹配，再尝试对齐</p>
+<pre><code class="C++">class Solution {
+public:
+    int strStr(string haystack, string needle) {
+        int nee_size = needle.size();
+        int hay_size = haystack.size();
+        if (nee_size == 0) return 0;
+
+        int displace[256];  
+        for (int i = 0;i &lt; 256;i++) { //设置移位默认值，nee_size+1;
+            displace[i] = nee_size + 1;
+        }
+        for (int i = 0;i &lt; nee_size;i++) {
+            displace[needle[i]] = nee_size - i;    //每次对比时，末尾的haystack字符需要对齐的情况下，haystack指针需要移动的位数
+        }
+
+        int hay_pos = 0;    //被匹配字符串的位置
+        int pos = 0;        //已经匹配的字符串长度
+
+        for (int hay_pos = 0;hay_pos &lt;= hay_size - nee_size;) {
+            pos = 0;
+            while (haystack[pos + hay_pos] == needle[pos] &amp;&amp; pos &lt; nee_size)
+                pos++;
+            if (pos == nee_size)
+                return hay_pos;
+            hay_pos += displace[haystack[hay_pos + nee_size]];    //当前对比末尾haystack对齐
+        }
+
+        return -1;
+
+    }
+};</code></pre>
+<p><a href="https://blog.csdn.net/q547550831/article/details/51860017" target="_blank" rel="noopener">Sunday参考链接</a></p>
+<h3 id="另外"><a href="#另外" class="headerlink" title="另外"></a>另外</h3><p>提一下使用<code>memset</code>初始化int数组的为问题</p>
+<div align=center><img src="./28. 实现 strStr()/初始化为1.png" alt="初始化为1" /></div>  
+<div align=center><img src="./28. 实现 strStr()/初始化为2.png" alt="初始化为2" /></div>  
+<div align=center><img src="./28. 实现 strStr()/初始化为-1.png" alt="初始化为-1" /></div>  
+
+<p>初始化为1和2的时候明显的失败，为什么0和-1却可以完成初始化，因为memset每次初始化1个字节，当尝试初始化为1时，int数变为了0x01010101,即图中的16843009，尝试初始化为2时，就变成了33686018，如此这般，0和-1的成功初始化也只是一种巧合,memeset是string的方法</p>
+<h1 id="难题"><a href="#难题" class="headerlink" title="难题"></a>难题</h1><h2 id="【更】102-二叉树的层序遍历"><a href="#【更】102-二叉树的层序遍历" class="headerlink" title="【更】102. 二叉树的层序遍历"></a>【更】102. 二叉树的层序遍历</h2><p><a href="https://leetcode-cn.com/problems/binary-tree-level-order-traversal/" target="_blank" rel="noopener">题目链接</a>  </p>
+<h3 id="个人解答-1"><a href="#个人解答-1" class="headerlink" title="个人解答"></a>个人解答</h3><p>知道需要使用到queue，但是不知道怎么记录行信息，于是在queue中插如空指针来表示行结束</p>
+<pre><code class="C++">/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector&lt;vector&lt;int&gt;&gt; levelOrder(TreeNode* root) {
+        if(nullptr == root ) return {};
+        queue&lt;TreeNode*&gt; tree;
+        vector&lt;vector&lt;int&gt;&gt; result;
+        vector&lt;int&gt; tmp;        
+        tree.push(root);
+        tree.push(nullptr);
+        while(!tree.empty()) {
+            TreeNode* haha=tree.front();
+            tree.pop();
+            tmp.push_back(haha-&gt;val);
+            if(nullptr!=haha-&gt;left) tree.push(haha-&gt;left);
+            if(nullptr!=haha-&gt;right) tree.push(haha-&gt;right);
+            if(nullptr==tree.front()) {
+                tree.pop();
+                if(!tree.empty()) tree.push(nullptr);
+                result.push_back(tmp);
+                tmp.clear();
+            }
+
+        }
+        return result;
+    }
+};</code></pre>
+<h2 id="36-有效的数独"><a href="#36-有效的数独" class="headerlink" title="36. 有效的数独"></a>36. 有效的数独</h2><p><a href="https://leetcode-cn.com/problems/valid-sudoku/" target="_blank" rel="noopener">题目链接</a><br>检查数据是否符合数独的要求，至于数组是否有解不需要管</p>
+<h3 id="个人解答-2"><a href="#个人解答-2" class="headerlink" title="个人解答"></a>个人解答</h3><p>没有想到什么好的办法，比较暴力</p>
+<pre><code class="C++">class Solution {
+public:
+    bool isValidSudoku(vector&lt;vector&lt;char&gt;&gt;&amp; board) {
+        unordered_map&lt;int,unordered_map&lt;int,int&gt;&gt; line,row,block;
+        for(int i=0;i&lt;9;i++) {
+            for(int j=0;j&lt;9;j++) {
+                if(board[i][j]!=&#39;.&#39;) {
+                    if(++line[i][board[i][j]-&#39;0&#39;] &gt;1) return false;
+                    if(++row[j][board[i][j]-&#39;0&#39;] &gt;1 ) return false;
+                    if(++block[(i/3)*3+(j/3)][board[i][j]-&#39;0&#39;]&gt;1) return false;
+                }
+            } 
+        }
+        return true;   
+    }
+};</code></pre>
+<h3 id="改进-1"><a href="#改进-1" class="headerlink" title="改进"></a>改进</h3><p>大佬们的想法差不多，但是在写法上还是有差距，比如</p>
+<pre><code class="C++">        //放弃使用其他数据结构，这样时间方面更加高效
+        int xsp[9][9] = {0};
+        int ysp[9][9] = {0};
+        int lsp[9][9] = {0};</code></pre>
+<p>但是，也有不一样的想法：<br>遍历的时候保存每一个数出现的位置，这个保存是按位保存，行列下标最大为8，占8位，可以这样分：0<del>8位记录块，9</del>16位记录列，17~24记录行，遍历时进行或运算保存。参照这个思路，写一个C++代码：</p>
+<pre><code class="C++">class Solution {
+public:
+    bool isValidSudoku(vector&lt;vector&lt;char&gt;&gt;&amp; board) {
+        int pos[9]={0};
+        for(int i=0;i&lt;9;i++ ) {
+            for(int j=0;j&lt;9;j++) {
+                if(board[i][j] != &#39;.&#39;) {
+                    int tmp= 1&lt;&lt;(18+i) | 1&lt;&lt;(9+j) | 1&lt;&lt;(i/3*3+j/3);   //位置记录
+                    if ((tmp &amp; pos[board[i][j]-&#39;1&#39;]) ==0 )                   //等于0，则不重复
+                        pos[board[i][j]-&#39;1&#39;] |= tmp;                  //将位置存储起来
+                    else
+                        return false;
+                }
+            }
+        }
+        return true；        
+    }
+};</code></pre>
+<p>运行效率不是一般的高，空间占用不是一般的少</p>
+<h2 id="19-删除链表的倒数第N个节点"><a href="#19-删除链表的倒数第N个节点" class="headerlink" title="19. 删除链表的倒数第N个节点"></a>19. 删除链表的倒数第N个节点</h2><p><a href="https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/" target="_blank" rel="noopener">题目链接</a>  </p>
+<h3 id="个人解答-3"><a href="#个人解答-3" class="headerlink" title="个人解答"></a>个人解答</h3><p>若是N！=1即不删除末尾节点的话还是比较好说的，但是问题就是存在末尾节点的删除，若是双指针遍历到当前这个删除的节点是末尾节点的话比较不好处理，于是想着去查找倒数第N+1个节点  </p>
+<pre><code class="C++">/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode* prev=head,*curr=head;
+        int m=n;
+        while(curr!=nullptr) {
+            if(m!=-1) {
+                curr=curr-&gt;next;
+                m--;                
+            }
+            else {
+                curr=curr-&gt;next;
+                prev=prev-&gt;next;
+            }
+        } 
+        if(prev==head &amp;&amp; m!=-1){    //还在头节点，且没能到达倒数第N+1个节点
+            head=head-&gt;next;
+        }
+        else{
+            prev-&gt;next=prev-&gt;next-&gt;next;   //倒数第N+1个节点一定不是末尾节点
+        }
+        return head;
+    }
+};</code></pre>
+<h3 id="改进-2"><a href="#改进-2" class="headerlink" title="改进"></a>改进</h3><p>ennn，为了简化上面代码的if判断，大佬们在head之前就假如一个哑节点，这样保证一定能够找到倒数第N+1个节点</p>
+<pre><code class="C++">class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode *tmp=new ListNode(0);
+        tmp-&gt;next=head;
+        ListNode* prev=tmp,*curr=tmp;
+        int m=n;
+        while(curr!=nullptr) {
+            if(m!=-1) {
+                curr=curr-&gt;next;
+                m--;                
+            }
+            else {
+                curr=curr-&gt;next;
+                prev=prev-&gt;next;
+            }
+        }
+        prev-&gt;next=prev-&gt;next-&gt;next;
+        return tmp-&gt;next;
+    }
+};</code></pre>
+<p>很棒的想法</p>
+<h2 id="206-反转链表"><a href="#206-反转链表" class="headerlink" title="206. 反转链表"></a>206. 反转链表</h2><p><a href="https://leetcode-cn.com/problems/reverse-linked-list/" target="_blank" rel="noopener">题目链接</a></p>
+<h3 id="个人解答-4"><a href="#个人解答-4" class="headerlink" title="个人解答"></a>个人解答</h3><p>最直接的想法就是遍历，使用头插法</p>
+<pre><code class="C++">/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode*  result=nullptr;
+
+        while(head!=nullptr) {
+            ListNode * tmp= new ListNode(head-&gt;val);
+            tmp-&gt;next=result;
+            result=tmp;            
+            head=head-&gt;next;
+        }        
+        return result;
+    }
+};</code></pre>
+<h3 id="改进-3"><a href="#改进-3" class="headerlink" title="改进"></a>改进</h3><p>上面的写法还是不太好，直接修改当前节点的next值就好，无需使用复制构造函数重新进行产生一个新链表</p>
+<pre><code class="C++">//上面写法的改进
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode*  result=nullptr;
+
+        while(head!=nullptr) {
+            ListNode * tmp= head-&gt;next;
+            head-&gt;next=result;
+            result=head;
+            head=tmp;
+        }        
+        return result;
+    }
+};</code></pre>
+<p>头插法很容易想到，但是题目说提到了递归就没有想到什么办法，之前是这样写的</p>
+<pre><code class="C++">/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+//错误解答        
+        if(head-&gt;next==nullptr) return head;
+        ListNode * tmp= new ListNode(head-&gt;val);
+        ListNode * result=reverseList(head-&gt;next);
+        result-&gt;next=tmp;   
+        return result;  //返回的是逆序链表的头结点,这里在不断的进行覆盖，所以最终结果只有头尾
+    }
+};</code></pre>
+<p>贴一下大佬们谢达JAVA代码</p>
+<pre><code class="JAVA">//类似C++的传值引用
+public ListNode reverseList(ListNode head) {
+    if (head == null || head.next == null) return head;      //返回非null指针，即最后一个节点
+    ListNode p = reverseList(head.next);          
+    //head最远为倒数第二个指针，即将完成倒数1,2的逆序
+    head.next.next = head;          //将倒数1的Next指向倒数2
+    head.next = null;               //取消倒数2的Next指向倒数1，否则有环
+    return p;                       //返回逆序链表的头指针
+}</code></pre>
+<p>改写一下变C++ </p>
+<pre><code class="C++">class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        if (head==nullptr || head-&gt;next == nullptr) return head;
+        ListNode* tmp = head;
+        ListNode* result = reverseList(head-&gt;next);  
+        tmp-&gt;next-&gt;next = tmp;
+        tmp-&gt;next = nullptr;
+        return result;
+    }
+};</code></pre>
+<div align=center><img src="./206. 反转链表/递归.gif" alt="递归思路" /></div> 
+
+<p>参考链接：</p>
+<ol>
+<li><a href="https://leetcode-cn.com/problems/reverse-linked-list/solution/dong-hua-yan-shi-206-fan-zhuan-lian-biao-by-user74/" target="_blank" rel="noopener">作者：王尼玛</a></li>
+</ol>
+<h1 id="普通题目"><a href="#普通题目" class="headerlink" title="普通题目"></a>普通题目</h1><h2 id="234-回文链表"><a href="#234-回文链表" class="headerlink" title="234. 回文链表"></a>234. 回文链表</h2><p><a href="https://leetcode-cn.com/problems/palindrome-linked-list/" target="_blank" rel="noopener">题目链接</a>  </p>
+<h3 id="个人解答-5"><a href="#个人解答-5" class="headerlink" title="个人解答"></a>个人解答</h3><pre><code class="C++">/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        vector &lt;int&gt; s;
+        ListNode* tmp=head;
+        while(tmp!=nullptr) {
+            s.push_back(tmp-&gt;val);
+            tmp=tmp-&gt;next;
+
+        }    
+        for(int i=0;i&lt;s.size()/2;i++) {
+            if(s[i]!=s[s.size()-i-1])
+                return false;
+        }
+        return true;
+    }
+};</code></pre>
+<p>想法比较直接嘛，因为单链表不能随机访问，所以第一个想法就是保存下载，然后对比判断。没有想到”O(n)时间复杂度和O(1)空间复杂度”的办法  </p>
+<h3 id="另解"><a href="#另解" class="headerlink" title="另解"></a>另解</h3><p>大佬们提出了改变程序输入的办法，将输入划分为两部分链表，逆序其中的一个，再进行判断比较。如此可以做到空间复杂度为O(1)。参照这个思路，自己写下：</p>
+<pre><code class="C++">class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        ListNode * tmp=head,*SecHead=head;
+        //找到第二个部分链表的头结点,同时逆序第一部分
+        ListNode *FirHead= new ListNode(0);
+        while(tmp!=nullptr &amp;&amp; tmp-&gt;next!=nullptr) {
+            tmp=tmp-&gt;next-&gt;next;
+            ListNode *curr=SecHead-&gt;next;
+            SecHead-&gt;next=FirHead-&gt;next;
+            FirHead-&gt;next=SecHead;
+            SecHead=curr;        
+        }
+        //tmp不为空，则说明奇数个节点，SecHead在中间位置
+        if(tmp!=nullptr)
+            SecHead=SecHead-&gt;next;
+        //判断
+        FirHead=FirHead-&gt;next;
+        while(FirHead!=nullptr &amp;&amp; SecHead!=nullptr){
+            if(FirHead-&gt;val != SecHead-&gt;val)
+                return false;
+                FirHead=FirHead-&gt;next;
+                SecHead=SecHead-&gt;next;
+        }
+        return true;
+    }
+};</code></pre>
+<h2 id="21-合并两个有序链表"><a href="#21-合并两个有序链表" class="headerlink" title="21. 合并两个有序链表"></a>21. 合并两个有序链表</h2><p><a href="https://leetcode-cn.com/problems/merge-two-sorted-lists/" target="_blank" rel="noopener">题目链接</a></p>
+<h3 id="个人解答-6"><a href="#个人解答-6" class="headerlink" title="个人解答"></a>个人解答</h3><p>想法比较简单,遍历比较然后插入到l1中,但是因为存在多种情况:l1没有内容;l1遍历结束,但是l2没有……使用了大量的条件判断</p>
+<pre><code class="C++">/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        if(l1==nullptr) return l2;
+        ListNode* tmp1=l1,*tmp2=l2;
+        while(tmp1!=nullptr &amp;&amp; tmp2!=nullptr) {
+            if(tmp1-&gt;val &gt;= tmp2-&gt;val) {
+                ListNode * temp=new ListNode(tmp1-&gt;val,tmp1-&gt;next);
+                tmp1-&gt;val = tmp2-&gt;val;
+                tmp1-&gt;next= temp;
+                tmp2=tmp2-&gt;next;
+            }
+            if(tmp1-&gt;next!=nullptr)
+                tmp1=tmp1-&gt;next;
+            else
+                break;       //l1先遍历结束时，停留在末尾节点，以便追加剩下的l2；
+        }
+        if(tmp2!=nullptr) tmp1-&gt;next = tmp2;
+        return l1;
+    }
+};</code></pre>
+<h3 id="改进-4"><a href="#改进-4" class="headerlink" title="改进"></a>改进</h3><p>上面的写法，当tmp2的节点需要插入到tmp1当前节点之前，所以只好把tmp2的值传递给tmp1，然后new一个tmp2的值，在tmp1后面追加。还可以优化</p>
+<pre><code class="C++">class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode* result=new ListNode();
+        ListNode *tmp=result;        
+        while(l1!=nullptr &amp;&amp; l2!=nullptr) {
+            if(l1-&gt;val &gt;= l2-&gt;val) {
+                tmp-&gt;next=l2;
+                l2=l2-&gt;next;
+            }
+            else {
+                tmp-&gt;next=l1;
+                l1=l1-&gt;next;
+            }
+            tmp=tmp-&gt;next;  
+        }
+        tmp-&gt;next = l1!=nullptr?l1:l2;
+        return result-&gt;next;
+    }
+};</code></pre>
+<p>大佬们贴出了递归的办法，自己写个</p>
+<pre><code class="C++">class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        if(l1==nullptr) return l2;
+        if(l2==nullptr) return l1;
+
+        ListNode *head;
+        if(l1-&gt;val &gt;= l2-&gt;val) {
+            head=l2;
+            head-&gt;next=mergeTwoLists(l1,l2-&gt;next);
+        }
+        else {
+            head=l1;
+            head-&gt;next=mergeTwoLists(l1-&gt;next,l2);
+        }
+        return head;       
+    }
+};</code></pre>
+<h2 id="141-环形链表"><a href="#141-环形链表" class="headerlink" title="141. 环形链表"></a>141. 环形链表</h2><p><a href="https://leetcode-cn.com/problems/linked-list-cycle/" target="_blank" rel="noopener">题目链接</a><br>理解的半天，就是输入链表，检查是否存在环</p>
+<h3 id="个人解答-7"><a href="#个人解答-7" class="headerlink" title="个人解答"></a>个人解答</h3><p>题目要求常量解决，这样想的，快慢指针，如果快指针为空，则没环；如果两者相等，则有环</p>
+<pre><code class="C++">/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        ListNode *prev=head,*curr=head;
+        int length=0;
+        while(prev!=nullptr &amp;&amp; curr!=nullptr) {
+            prev=prev-&gt;next;
+            curr=curr-&gt;next;
+            if(curr!=nullptr) 
+                curr=curr-&gt;next;
+            else
+                return false;
+            if(curr==prev) 
+                return true;
+        }
+        return false;
+    }
+};</code></pre>
+<p>不要到循环开始的位置，所以采用了这样的办法，但这样写感觉有点不好，最坏的情况就是快指针需要遍历三遍才能追上慢指针<br>与大佬们的想法是差不多的；也可以使用hash表，保存当前节点的地址。</p>
+<h2 id="190-颠倒二进制位-–-分治"><a href="#190-颠倒二进制位-–-分治" class="headerlink" title="190. 颠倒二进制位 –　分治"></a>190. 颠倒二进制位 –　分治</h2><p><a href="https://leetcode-cn.com/problems/reverse-bits/" target="_blank" rel="noopener">题目地址</a><br>把一个数的二进制表达式的数字顺序颠倒</p>
+<h3 id="个人解答-8"><a href="#个人解答-8" class="headerlink" title="个人解答"></a>个人解答</h3><p>题目指定了是32位，所以按位处理就好</p>
+<pre><code class="C++">class Solution {
+public:
+    uint32_t reverseBits(uint32_t n) {
+        uint32_t result=0;
+        for(int i=0;i&lt;=31;i++) {
+            result=(result&lt;&lt;1)+(n&amp;1);
+            n=n&gt;&gt;1;
+        }
+        return result;
+
+    }
+};</code></pre>
+<h3 id="另解-1"><a href="#另解-1" class="headerlink" title="另解"></a>另解</h3><p>学习一下其他人分治合并的思路，先贴代码</p>
+<pre><code class="C++">class Solution {
+public:
+    uint32_t reverseBits(uint32_t n) {                             
+        n = (n &gt;&gt; 16) | (n &lt;&lt; 16);                                 
+        n = ((n &amp; 0xff00ff00) &gt;&gt; 8) | ((n &amp; 0x00ff00ff) &lt;&lt; 8);     
+        n = ((n &amp; 0xf0f0f0f0) &gt;&gt; 4) | ((n &amp; 0x0f0f0f0f) &lt;&lt; 4);
+        n = ((n &amp; 0xcccccccc) &gt;&gt; 2) | ((n &amp; 0x33333333) &lt;&lt; 2);   //0xc:  1100  ;0x3 : 0011
+        n = ((n &amp; 0xaaaaaaaa) &gt;&gt; 1) | ((n &amp; 0x55555555) &lt;&lt; 1);   //0xa:  1010  ;0x5 : 0101
+        return n;
+    }
+};</code></pre>
+<div align=center><img src="./190. 颠倒二进制位/分治举例.png" alt="分治举例" /></div> 
+
+<p>从上往下解决问题  </p>
+<h2 id="191-位1的个数"><a href="#191-位1的个数" class="headerlink" title="191. 位1的个数"></a>191. 位1的个数</h2><p><a href="https://leetcode-cn.com/problems/number-of-1-bits/" target="_blank" rel="noopener">题目链接</a><br>题目比较简单，主要学习一下位操作</p>
+<h3 id="个人解答-9"><a href="#个人解答-9" class="headerlink" title="个人解答"></a>个人解答</h3><pre><code class="C++">class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+        int result=0;
+        while(n !=0){
+            if(n&amp;1==1)
+                result++;
+            n=n&gt;&gt;1;
+        }
+        return result;
+    }
+};</code></pre>
+<h3 id="另解-2"><a href="#另解-2" class="headerlink" title="另解"></a>另解</h3><pre><code class="C++">class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+        int sum = 0;
+        while (n != 0) {
+            sum++;
+            n &amp;= (n - 1);
+        }
+        return sum;
+    }
+};</code></pre>
+<p>这种解法比较骚，首先是不断的<code>n &amp;= (n - 1);</code>，n最后都会为0，再者以<code>n != 0</code>作为sum++的依据，不容易想到。如果n是奇数的话，末尾为1，通过与n-1于运算消除，若n为偶数，通过n-1与运算又能将最右边的1消除。效率更高～666</p>
+<h2 id="20-有效的括号"><a href="#20-有效的括号" class="headerlink" title="20. 有效的括号"></a>20. 有效的括号</h2><p><a href="https://leetcode-cn.com/problems/valid-parentheses/" target="_blank" rel="noopener">题目链接</a></p>
+<h3 id="个人解答-10"><a href="#个人解答-10" class="headerlink" title="个人解答"></a>个人解答</h3><p>题目的输入比较简单，使用栈比较直接，贴上个人首解</p>
+<pre><code class="C++">class Solution {
+public:
+    bool isValid(string s) {
+        if(s.size()%2!=0) return false;
+        stack&lt;char&gt; tmp;
+        for(int i=0;i&lt;s.size();i++) {
+            switch(s[i]){
+                case &#39;{&#39;:
+                case &#39;(&#39;:
+                case &#39;[&#39;:
+                    tmp.push(s[i]);
+                    break;
+                case &#39;)&#39;:
+                    if(!tmp.empty() &amp;&amp; tmp.top()==&#39;(&#39;)
+                        tmp.pop();
+                    else
+                        return false;
+                    break;
+                case &#39;}&#39;:
+                    if(!tmp.empty() &amp;&amp; tmp.top()==&#39;{&#39;)
+                        tmp.pop();
+                    else
+                        return false;
+                    break;
+                case &#39;]&#39;:
+                    if(!tmp.empty() &amp;&amp; tmp.top()==&#39;[&#39;)
+                        tmp.pop();
+                    else
+                        return false;
+                    break;
+                }
+        }
+        if(tmp.empty())
+            return true;
+        else
+            return false;
+
+    }
+};</code></pre>
+<h3 id="改进-5"><a href="#改进-5" class="headerlink" title="改进"></a>改进</h3><p>学习了大佬们的代码，在switch语句方面还可以优化</p>
+<pre><code class="C++">class Solution {
+public:
+    bool isValid(string s) {
+        if(s.size()%2!=0) return false;
+        unordered_map&lt;char,int&gt; x={{'{',1},{'(',2},{'[',3},{'}',4},{')',5},{']',6}};
+        stack&lt;char&gt; tmp;
+        for(int i=0;i&lt;s.size();i++) {
+            if(x[s[i]]&lt;=3) tmp.push(s[i]);
+            else if(!tmp.empty() &amp;&amp; x[tmp.top()]==x[s[i]]-3)
+                tmp.pop();
+            else
+                return false;
+        }
+        return tmp.empty();
+    }
+};</code></pre>
+<h2 id="118-杨辉三角"><a href="#118-杨辉三角" class="headerlink" title="118. 杨辉三角"></a>118. 杨辉三角</h2><p><a href="https://leetcode-cn.com/problems/pascals-triangle/" target="_blank" rel="noopener">题目链接</a>  </p>
+<h3 id="个人解答-11"><a href="#个人解答-11" class="headerlink" title="个人解答"></a>个人解答</h3><p>比较简单，贴一个递归版本</p>
+<pre><code class="C++">class Solution {
+public:
+    vector&lt;vector&lt;int&gt;&gt; generate(int numRows) {
+        if(numRows==0) return {};
+        if(numRows==1) return {{1}};
+        vector&lt;vector&lt;int&gt;&gt; result;
+        result=generate(numRows-1);
+        vector&lt;int&gt; tmp={1};
+        for(int pos=1;pos&lt;numRows-1;pos++)
+            tmp.push_back(result[numRows-2][pos-1]+result[numRows-2][pos]);   
+        tmp.push_back(1);
+        result.push_back(tmp);
+        return result;
+    }
+};</code></pre>
+<h2 id="268-缺失数字"><a href="#268-缺失数字" class="headerlink" title="268. 缺失数字"></a>268. 缺失数字</h2><p><a href="https://leetcode-cn.com/problems/missing-number/" target="_blank" rel="noopener">题目链接</a><br>一道简单的题目，但是第一次的写法实在是蠢到了极点</p>
+<h3 id="个人解答-12"><a href="#个人解答-12" class="headerlink" title="个人解答"></a>个人解答</h3><pre><code class="C++">class Solution {
+public:
+    int missingNumber(vector&lt;int&gt;&amp; nums) {
+        int result=0;
+        for(int tmp:nums) {
+            if(tmp%2==0)
+                result+=tmp;
+            else
+                result-=tmp;
+        }
+        if(nums.size()%2==0) {
+            result=(nums.size()+1)/2-result;
+        }
+        else {
+            result=-(nums.size()+1)/2-result;
+        }
+        if(result&lt;0)
+            result=-result;
+        return result;
+    }
+};</code></pre>
+<p>在想什么偶数加，奇数减的操作。。。。。。。。</p>
+<h3 id="改进-6"><a href="#改进-6" class="headerlink" title="改进"></a>改进</h3><p>改进的办法也很多，利用高斯公示先求出和，在减去给出的数组的和；或者先求出完整数组的各个数的异或值，在不断的与给出的数值进行异或。办法是真的多，但是为啥你就想到了什么偶数加奇数减的操作</p>
+<h2 id="14-最长公共前缀"><a href="#14-最长公共前缀" class="headerlink" title="14. 最长公共前缀"></a>14. 最长公共前缀</h2><p><a href="https://leetcode-cn.com/problems/longest-common-prefix/" target="_blank" rel="noopener">题目地址</a><br>找出各个字符串的相同的最长前缀</p>
+<h3 id="个人解答-13"><a href="#个人解答-13" class="headerlink" title="个人解答"></a>个人解答</h3><p>比较暴力，直接扫描</p>
+<pre><code class="C++">class Solution {
+public:
+    string longestCommonPrefix(vector&lt;string&gt;&amp; strs) {
+        if(strs.size()==0) return &quot;&quot;;
+        if(strs.size()==1) return strs[0];
+        int length=0;
+        while(1){
+            for(int i=0;i&lt;strs.size()-1;i++) {
+                if(length == strs[i].size() || length == strs[i+1].size() || strs[i+1][length]!=strs[i][length]) {    //优先检查size大小，所以不存在溢出
+                    return strs[0].substr(0,length);
+                }
+            }
+            length++;
+        }
+        return &quot;&quot;;
+    }
+};</code></pre>
+<p>这种想法很容易让人想到，但是在写法上，使用了<code>while(1)</code>,很容易漏考虑情况造成死循环，如果说要改进的话，可以将strs[0]作为最外层的循环，以它为基础进行比较</p>
+<h3 id="网络解答"><a href="#网络解答" class="headerlink" title="网络解答"></a>网络解答</h3><p>大佬们的办法真的多，贴一种以strs[0]作为比较对象，一次一次剔除删减的办法</p>
+<pre><code class="JAVA">public String longestCommonPrefix(String[] strs) {
+   if (strs.length == 0) return &quot;&quot;;
+   String prefix = strs[0];
+   for (int i = 1; i &lt; strs.length; i++)
+       while (strs[i].indexOf(prefix) != 0) {
+           prefix = prefix.substring(0, prefix.length() - 1);
+           if (prefix.isEmpty()) return &quot;&quot;;
+       }        
+   return prefix;
+}</code></pre>
+<p>模仿写一个c++版本的</p>
+<pre><code class="C++">class Solution {
+public:class Solution {
+public:
+    string longestCommonPrefix(vector&lt;string&gt;&amp; strs) {
+        if(strs.size()==0) return &quot;&quot;;
+        string tmp=strs[0];
+        for(int i=1;i&lt;strs.size();i++) {
+            while(strs[i].find(tmp)!=0) {            //find查找失败时，是std::string:npos,即-1
+                tmp=tmp.substr(0,tmp.length()-1);    //在开头匹配不到，则删减tmp
+            }
+        }
+        return tmp;
+    }
+};
+    string longestCommonPrefix(vector&lt;string&gt;&amp; strs) {
+        if(strs.size()==0) return &quot;&quot;;
+        string tmp=strs[0];
+        for(int i=1;i&lt;strs.size();i++) {
+            while(strs[i].find(tmp)!=0) {  
+                tmp=tmp.substr(0,tmp.length()-1);    //在开头匹配不到，则删减tmp
+            }
+        }
+        return tmp;
+    }
+};</code></pre>
+<h2 id="387-字符串中的第一个唯一字符"><a href="#387-字符串中的第一个唯一字符" class="headerlink" title="387. 字符串中的第一个唯一字符"></a>387. 字符串中的第一个唯一字符</h2><p><a href="https://leetcode-cn.com/problems/first-unique-character-in-a-string/" target="_blank" rel="noopener">题目链接</a><br>题目比较简单，但是也有需要注意的地方</p>
+<h3 id="个人解答-14"><a href="#个人解答-14" class="headerlink" title="个人解答"></a>个人解答</h3><pre><code class="C++">class Solution {
+public:
+    int firstUniqChar(string s) {
+        int tmp[26]={0};   
+        for(int i=0;i&lt;s.size();i++) {
+            tmp[s[i]-&#39;a&#39;]++;
+        }
+        for(int i=0;i&lt;s.size();i++) {
+            if(tmp[s[i]-&#39;a&#39;]==1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+};</code></pre>
+<p>两次遍历。第一次在写代码的时候使用的是<code>unordered_map</code>，简单的理解<code>unordered_map</code>的遍历顺序就是插入顺序，但是实际情况不是这样的，<code>unordered_map</code>与<code>map</code>都无法保证遍历顺序是插入顺序<br><a href="https://www.coder.work/article/1208488" target="_blank" rel="noopener">参考链接</a></p>
+<h2 id="48-旋转图像"><a href="#48-旋转图像" class="headerlink" title="48. 旋转图像"></a>48. 旋转图像</h2><p><a href="https://leetcode-cn.com/problems/rotate-image/" target="_blank" rel="noopener">题目链接</a><br>题目要求顺时针旋转90°</p>
+<h3 id="个人解答-15"><a href="#个人解答-15" class="headerlink" title="个人解答"></a>个人解答</h3><p>找到规律，先对角翻转“/”，在横向数据上下颠倒就是</p>
+<pre><code class="C++">class Solution {
+public:
+    void rotate(vector&lt;vector&lt;int&gt;&gt;&amp; matrix) {
+        int length=matrix.size();
+        for(int i=0;i&lt;length;i++) {
+            for(int j=0;j&lt;length-i-1;j++) {   //沿对角线&quot;/&quot;翻转
+                matrix[i][j]+=matrix[length-1-j][length-1-i];
+                matrix[length-1-j][length-1-i]=matrix[i][j]-matrix[length-1-j][length-1-i];
+                matrix[i][j]=matrix[i][j]-matrix[length-1-j][length-1-i];
+            }
+        }
+        reverse(matrix.begin(),matrix.end());  //按行逆序
+    }
+};</code></pre>
+<p>大佬们还采用了直接移动的办法，依据矩阵大小可以很快的计算出某个位置移动之后位置，如此，由外到内或者从内到外一圈一圈的完成移动，ennn好是好，但是编程过程中位置的计算不太方便，而且在leetcode中调试不便，此处就不在尝试了</p>
+<h2 id="1-两数之和"><a href="#1-两数之和" class="headerlink" title="1. 两数之和"></a>1. 两数之和</h2><p><a href="https://leetcode-cn.com/problems/two-sum/" target="_blank" rel="noopener">题目链接</a>  </p>
+<h3 id="个人解答-16"><a href="#个人解答-16" class="headerlink" title="个人解答"></a>个人解答</h3><p>最暴力的方法就是两层for循环嘛</p>
+<pre><code class="C++">class Solution {
+public:
+    vector&lt;int&gt; twoSum(vector&lt;int&gt;&amp; nums, int target) {
+        unordered_map&lt;int,int&gt; s;
+        vector&lt;int&gt; result;
+        for(int i=0;i&lt;nums.size();i++) {
+            if(s[nums[i]]!=0) {
+                result.push_back(s[nums[i]]-1);                
+                result.push_back(i);
+                break;
+            }
+            s[target - nums[i]]= i+1; //区别 下标0 与默认值0
+        }
+        return result;
+    }
+};</code></pre>
+<h3 id="优解"><a href="#优解" class="headerlink" title="优解"></a>优解</h3><p>与大佬们的想法是一样的，但是代码的美观程度与可读性还是没法比</p>
+<pre><code class="C++">class Solution {
+public:
+    vector&lt;int&gt; twoSum(vector&lt;int&gt;&amp; nums, int target) {
+        unordered_map&lt;int, int&gt; hash;
+        for(int i = 0; i &lt; nums.size(); i++){
+            if(hash.count(target - nums[i])) return {hash[target - nums[i]], i};
+            hash[nums[i]] = i;
+        }
+        return {-1, -1};
+    }
+};</code></pre>
+<p>说明一下，实验发现，“unordered_map”的count方法效率要比find方法高出不少；学习一波返回值<code>vector&lt;int&gt;</code>的写法</p>
+<h2 id="66-加一"><a href="#66-加一" class="headerlink" title="66. 加一"></a>66. 加一</h2><p><a href="https://leetcode-cn.com/problems/plus-one/" target="_blank" rel="noopener">题目链接</a>  </p>
+<h3 id="个人解答-17"><a href="#个人解答-17" class="headerlink" title="个人解答"></a>个人解答</h3><p>想法还是比较简答的，最容易想到的就是保存为整数，然后加1再分离保存。但是这么简单的题要求高一点</p>
+<pre><code class="C++">class Solution {
+public:
+    vector&lt;int&gt; plusOne(vector&lt;int&gt;&amp; digits) {
+        int pos=digits.size()-1;
+        while(pos&gt;=0 &amp;&amp; ++digits[pos]==10) {  //每一位加1，模拟进位
+            digits[pos]=0;
+            pos--;
+        }
+        if(digits[0]==0) {               //第一个数为0则说明产生了进位，最开头添加1
+            digits.insert(digits.begin(),1);
+            digits[1]=0;
+        }
+        return digits;
+    }
+};</code></pre>
+<p>网上的想法大同小异，不多说了</p>
+<h2 id="283-移动零"><a href="#283-移动零" class="headerlink" title="283. 移动零"></a>283. 移动零</h2><p><a href="https://leetcode-cn.com/problems/move-zeroes/" target="_blank" rel="noopener">题目链接</a></p>
+<h3 id="个人解答-18"><a href="#个人解答-18" class="headerlink" title="个人解答"></a>个人解答</h3><p>想法比较简单，使用双指针来实现的</p>
+<pre><code class="C++">class Solution {
+public:
+    void moveZeroes(vector&lt;int&gt;&amp; nums) {
+        int prv=0,curr=0;
+        while(curr!=nums.size()) {
+            if(nums[curr]!=0) {
+                nums[prv]=nums[curr];
+                prv++;
+            }
+            curr++;
+        }
+        while(prv!=nums.size()) {
+            nums[prv]=0;
+            prv++;
+        }
+    }
+};</code></pre>
+<h3 id="网上优解-2"><a href="#网上优解-2" class="headerlink" title="网上优解"></a>网上优解</h3><p>上面的解答使用到了二次遍历，大佬们还给出了一次遍历的方法</p>
+<pre><code class="C++">class Solution {
+public:
+    void moveZeroes(vector&lt;int&gt;&amp; nums) {
+        int i=0;
+        for(int pos=0;pos!=nums.size();pos++) {
+            if(nums[pos]!=0) {
+                int tmp=nums[i];        //当pos与i相等时，无法使用相加减交换的办法
+                nums[i++]=nums[pos];
+                nums[pos]=tmp;
+            }
+        }
+    }
+};</code></pre>
+<p>说这个一次遍历有些难以理解，看上去好像也是双指针的办法，但是如果理解为i为非0的个数，就好多了；上面的首次解答即2次完整的遍历</p>
+<h2 id="860-柠檬水找零"><a href="#860-柠檬水找零" class="headerlink" title="860. 柠檬水找零"></a>860. 柠檬水找零</h2><p><a href="https://leetcode-cn.com/problems/lemonade-change/" target="_blank" rel="noopener">860. 柠檬水找零</a>,题目比较简单，就是单纯的模拟找零钱的过程，注意一下找15时优先10+5即可</p>
+<pre><code class="C++">class Solution {
+public:
+    bool lemonadeChange(vector&lt;int&gt;&amp; bills) {
+        int five=0,ten=0,tw=0;
+        for(int i=0;i&lt;bills.size();i++)
+        {
+            if(bills[i]==5) {
+                five++;
+            }
+            else if(bills[i]==10) {
+                if(five==0)
+                    return false;
+                else {
+                    five--;
+                    ten++;
+                }
+            }
+            else {
+                if(five&gt;=1 &amp;&amp; ten&gt;=1) {
+                    five--;
+                    ten--;
+                }
+                else if(five&gt;=3)
+                    five-=3;
+                else
+                    return false;
+            }
+        }
+        return true;
+    }
+
+}</code></pre>
+<h2 id="202-快乐数"><a href="#202-快乐数" class="headerlink" title="202. 快乐数"></a>202. 快乐数</h2><p><a href="https://leetcode-cn.com/problems/happy-number/" target="_blank" rel="noopener">202. 快乐数</a>  </p>
 <blockquote>
 <p>输入：19<br>输出：true<br>解释：<br>12 + 92 = 82<br>82 + 22 = 68<br>62 + 82 = 100<br>12 + 02 + 02 = 1<br>能够等于1则为快乐数</p>
 </blockquote>
-<h3 id="个人首解"><a href="#个人首解" class="headerlink" title="个人首解"></a>个人首解</h3><p>主要思想就是循环计算下一个，判断是否为1，当出现循环的时候直接返回 False</p>
+<h3 id="个人首解-1"><a href="#个人首解-1" class="headerlink" title="个人首解"></a>个人首解</h3><p>主要思想就是循环计算下一个，判断是否为1，当出现循环的时候直接返回 False</p>
 <pre><code class="C++">class Solution {
 public:
     bool isHappy(int n) {
@@ -195,8 +1125,8 @@ public:
         return true;
     }
 };</code></pre>
-<h3 id="网上优解-1"><a href="#网上优解-1" class="headerlink" title="网上优解"></a>网上优解</h3><p>这里主要学习一下在判断虚幻的时候，使用快慢指针的做法，快指针在前，每次向前两步，慢指针每次向前一步，当出现循环时快指针一定可以追上慢指针<br><a href="https://leetcode-cn.com/problems/happy-number/solution/kuai-le-shu-by-leetcode-solution/" target="_blank" rel="noopener">官方解答</a></p>
-<h3 id="个人改进-1"><a href="#个人改进-1" class="headerlink" title="个人改进"></a>个人改进</h3><p>对循环判断进行改进</p>
+<h3 id="网上优解-3"><a href="#网上优解-3" class="headerlink" title="网上优解"></a>网上优解</h3><p>这里主要学习一下在判断虚幻的时候，使用快慢指针的做法，快指针在前，每次向前两步，慢指针每次向前一步，当出现循环时快指针一定可以追上慢指针<br><a href="https://leetcode-cn.com/problems/happy-number/solution/kuai-le-shu-by-leetcode-solution/" target="_blank" rel="noopener">官方解答</a></p>
+<h3 id="个人改进-2"><a href="#个人改进-2" class="headerlink" title="个人改进"></a>个人改进</h3><p>对循环判断进行改进</p>
 <pre><code class="C++">class Solution {
 public:
 
@@ -229,7 +1159,7 @@ public:
 };</code></pre>
 <p>其实具体的做法听多的，也可以保存计算值避免重复计算  </p>
 <h2 id="1351-统计有序矩阵中的负数"><a href="#1351-统计有序矩阵中的负数" class="headerlink" title="1351. 统计有序矩阵中的负数"></a>1351. 统计有序矩阵中的负数</h2><p><a href="https://leetcode-cn.com/problems/count-negative-numbers-in-a-sorted-matrix/" target="_blank" rel="noopener">1351. 统计有序矩阵中的负数</a></p>
-<h3 id="个人解答"><a href="#个人解答" class="headerlink" title="个人解答"></a>个人解答</h3><p>做法挺多的，最简单的就是直接便利访问，但是没有利用到有序这个条件<br>于是乎  </p>
+<h3 id="个人解答-19"><a href="#个人解答-19" class="headerlink" title="个人解答"></a>个人解答</h3><p>做法挺多的，最简单的就是直接便利访问，但是没有利用到有序这个条件<br>于是乎  </p>
 <pre><code class="Python">class Solution:
     def countNegatives(self, grid: List[List[int]]) -&gt; int:
         result=0
@@ -259,7 +1189,7 @@ public:
 <blockquote>
 <p>输入：paths = [[“London”,”New York”],[“New York”,”Lima”],[“Lima”,”Sao Paulo”]]<br>输出：”Sao Paulo”<br>解释：从 “London” 出发，最后抵达终点站 “Sao Paulo” 。本次旅行的路线是 “London” -&gt; “New York” -&gt; “Lima” -&gt; “Sao Paulo” 。</p>
 </blockquote>
-<h3 id="个人首解-1"><a href="#个人首解-1" class="headerlink" title="个人首解"></a>个人首解</h3><p>主要想法就是通过模仿Python的字典，一个一个往下查询。因为只需要查找终点，所以从第一个开始查询就行  </p>
+<h3 id="个人首解-2"><a href="#个人首解-2" class="headerlink" title="个人首解"></a>个人首解</h3><p>主要想法就是通过模仿Python的字典，一个一个往下查询。因为只需要查找终点，所以从第一个开始查询就行  </p>
 <pre><code class="C++">class Solution {
 public:
     string destCity(vector&lt;vector&lt;string&gt;&gt;&amp; paths) {
@@ -279,7 +1209,7 @@ public:
 };
 
 //Python代码类似， 但还是注意 Python3中字典不在提供has_key方法</code></pre>
-<h3 id="网上优解-2"><a href="#网上优解-2" class="headerlink" title="网上优解"></a>网上优解</h3><p>思路就是只有终点没有在 起点中出现过，于是乎</p>
+<h3 id="网上优解-4"><a href="#网上优解-4" class="headerlink" title="网上优解"></a>网上优解</h3><p>思路就是只有终点没有在 起点中出现过，于是乎</p>
 <pre><code class="C++">class Solution {
 public:
     string destCity(vector&lt;vector&lt;string&gt;&gt;&amp; paths) {
@@ -308,7 +1238,7 @@ public:
         return where[0]
 </code></pre>
 <p>Python的写法比较多，但是思想基本一致，说明一下这里的集合差<code>begin - end</code>将返回begin中存在，但是end中不存在的内容，这样的话就可以查找起点了</p>
-<h3 id="个人改进-2"><a href="#个人改进-2" class="headerlink" title="个人改进"></a>个人改进</h3><p>上面的C++代码做了起点与终点区分，我们尝试改动一点点，就可以看出整个路线的起点，经过，终点</p>
+<h3 id="个人改进-3"><a href="#个人改进-3" class="headerlink" title="个人改进"></a>个人改进</h3><p>上面的C++代码做了起点与终点区分，我们尝试改动一点点，就可以看出整个路线的起点，经过，终点</p>
 <pre><code class="C++">class Solution {
 public:
     string destCity(vector&lt;vector&lt;string&gt;&gt;&amp; paths) {
@@ -326,9 +1256,8 @@ public:
         return &quot;&quot;;
     }
 };</code></pre>
-<hr>
 <h2 id="1431-拥有最多糖果的孩子"><a href="#1431-拥有最多糖果的孩子" class="headerlink" title="1431. 拥有最多糖果的孩子"></a>1431. 拥有最多糖果的孩子</h2><p><a href="https://leetcode-cn.com/problems/kids-with-the-greatest-number-of-candies/" target="_blank" rel="noopener">1431. 拥有最多糖果的孩子</a><br>给孩子一定的糖果，记录返回哪些孩子得到这些糖果之后成为数量最多</p>
-<h3 id="个人首解-2"><a href="#个人首解-2" class="headerlink" title="个人首解"></a>个人首解</h3><pre><code class="python">class Solution:
+<h3 id="个人首解-3"><a href="#个人首解-3" class="headerlink" title="个人首解"></a>个人首解</h3><pre><code class="python">class Solution:
     def kidsWithCandies(self, candies: List[int], extraCandies: int) -&gt; List[bool]:
         result=[]
         max=0
@@ -342,7 +1271,7 @@ public:
                 result.append(False)
         return result</code></pre>
 <p>C++的思想与python一样，都是通过先寻找最大值然后在比较</p>
-<h3 id="网上优解-3"><a href="#网上优解-3" class="headerlink" title="网上优解"></a>网上优解</h3><pre><code class="python">class Solution:
+<h3 id="网上优解-5"><a href="#网上优解-5" class="headerlink" title="网上优解"></a>网上优解</h3><pre><code class="python">class Solution:
     def kidsWithCandies(self, candies: List[int], extraCandies: int) -&gt; List[bool]:
         maxc = max(candies)
         res = []
@@ -351,13 +1280,12 @@ public:
         return res
 </code></pre>
 <p>思路是一样的，使用了max函数寻找的最大值，但是在写法上要比自己的简洁</p>
-<h3 id="个人改进-3"><a href="#个人改进-3" class="headerlink" title="个人改进"></a>个人改进</h3><pre><code class="python">class Solution:
+<h3 id="个人改进-4"><a href="#个人改进-4" class="headerlink" title="个人改进"></a>个人改进</h3><pre><code class="python">class Solution:
     def kidsWithCandies(self, candies: List[int], extraCandies: int) -&gt; List[bool]:
         return [i + extraCandies &gt;= max(candies) for i in candies]
 </code></pre>
-<hr>
 <h2 id="1389-按既定顺序创建目标数组"><a href="#1389-按既定顺序创建目标数组" class="headerlink" title="1389. 按既定顺序创建目标数组"></a>1389. 按既定顺序创建目标数组</h2><p><a href="https://leetcode-cn.com/problems/create-target-array-in-the-given-order/" target="_blank" rel="noopener">1389. 按既定顺序创建目标数组</a><br>一个元素数组，一个下标数组（下标可重复，按先后插入）  </p>
-<h3 id="个人首解-3"><a href="#个人首解-3" class="headerlink" title="个人首解"></a>个人首解</h3><pre><code class="python">class Solution:
+<h3 id="个人首解-4"><a href="#个人首解-4" class="headerlink" title="个人首解"></a>个人首解</h3><pre><code class="python">class Solution:
     def createTargetArray(self, nums: List[int], index: List[int]) -&gt; List[int]:
         result=[]
         for i in range(len(nums)):
@@ -377,8 +1305,8 @@ public:
         return result;
     }
 };</code></pre>
-<h3 id="网上优解-4"><a href="#网上优解-4" class="headerlink" title="网上优解"></a>网上优解</h3><p>没有见到Python的一句话写法，但是发现c++ insert的时候，没必要考虑插入的位置大于现有的数组长度</p>
-<h3 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h3><pre><code class="c++">class Solution {
+<h3 id="网上优解-6"><a href="#网上优解-6" class="headerlink" title="网上优解"></a>网上优解</h3><p>没有见到Python的一句话写法，但是发现c++ insert的时候，没必要考虑插入的位置大于现有的数组长度</p>
+<h3 id="改进-7"><a href="#改进-7" class="headerlink" title="改进"></a>改进</h3><pre><code class="c++">class Solution {
 public:
     vector&lt;int&gt; createTargetArray(vector&lt;int&gt;&amp; nums, vector&lt;int&gt;&amp; index) {
         vector&lt;int&gt;result;
@@ -387,7 +1315,6 @@ public:
         return result;
     }
 };</code></pre>
-<hr>
 <h2 id="面试题64"><a href="#面试题64" class="headerlink" title="面试题64"></a>面试题64</h2><p><a href="https://leetcode-cn.com/problems/qiu-12n-lcof/" target="_blank" rel="noopener">面试题64</a><br>求1+2+……+n，不可使用if、while、switch、for、else以及条件判断语句（A？B：C）  </p>
 <h3 id="首次解答"><a href="#首次解答" class="headerlink" title="首次解答"></a>首次解答</h3><pre><code class="python">class Solution:
     def sumNums(self, n: int) -&gt; int:
@@ -402,33 +1329,34 @@ public:
 };</code></pre>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>用到了 A&amp;&amp;B：  </p>
 <ol>
-<li>当A为True时，计算并返回B的bool值</li>
-<li>当A为False时，直接返回False<br>与以往的迭代不同，它没有写在return语句中</li>
-</ol>
-<hr>
+<li><p>当A为True时，计算并返回B的bool值</p>
+</li>
+<li><p>当A为False时，直接返回False<br>与以往的迭代不同，它没有写在return语句中</p>
 <h2 id="219存在重复元素Ⅱ"><a href="#219存在重复元素Ⅱ" class="headerlink" title="219存在重复元素Ⅱ"></a>219存在重复元素Ⅱ</h2><p><a href="https://leetcode-cn.com/problems/contains-duplicate-ii/" target="_blank" rel="noopener">219存在重复元素Ⅱ</a><br>判断某元素相邻的范围内是否存在相同元素  </p>
 <h3 id="首次解答-1"><a href="#首次解答-1" class="headerlink" title="首次解答"></a>首次解答</h3><pre><code class="C++">class Solution {
 public:
-    bool containsNearbyDuplicate(vector&lt;int&gt;&amp; nums, int k) {
-        unordered_map &lt;int,vector&lt;int&gt;&gt;hash;
+ bool containsNearbyDuplicate(vector&lt;int&gt;&amp; nums, int k) {
+     unordered_map &lt;int,vector&lt;int&gt;&gt;hash;
 
-        for(int i=0;i&lt;nums.size();i++)
-        {
-            hash[nums[i]].push_back(i);
-        }
-        for(auto i=hash.begin();i!=hash.end();i++)
-        {
-            if(i-&gt;second.size()!=1)
-            {
-                for(auto j =0;j&lt;i-&gt;second.size()-1;j++)
-                    if ((i-&gt;second)[j+1]-(i-&gt;second)[j]&lt;=k)
-                        return true;
-            }
-        }
-        return false;
-    }   
+     for(int i=0;i&lt;nums.size();i++)
+     {
+         hash[nums[i]].push_back(i);
+     }
+     for(auto i=hash.begin();i!=hash.end();i++)
+     {
+         if(i-&gt;second.size()!=1)
+         {
+             for(auto j =0;j&lt;i-&gt;second.size()-1;j++)
+                 if ((i-&gt;second)[j+1]-(i-&gt;second)[j]&lt;=k)
+                     return true;
+         }
+     }
+     return false;
+ }   
 };</code></pre>
 <p>初期思路是将相同的元素的下标分开排列，再进行比较，但是后面一想，访问输入元素时，下标是不断增加的，判断相邻下标即可，即只保存最新的下标即可</p>
+</li>
+</ol>
 <h3 id="优化改进"><a href="#优化改进" class="headerlink" title="优化改进"></a>优化改进</h3><pre><code class="C++">class Solution {
 public:
     bool containsNearbyDuplicate(vector&lt;int&gt;&amp; nums, int k) {
@@ -461,7 +1389,7 @@ public:
     }
 };</code></pre>
 <p>我写的答案，做法比较简单，时间效率也比较高，但是C++有字符串相关的方法，记录一下</p>
-<h3 id="网上优解-5"><a href="#网上优解-5" class="headerlink" title="网上优解"></a>网上优解</h3><pre><code class="C++">//转为字符串，求长度比较
+<h3 id="网上优解-7"><a href="#网上优解-7" class="headerlink" title="网上优解"></a>网上优解</h3><pre><code class="C++">//转为字符串，求长度比较
 class Solution1 {
 public:
     int findNumbers(vector&lt;int&gt;&amp; nums) {
@@ -515,7 +1443,7 @@ public:
                 result.append(nums[i+1])
         return  result;</code></pre>
 <p>主要是Python没有想到一句话的写法</p>
-<h3 id="网上优解-6"><a href="#网上优解-6" class="headerlink" title="网上优解"></a>网上优解</h3><pre><code class="Python">class Solution:
+<h3 id="网上优解-8"><a href="#网上优解-8" class="headerlink" title="网上优解"></a>网上优解</h3><pre><code class="Python">class Solution:
     def decompressRLElist(self, nums: List[int]) -&gt; List[int]:
         return [nums[i] for i in range(len(nums)) for j in range(nums[i-1]) if i % 2 == 1]
 
@@ -573,9 +1501,9 @@ class Solution:
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">16 <p>Articles</p></a></li>
-                    <li><a href="/categories">11 <p>Categories</p></a></li>
-                    <li><a href="/tags">23 <p>Tags</p></a></li>
+                    <li><a href="/archives">17 <p>Articles</p></a></li>
+                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/tags">22 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -584,7 +1512,7 @@ class Solution:
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#好题"><span class="toc-number">1.</span> <span class="toc-text">好题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#面试题-02-03-删除中间节点"><span class="toc-number">1.1.</span> <span class="toc-text">面试题 02.03. 删除中间节点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解"><span class="toc-number">1.1.1.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进"><span class="toc-number">1.1.2.</span> <span class="toc-text">个人改进</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#难题"><span class="toc-number">2.</span> <span class="toc-text">难题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#普通题目"><span class="toc-number">3.</span> <span class="toc-text">普通题目</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#202-快乐数"><span class="toc-number">3.1.</span> <span class="toc-text">202. 快乐数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解"><span class="toc-number">3.1.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-1"><span class="toc-number">3.1.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进-1"><span class="toc-number">3.1.3.</span> <span class="toc-text">个人改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1351-统计有序矩阵中的负数"><span class="toc-number">3.2.</span> <span class="toc-text">1351. 统计有序矩阵中的负数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答"><span class="toc-number">3.2.1.</span> <span class="toc-text">个人解答</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1436-旅行终点站"><span class="toc-number">3.3.</span> <span class="toc-text">1436. 旅行终点站</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解-1"><span class="toc-number">3.3.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-2"><span class="toc-number">3.3.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进-2"><span class="toc-number">3.3.3.</span> <span class="toc-text">个人改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1431-拥有最多糖果的孩子"><span class="toc-number">3.4.</span> <span class="toc-text">1431. 拥有最多糖果的孩子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解-2"><span class="toc-number">3.4.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-3"><span class="toc-number">3.4.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进-3"><span class="toc-number">3.4.3.</span> <span class="toc-text">个人改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1389-按既定顺序创建目标数组"><span class="toc-number">3.5.</span> <span class="toc-text">1389. 按既定顺序创建目标数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解-3"><span class="toc-number">3.5.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-4"><span class="toc-number">3.5.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进"><span class="toc-number">3.5.3.</span> <span class="toc-text">改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#面试题64"><span class="toc-number">3.6.</span> <span class="toc-text">面试题64</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答"><span class="toc-number">3.6.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#他人优解"><span class="toc-number">3.6.2.</span> <span class="toc-text">他人优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">3.6.3.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#219存在重复元素Ⅱ"><span class="toc-number">3.7.</span> <span class="toc-text">219存在重复元素Ⅱ</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答-1"><span class="toc-number">3.7.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优化改进"><span class="toc-number">3.7.2.</span> <span class="toc-text">优化改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1295统计位数为偶数的数字"><span class="toc-number">3.8.</span> <span class="toc-text">1295统计位数为偶数的数字</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答-2"><span class="toc-number">3.8.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-5"><span class="toc-number">3.8.2.</span> <span class="toc-text">网上优解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1313解压缩编码列表"><span class="toc-number">3.9.</span> <span class="toc-text">1313解压缩编码列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答-3"><span class="toc-number">3.9.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-6"><span class="toc-number">3.9.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结-1"><span class="toc-number">3.9.3.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#好题"><span class="toc-number">1.</span> <span class="toc-text">好题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#面试题-02-03-删除中间节点"><span class="toc-number">1.1.</span> <span class="toc-text">面试题 02.03. 删除中间节点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解"><span class="toc-number">1.1.1.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进"><span class="toc-number">1.1.2.</span> <span class="toc-text">个人改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#509-斐波那契数"><span class="toc-number">1.2.</span> <span class="toc-text">509. 斐波那契数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解"><span class="toc-number">1.2.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-1"><span class="toc-number">1.2.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进-1"><span class="toc-number">1.2.3.</span> <span class="toc-text">个人改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-字符串转换整数-atoi-–-有限状态机"><span class="toc-number">1.3.</span> <span class="toc-text">8. 字符串转换整数 (atoi) – 有限状态机</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答"><span class="toc-number">1.3.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进"><span class="toc-number">1.3.2.</span> <span class="toc-text">改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-实现-strStr-–-Sunday"><span class="toc-number">1.4.</span> <span class="toc-text">28. 实现 strStr() – Sunday</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Sunday"><span class="toc-number">1.4.1.</span> <span class="toc-text">Sunday</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#另外"><span class="toc-number">1.4.2.</span> <span class="toc-text">另外</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#难题"><span class="toc-number">2.</span> <span class="toc-text">难题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#【更】102-二叉树的层序遍历"><span class="toc-number">2.1.</span> <span class="toc-text">【更】102. 二叉树的层序遍历</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-1"><span class="toc-number">2.1.1.</span> <span class="toc-text">个人解答</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#36-有效的数独"><span class="toc-number">2.2.</span> <span class="toc-text">36. 有效的数独</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-2"><span class="toc-number">2.2.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进-1"><span class="toc-number">2.2.2.</span> <span class="toc-text">改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-删除链表的倒数第N个节点"><span class="toc-number">2.3.</span> <span class="toc-text">19. 删除链表的倒数第N个节点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-3"><span class="toc-number">2.3.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进-2"><span class="toc-number">2.3.2.</span> <span class="toc-text">改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#206-反转链表"><span class="toc-number">2.4.</span> <span class="toc-text">206. 反转链表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-4"><span class="toc-number">2.4.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进-3"><span class="toc-number">2.4.2.</span> <span class="toc-text">改进</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#普通题目"><span class="toc-number">3.</span> <span class="toc-text">普通题目</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#234-回文链表"><span class="toc-number">3.1.</span> <span class="toc-text">234. 回文链表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-5"><span class="toc-number">3.1.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#另解"><span class="toc-number">3.1.2.</span> <span class="toc-text">另解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-合并两个有序链表"><span class="toc-number">3.2.</span> <span class="toc-text">21. 合并两个有序链表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-6"><span class="toc-number">3.2.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进-4"><span class="toc-number">3.2.2.</span> <span class="toc-text">改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#141-环形链表"><span class="toc-number">3.3.</span> <span class="toc-text">141. 环形链表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-7"><span class="toc-number">3.3.1.</span> <span class="toc-text">个人解答</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#190-颠倒二进制位-–-分治"><span class="toc-number">3.4.</span> <span class="toc-text">190. 颠倒二进制位 –　分治</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-8"><span class="toc-number">3.4.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#另解-1"><span class="toc-number">3.4.2.</span> <span class="toc-text">另解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#191-位1的个数"><span class="toc-number">3.5.</span> <span class="toc-text">191. 位1的个数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-9"><span class="toc-number">3.5.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#另解-2"><span class="toc-number">3.5.2.</span> <span class="toc-text">另解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-有效的括号"><span class="toc-number">3.6.</span> <span class="toc-text">20. 有效的括号</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-10"><span class="toc-number">3.6.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进-5"><span class="toc-number">3.6.2.</span> <span class="toc-text">改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#118-杨辉三角"><span class="toc-number">3.7.</span> <span class="toc-text">118. 杨辉三角</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-11"><span class="toc-number">3.7.1.</span> <span class="toc-text">个人解答</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#268-缺失数字"><span class="toc-number">3.8.</span> <span class="toc-text">268. 缺失数字</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-12"><span class="toc-number">3.8.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进-6"><span class="toc-number">3.8.2.</span> <span class="toc-text">改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-最长公共前缀"><span class="toc-number">3.9.</span> <span class="toc-text">14. 最长公共前缀</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-13"><span class="toc-number">3.9.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网络解答"><span class="toc-number">3.9.2.</span> <span class="toc-text">网络解答</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#387-字符串中的第一个唯一字符"><span class="toc-number">3.10.</span> <span class="toc-text">387. 字符串中的第一个唯一字符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-14"><span class="toc-number">3.10.1.</span> <span class="toc-text">个人解答</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#48-旋转图像"><span class="toc-number">3.11.</span> <span class="toc-text">48. 旋转图像</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-15"><span class="toc-number">3.11.1.</span> <span class="toc-text">个人解答</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-两数之和"><span class="toc-number">3.12.</span> <span class="toc-text">1. 两数之和</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-16"><span class="toc-number">3.12.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优解"><span class="toc-number">3.12.2.</span> <span class="toc-text">优解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#66-加一"><span class="toc-number">3.13.</span> <span class="toc-text">66. 加一</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-17"><span class="toc-number">3.13.1.</span> <span class="toc-text">个人解答</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#283-移动零"><span class="toc-number">3.14.</span> <span class="toc-text">283. 移动零</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-18"><span class="toc-number">3.14.1.</span> <span class="toc-text">个人解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-2"><span class="toc-number">3.14.2.</span> <span class="toc-text">网上优解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#860-柠檬水找零"><span class="toc-number">3.15.</span> <span class="toc-text">860. 柠檬水找零</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#202-快乐数"><span class="toc-number">3.16.</span> <span class="toc-text">202. 快乐数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解-1"><span class="toc-number">3.16.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-3"><span class="toc-number">3.16.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进-2"><span class="toc-number">3.16.3.</span> <span class="toc-text">个人改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1351-统计有序矩阵中的负数"><span class="toc-number">3.17.</span> <span class="toc-text">1351. 统计有序矩阵中的负数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人解答-19"><span class="toc-number">3.17.1.</span> <span class="toc-text">个人解答</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1436-旅行终点站"><span class="toc-number">3.18.</span> <span class="toc-text">1436. 旅行终点站</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解-2"><span class="toc-number">3.18.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-4"><span class="toc-number">3.18.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进-3"><span class="toc-number">3.18.3.</span> <span class="toc-text">个人改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1431-拥有最多糖果的孩子"><span class="toc-number">3.19.</span> <span class="toc-text">1431. 拥有最多糖果的孩子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解-3"><span class="toc-number">3.19.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-5"><span class="toc-number">3.19.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#个人改进-4"><span class="toc-number">3.19.3.</span> <span class="toc-text">个人改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1389-按既定顺序创建目标数组"><span class="toc-number">3.20.</span> <span class="toc-text">1389. 按既定顺序创建目标数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#个人首解-4"><span class="toc-number">3.20.1.</span> <span class="toc-text">个人首解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-6"><span class="toc-number">3.20.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进-7"><span class="toc-number">3.20.3.</span> <span class="toc-text">改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#面试题64"><span class="toc-number">3.21.</span> <span class="toc-text">面试题64</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答"><span class="toc-number">3.21.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#他人优解"><span class="toc-number">3.21.2.</span> <span class="toc-text">他人优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">3.21.3.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#219存在重复元素Ⅱ"><span class="toc-number">3.22.</span> <span class="toc-text">219存在重复元素Ⅱ</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答-1"><span class="toc-number">3.22.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优化改进"><span class="toc-number">3.22.2.</span> <span class="toc-text">优化改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1295统计位数为偶数的数字"><span class="toc-number">3.23.</span> <span class="toc-text">1295统计位数为偶数的数字</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答-2"><span class="toc-number">3.23.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-7"><span class="toc-number">3.23.2.</span> <span class="toc-text">网上优解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1313解压缩编码列表"><span class="toc-number">3.24.</span> <span class="toc-text">1313解压缩编码列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#首次解答-3"><span class="toc-number">3.24.1.</span> <span class="toc-text">首次解答</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网上优解-8"><span class="toc-number">3.24.2.</span> <span class="toc-text">网上优解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结-1"><span class="toc-number">3.24.3.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li></ol>
                 </div>
             </div>
             

@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>程序员的自我修养(2)--装载与动态链接 - Hexo</title>
+    <title>程序员的自我修养(2)--装载与动态链接、库与运行库 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
@@ -58,7 +58,7 @@
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
         <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
-        <h3 class="subtitle">程序员的自我修养(2)--装载与动态链接</h3>
+        <h3 class="subtitle">程序员的自我修养(2)--装载与动态链接、库与运行库</h3>
         <div class="social">
                    <!-- <div class="like-icon"> -->
                        <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
@@ -93,20 +93,20 @@
                 
                 May 17, 2020
             </p>
-            <h3 class="post-title animated fadeInDown"><a href="/2020/05/17/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB-2/" title="程序员的自我修养(2)--装载与动态链接" class="">程序员的自我修养(2)--装载与动态链接</a>
+            <h3 class="post-title animated fadeInDown"><a href="/2020/05/17/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB-2/" title="程序员的自我修养(2)--装载与动态链接、库与运行库" class="">程序员的自我修养(2)--装载与动态链接、库与运行库</a>
             </h3>
             
             <p class="post-count animated fadeInDown">
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    3.7k
+                    15k
                 </span>
                 
                 
                 <span>
                     <b class="iconfont icon-timer__s"></b> <i>Reading time</i>
-                    3 mins.
+                    14 mins.
                 </span>
                 
                 
@@ -151,7 +151,7 @@
 </ol>
 <p>启动运行之时,程序并没有被真正的加载到内存中,操作系统只是依赖可执行文件头信息建立了可执行文件与虚拟内存之间的映射关系。当出现页错误时,CPU将控制权交给操作系统,操作系统依靠之前映射关系的数据结构,找到空页面所在的VMA(Virtual Memory Area,虚拟内存区域),计算出页面在可执行文件中的偏移,然后在物理内存中分配一个物理页面并建立该物理页面与对应虚拟页面的映射关系,再把控制权交给进程,进程得以继续执行  </p>
 <h2 id="6-4进程虚拟空间分布"><a href="#6-4进程虚拟空间分布" class="headerlink" title="6.4进程虚拟空间分布"></a>6.4进程虚拟空间分布</h2><p>Linux下,系统把相同权限的段合并到一起当做一个Segment进行映射  </p>
-<div align=center><img src="./1/物理地址与虚拟地址转换.png" alt="物理地址与虚拟地址转换"   /></div>
+<div align=center><img src="./6/运行时内存布局.png" alt="运行时内存布局"   /></div>
 
 <p>这里的<code>Segment</code>指文件的执行视图,<code>Section</code>☞文件的链接视图。而Segment信息被保存在<code>Elf32_Phdr</code>数据结构中  </p>
 <pre><code class="C++">typedef struct{
@@ -184,7 +184,203 @@
 <li>建立主线程并启动进程</li>
 </ol>
 <p>与装载相关的信息都保存在<code>IMAGE_OPTIONAL_HEADER</code>中，具体参考<a href="https://i1arn.github.io/2020/04/27/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB-1/#IMAGE_OPTIONAL_HEADER">IMAGE_OPTIONAL_HEADER</a></p>
-<h1 id="动态链接"><a href="#动态链接" class="headerlink" title="动态链接"></a>动态链接</h1><h1 id="Linux共享库的组织"><a href="#Linux共享库的组织" class="headerlink" title="Linux共享库的组织"></a>Linux共享库的组织</h1><h1 id="Windows下的动态链接"><a href="#Windows下的动态链接" class="headerlink" title="Windows下的动态链接"></a>Windows下的动态链接</h1>
+<h1 id="动态链接"><a href="#动态链接" class="headerlink" title="动态链接"></a>动态链接</h1><p>把链接过程推迟到运行时在进行</p>
+<h2 id="为什么要动态链接"><a href="#为什么要动态链接" class="headerlink" title="为什么要动态链接"></a>为什么要动态链接</h2><p>静态链接的缺点：</p>
+<ol>
+<li>空间浪费<br> 多个程序可能就包含了一个公共库函数的多份代码,空间利用率不高</li>
+<li>程序的更新、部署和发布麻烦<br> 一处更新则全盘跟新，使用维护不便<br>动态链接的优点：</li>
+<li>空间节省<br> 程序共享一个模块，节省内存，同时还可以减少物理页面的换入换出，增加CPU缓存的命令率</li>
+<li>更友好的开发测试<br> 程序被分成若干模块，各个模块间更加独立，耦合度更小</li>
+<li>扩展性与兼容性更好<br> 动态链接使得部分程序可以跨平台编译运行</li>
+</ol>
+<h2 id="地址无关代码"><a href="#地址无关代码" class="headerlink" title="地址无关代码"></a>地址无关代码</h2><p>静态共享库存在地址冲突，难以升级维护等等问题<br>PIC(Position-independent Code,地址无关代码技术)：把指令中需要被修改的部分分离出来，跟数据部分放在一起，这样指令部分就可以保持不变，而每一个进程都可以拥有数据部分的副本  </p>
+<h3 id="各种地址引用方式"><a href="#各种地址引用方式" class="headerlink" title="各种地址引用方式"></a>各种地址引用方式</h3><table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">指令跳转、调用</th>
+<th align="left">数据访问</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">模块内部</td>
+<td align="left">相对跳转和调用</td>
+<td align="left">相对地址访问</td>
+</tr>
+<tr>
+<td align="left">模块外部</td>
+<td align="left">间接跳转与调用</td>
+<td align="left">间接访问</td>
+</tr>
+</tbody></table>
+<h3 id="PIE"><a href="#PIE" class="headerlink" title="PIE"></a>PIE</h3><p>地址代码无关技术可以用在共享对象上面，也可以用于执行文件，即生成PIE（Position-Independent Executable，地址无关可执行文件）</p>
+<h2 id="延迟绑定（PLT，Procedure-Linkage-Table）"><a href="#延迟绑定（PLT，Procedure-Linkage-Table）" class="headerlink" title="延迟绑定（PLT，Procedure Linkage Table）"></a>延迟绑定（PLT，Procedure Linkage Table）</h2><p>动态链接比静态链接慢主要有两点原因：1.动态链接对全局和静态的数据访问都要进行复杂的GOT定位，然后间接寻址，对于模块间的调用也需要定位GOT，在进行跳转访问；2.程序的链接工作被推迟到运行时进行，这样动态链接程序需要不断的进行寻找、装载共享对象，并完成符号的重定位工作。为了解决这一问题，提出了PLT延迟绑定技术  </p>
+<pre><code>bar@plt：
+jmp *(bar@got)
+push n
+push moduleID
+jump __dl_runtime_resolve</code></pre><p>基本原理代码如上，第一次执行bar函数的时候，链接器尚未将正确的函数地址填入到GOT表中，<code>bar@got</code>保存的是下一条指令，即<code>push n</code>的地址，n是bar符号在重定位表中的下标，之后跳转到相关的函数来完成符号解析与重定位，并将正确的bar符号地址填入到got表中。</p>
+<h3 id="got与-got-plt"><a href="#got与-got-plt" class="headerlink" title=".got与.got.plt"></a><code>.got</code>与<code>.got.plt</code></h3><p>实际实现与上面代码有些不同，ELF中，<code>.got</code>用来保存全局变量引用的地址，<code>.got.plt</code>则用来保存函数引用的地址<br><code>.got.plt</code>前三项保存的是<code>.dynamic</code>段的地址、本模块的ID，以及<code>__dl_runtime_resolve</code>的地址</p>
+<div align=center><img src="./7/GOT中的PLT数据结构.png" alt="GOT中的PLT数据结构"   /></div>
+为了减少代码的重复，实际的PLT结构结构代码如下：
+
+<pre><code>PLT0：
+push *(GOT+4)
+jump *(GOT+8)
+
+……
+
+bar@plt:
+jump *(bar@got)
+push n
+jump PLT0</code></pre><h2 id="动态链接相关结构"><a href="#动态链接相关结构" class="headerlink" title="动态链接相关结构"></a>动态链接相关结构</h2><ol>
+<li><code>.interp</code><br> 指定动态链接器的路径  </li>
+<li><code>.dynamic</code><br> 保存了动态链接器所需的基本信息，如依赖、动态链接符号表位置，重定位表位置，共享对象初始化代码地址等等  </li>
+<li><code>.dynsym</code><br> Dynamic Symbol Table，保存模块之间的符号导入导出关系，只保存动态链接相关的符号，模块内部符号如模块私有变量不保存，<code>.symtab</code>往往保存了所有符号  </li>
+<li><code>.dynstr</code><br> 动态符号字符串表，<code>.strtab</code>是静态链接时的符号字符串表</li>
+<li><code>.rel.dyn</code>、<code>.rel.plt</code><br> <code>.rel.dyn</code>对数据引用的修正,修正的位置位于<code>.got</code>以及数据段，<code>.rel.plt</code>对函数引用的修正，修正的位置是<code>.got.plt</code>。两者类似于静态链接中的<code>.rel.text</code>与<code>.rel.data</code><br>进程堆栈初始化信息存放在环境变量指针后面  </li>
+</ol>
+<h2 id="动态链接的步骤和实现"><a href="#动态链接的步骤和实现" class="headerlink" title="动态链接的步骤和实现"></a>动态链接的步骤和实现</h2><h3 id="动态链接器自举"><a href="#动态链接器自举" class="headerlink" title="动态链接器自举"></a>动态链接器自举</h3><p>动态链接器有两个特殊属性，一是自身不可以依赖其他任何共享对象，二是自身所需要的全局和静态变量的重定位工作由它本身完成（即自举）。在链接器完成自举之前，不能使用任何的全局变量也不能调用函数（Got、Plt尚未完成重定位）</p>
+<h3 id="装载共享对象"><a href="#装载共享对象" class="headerlink" title="装载共享对象"></a>装载共享对象</h3><p>完成基本自举之后，可执行文件与链接器本身的符号表进行合并，形成全局符号表，然后在<code>.dynamic</code>中寻找有<code>DT_NEEDED</code>属性的依赖共享对象，将其依赖对象名村放入装载集合，循环查找加载<br>全局符号介入：一个共享对象的全局符号被另一个共享对象的同名全局符号覆盖的现象，Linux下遵循先入为主的原则，后加入的符号如果已经存在则忽略  </p>
+<h3 id="重定位与初始化"><a href="#重定位与初始化" class="headerlink" title="重定位与初始化"></a>重定位与初始化</h3><p>完成重定位之后，如果共享对象有<code>.init</code>段，则动态链接器会执行该段代码，用以实现共享对象特有的初始化过程，但是可执行文件中若存在<code>.init</code>，链接器不会执行，该代码由程序初始化部分代码负责执行</p>
+<h3 id="动态链接器的实现"><a href="#动态链接器的实现" class="headerlink" title="动态链接器的实现"></a>动态链接器的实现</h3><p>本身是静态链接，Linux内核不关心文件是否可执行，就是按照文件描述将文件装载，然后把控制权转交给ELF入口地址（<code>.interp</code>或者是<code>e_entry</code>）。这样可以看出，共享库与可执行文件并没有太大的区别  </p>
+<h2 id="显示运行时链接"><a href="#显示运行时链接" class="headerlink" title="显示运行时链接"></a>显示运行时链接</h2><p>Linux下：</p>
+<ol>
+<li><code>dlopen</code>打开库</li>
+<li><code>dlsym</code>查找符号</li>
+<li><code>dlerror</code>错误处理</li>
+<li><code>dlclose</code>关闭库</li>
+</ol>
+<h1 id="Linux共享库的组织"><a href="#Linux共享库的组织" class="headerlink" title="Linux共享库的组织"></a>Linux共享库的组织</h1><p>ABI，Application Binary Interface，二进制接口<br>查找过程：首先在系统目录  系统对链接器配置文件“ld.so.conf”制定的目录中的所有库文件进行符号链接并保存在缓存“ld.so.cache”中，首先查找该缓存，如果没有就再去“/lib”和“/usr/lib”目录下查找。如若没有，则查找失败 </p>
+<p>相关环境变量：<br>|变量名|作用|<br>|:—-|:—-|<br>|<code>LD_LIBRARY_PATH</code>|可以用来临时改变程序需要的共享库的查找路径，链接器将优先查找该路径|<br>|<code>LD_PRELOAD</code>|指令的共享库或者目标文件都会被直接装载|<br>|<code>LD_DEBUG</code>|打开链接器的调试功能，打印过程信息|</p>
+<h1 id="Windows下的动态链接"><a href="#Windows下的动态链接" class="headerlink" title="Windows下的动态链接"></a>Windows下的动态链接</h1><h2 id="DLL简介"><a href="#DLL简介" class="headerlink" title="DLL简介"></a>DLL简介</h2><p>DLL，Dynamic—link Library，动态链接库，文件拓展名可以是dll，ocx（ocx控件），cpl（控制面板程序）</p>
+<p><code>__declspec(dllimport)</code>从其他DLL导入的符号，<code>__declspec(dllexport)</code>本DLL导出的符号</p>
+<p>显示运行时链接API：</p>
+<ol>
+<li><code>LoadLibrary</code>装载DLL到进程的地址空间</li>
+<li><code>GetProcAddress</code>查找某个符号地址</li>
+<li><code>FreeLibrary</code>卸载已加载的模块</li>
+</ol>
+<h2 id="导入表与导出表"><a href="#导入表与导出表" class="headerlink" title="导入表与导出表"></a>导入表与导出表</h2><h3 id="导出表"><a href="#导出表" class="headerlink" title="导出表"></a>导出表</h3><p>导出表：提供了一个符号名与符号地址的映射关系，将自身的函数与变量提供给其他文件使用<br><a href="https://i1arn.github.io/2020/04/27/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB-1/#COFF">PE头中由一个DataDirectory数组</a>，数组的第一项保存的就是导出表的结构地址与长度<br>结构定义如下：</p>
+<pre><code class="c++">public struct IMAGE_EXPORT_DIRECTORY
+{
+    public UInt32 Characteristics;
+    public UInt32 TimeDateStamp;
+    public UInt16 MajorVersion;
+    public UInt16 MinorVersion;
+    public UInt32 Name;
+    public UInt32 Base;
+    public UInt32 NumberOfFunctions;
+    public UInt32 NumberOfNames;
+    public UInt32 AddressOfFunctions;     // 导出地址表地址，EAT（Export Address Table）
+    public UInt32 AddressOfNames;     // 符号名表地址
+    public UInt32 AddressOfNameOrdinals;  // 名字序号对应表地址
+}</code></pre>
+<p>导出重定向：将某个符号重定向到另外一个DLL，比如说XP中，调用kernel32.dll中的<code>HeapAlloc</code>函数将被重定向到ntdll.dll的<code>RtlAllocHeap</code>函数</p>
+<h3 id="导入表"><a href="#导入表" class="headerlink" title="导入表"></a><a href="#IAT">导入表</a></h3><p>符号导入：程序使用到了DLL的函数或者变量，ELF中<code>.rel.dyn</code>和<code>.rel.plt</code>保存了导入的变量及符号地址，PE下则是导入表，具体表现为<code>IMAGE_IMPORT_DESCRIPTOR</code>结构体</p>
+<pre><code class="c++">typedef struct _IMAGE_IMPORT_DESCRIPTOR {
+    union {
+        DWORD   Characteristics;            
+        DWORD   OriginalFirstThunk;         
+    } DUMMYUNIONNAME;                       // 高位为1，则低31位就是序号值，否则导入名称表（INT，与IAT相同，用来绑定符号地址）
+    DWORD   TimeDateStamp;                  
+    DWORD   ForwarderChain;                 
+    DWORD   Name;                           //导入的映像名称
+    DWORD   FirstThunk;                     // 指向导入地址数组
+} IMAGE_IMPORT_DESCRIPTOR;
+typedef IMAGE_IMPORT_DESCRIPTOR UNALIGNED *PIMAGE_IMPORT_DESCRIPTOR;</code></pre>
+<h1 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h1><h2 id="进程的内存布局"><a href="#进程的内存布局" class="headerlink" title="进程的内存布局"></a>进程的内存布局</h2><div align=center><img src="./10/常见的进程内存布局.png" alt="常见的进程内存布局"   /></div>
+
+<h2 id="栈与调用惯例"><a href="#栈与调用惯例" class="headerlink" title="栈与调用惯例"></a>栈与调用惯例</h2><p>参考<a href="https://i1arn.github.io/2020/03/03/%E6%A0%88%E7%9B%B8%E5%85%B3/#__cdecl%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B">__cdecl调用过程</a><br><a href="https://i1arn.github.io/2020/03/03/%E6%A0%88%E7%9B%B8%E5%85%B3/">栈相关</a>  </p>
+<h3 id="函数返回值传递"><a href="#函数返回值传递" class="headerlink" title="函数返回值传递"></a>函数返回值传递</h3><p>三种情况，最简单的就是通过eax返回；5~8字节的对象，使用edx返回高4字节，eax返回低4字节；那要是长度超过8字节呢？<br>使用书中的源码调试很快发现了传参方法 </p>
+<pre><code class="C++">typedef struct big_thing {
+    char buf[128];
+}big_thing;
+
+big_thing return_test() {
+    big_thing b;
+    b.buf[0] = 0;
+    return b;
+}
+
+int main() {
+    big_thing n = return_test();
+    return 1;
+}   </code></pre>
+<div align=center><img src="./10/main函数的执行过程.png" alt="main函数的执行过程" /></div>
+<div align=center><img src="./10/复制返回内容.png" alt="返回内容复制到了隐藏的参数中" /></div>
+
+<p>这个过程，有意思的是这个隐藏的参数的地址在main函数的栈帧空间中，结构体从生成到返回经历了两次复制操作；可是在Linux下编译执行的时候又出现了与书本不同的地方<br>编译命令<code>gcc -g test.cpp -O0 -fno-builtin -o test</code> </p>
+<div align=center><img src="./10/Linux下未复制返回内容.png" alt="Linux下未复制返回内容" /></div>
+
+<p>与Windows下编译结果一样，也是传入了一个隐藏的参数，但是“return_test”之后“main”函数不再有其他行为，更不说“memecpy”操作。本以为是因为尚未使用n的原因，但是并不是这样的；在main函数里面添加了<code>n.buf[0]=0x64;</code>，但是编译的结果仍然一样</p>
+<div align=center><img src="./10/使用返回对象.png" alt="使用返回对象" /></div>
+
+<p>好像是在调用“return_test”的时候，传入的隐藏参数就是n的地址；与Windows的相比较，感觉这样更好吧，因为Windows下的隐藏参数同样也是在main函数的栈帧空间中的，直接使用的话可以少了两次复制，main函数的栈帧空间少了。如果这里的结构体更换为对象呢？<br>编译环境：vs2019，X64默认选项  </p>
+<pre><code class="C++">#include&lt;stdio.h&gt;
+
+class MyClass
+{
+public:
+    MyClass() { puts(&quot;构造函数&quot;); };
+    MyClass(const MyClass&amp; temp) { puts(&quot;复制构造函数&quot;); };
+    MyClass&amp; operator=(const MyClass&amp; temp) {
+        puts(&quot;重载 = &quot;);
+        return *this;
+    };   //重载 = 操作符
+    ~MyClass() { puts(&quot;析构函数&quot;); };
+};
+
+MyClass return_test() {
+    MyClass b;
+    puts(&quot;return_test&quot;);
+    return b;
+}
+
+int main()
+{
+    MyClass haha;
+    haha = return_test();
+    return 1;
+}</code></pre>
+<p>执行结果：</p>
+<div align=center><img src="./10/Windows下返回对象.png" alt="Windows下的执行结果" /></div>
+
+<p>Linux下使用G++编译之后，执行的过程与之前相同，Linux比Windows少定义了一个对象，少了一次复制构造函数的使用：</p>
+<ol>
+<li>main函数中调用构造函数初始化对象haha</li>
+<li>传入隐藏的参数，在return_test中调用构造函数初始化该对象</li>
+<li>main函数中，使用重载操作符将隐藏参数复制给对象haha</li>
+<li>析构函数释放隐藏参数</li>
+<li>释放对象haha</li>
+</ol>
+<div align=center><img src="./10/Linux下返回对象.png" alt="Linux下的执行结果" /></div>
+
+
+
+<h2 id="堆与内存管理"><a href="#堆与内存管理" class="headerlink" title="堆与内存管理"></a>堆与内存管理</h2><p>进程使用系统调用的方式来申请堆空间的话性能开销太大，于是程序申请适当大小的堆，交由程序的运行库来管理堆的分配<br>Linux下提供了两个系统调用用以分配堆空间：<code>brk</code>与<code>mmap</code><br>申请的空间大小不能超过空闲内存与空闲交换空间的总和  </p>
+<p><code>malloc</code>申请的虚拟空间是连续的，但对应的物理空间不一定连续</p>
+<h1 id="运行库"><a href="#运行库" class="headerlink" title="运行库"></a>运行库</h1><h2 id="入口函数与程序初始化"><a href="#入口函数与程序初始化" class="headerlink" title="入口函数与程序初始化"></a>入口函数与程序初始化</h2><h3 id="glibc函数入口"><a href="#glibc函数入口" class="headerlink" title="glibc函数入口"></a>glibc函数入口</h3><p>glibc的程序入口为<code>_start</code>,由ld链接器所默认的链接脚本指定；而<code>_start</code>将执行<code>__libc_start_main</code>函数，具体里面将，设置环境变量数组、栈底地址；完成用户代码入口函数执行前后的初始化与收尾工作的注册，包含init、fini、rtld_fini（runtime loader动态链接相关收尾）；再初始化，调用用户代码入口函数；最终退出</p>
+<h3 id="MSVC"><a href="#MSVC" class="headerlink" title="MSVC"></a>MSVC</h3><ol>
+<li>初始化和OS版本有关的全局变量</li>
+<li>初始化堆，使用的是<code>alloca</code>而不是<code>malloc</code>，因为目前堆还未初始化，而<code>alloca</code>是唯一可以不适用堆的动态分配机制，可以在栈上分配任意大小空间，在函数返回时自动释放</li>
+<li>初始化I/O</li>
+<li>获取命令行参数和环境变量</li>
+<li>初始化C库的一些数据</li>
+<li>调用main，并记录返回值</li>
+<li>检查错误并返回main返回值</li>
+</ol>
+<h2 id="C-C-运行库"><a href="#C-C-运行库" class="headerlink" title="C/C++运行库"></a>C/C++运行库</h2><p>CRT,CRunTime-Libaray，C运行库，基本功能有启动与退出、标准函数、I/O功能的封装、堆的封装与实现、语言中的特殊功能实现、调试功能。<br>变长参数宏举例：  </p>
+<pre><code class="C++">//gcc
+#define printf(args) fprintf(stdout,##args)
+
+printf(&quot;%s%d&quot;,&quot;hello&quot;,123);
+fprintf(stdout,&quot;%s%d&quot;,&quot;hello&quot;,123);
+
+//msvc
+#define printf( ...) fprintf(stdout,__VA_ARGS__)</code></pre>
+<h1 id="系统调用与API"><a href="#系统调用与API" class="headerlink" title="系统调用与API"></a>系统调用与API</h1><p>Windows的系统调用入口号0x2E，Linux系统调用入口号0x80。Linux下的系统调用是通过EAX寄存器来存放接口号，同时EAX也将保存返回值。<br><a href="https://blog.csdn.net/sinat_26227857/article/details/44244433" target="_blank" rel="noopener">参考Linux系统调用表</a>  </p>
+
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
                 data-autoplay="false">
@@ -227,9 +423,9 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">16 <p>Articles</p></a></li>
-                    <li><a href="/categories">11 <p>Categories</p></a></li>
-                    <li><a href="/tags">23 <p>Tags</p></a></li>
+                    <li><a href="/archives">17 <p>Articles</p></a></li>
+                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/tags">22 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -238,7 +434,7 @@
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#可执行文件的装载与进程"><span class="toc-number">1.</span> <span class="toc-text">可执行文件的装载与进程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-2装载的方式"><span class="toc-number">1.1.</span> <span class="toc-text">6.2装载的方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#覆盖装入"><span class="toc-number">1.1.1.</span> <span class="toc-text">覆盖装入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#页映射"><span class="toc-number">1.1.2.</span> <span class="toc-text">页映射</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-3从操作系统看可执行文件的装载"><span class="toc-number">1.2.</span> <span class="toc-text">6.3从操作系统看可执行文件的装载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-4进程虚拟空间分布"><span class="toc-number">1.3.</span> <span class="toc-text">6.4进程虚拟空间分布</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#段地址对齐"><span class="toc-number">1.3.1.</span> <span class="toc-text">段地址对齐</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-5Linux内核装载ELF过程简介"><span class="toc-number">1.4.</span> <span class="toc-text">6.5Linux内核装载ELF过程简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-6Windows-PE-的装载"><span class="toc-number">1.5.</span> <span class="toc-text">6.6Windows PE 的装载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#动态链接"><span class="toc-number">2.</span> <span class="toc-text">动态链接</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux共享库的组织"><span class="toc-number">3.</span> <span class="toc-text">Linux共享库的组织</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows下的动态链接"><span class="toc-number">4.</span> <span class="toc-text">Windows下的动态链接</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#可执行文件的装载与进程"><span class="toc-number">1.</span> <span class="toc-text">可执行文件的装载与进程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-2装载的方式"><span class="toc-number">1.1.</span> <span class="toc-text">6.2装载的方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#覆盖装入"><span class="toc-number">1.1.1.</span> <span class="toc-text">覆盖装入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#页映射"><span class="toc-number">1.1.2.</span> <span class="toc-text">页映射</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-3从操作系统看可执行文件的装载"><span class="toc-number">1.2.</span> <span class="toc-text">6.3从操作系统看可执行文件的装载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-4进程虚拟空间分布"><span class="toc-number">1.3.</span> <span class="toc-text">6.4进程虚拟空间分布</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#段地址对齐"><span class="toc-number">1.3.1.</span> <span class="toc-text">段地址对齐</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-5Linux内核装载ELF过程简介"><span class="toc-number">1.4.</span> <span class="toc-text">6.5Linux内核装载ELF过程简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-6Windows-PE-的装载"><span class="toc-number">1.5.</span> <span class="toc-text">6.6Windows PE 的装载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#动态链接"><span class="toc-number">2.</span> <span class="toc-text">动态链接</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么要动态链接"><span class="toc-number">2.1.</span> <span class="toc-text">为什么要动态链接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#地址无关代码"><span class="toc-number">2.2.</span> <span class="toc-text">地址无关代码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#各种地址引用方式"><span class="toc-number">2.2.1.</span> <span class="toc-text">各种地址引用方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PIE"><span class="toc-number">2.2.2.</span> <span class="toc-text">PIE</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#延迟绑定（PLT，Procedure-Linkage-Table）"><span class="toc-number">2.3.</span> <span class="toc-text">延迟绑定（PLT，Procedure Linkage Table）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#got与-got-plt"><span class="toc-number">2.3.1.</span> <span class="toc-text">.got与.got.plt</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态链接相关结构"><span class="toc-number">2.4.</span> <span class="toc-text">动态链接相关结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#动态链接的步骤和实现"><span class="toc-number">2.5.</span> <span class="toc-text">动态链接的步骤和实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#动态链接器自举"><span class="toc-number">2.5.1.</span> <span class="toc-text">动态链接器自举</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#装载共享对象"><span class="toc-number">2.5.2.</span> <span class="toc-text">装载共享对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#重定位与初始化"><span class="toc-number">2.5.3.</span> <span class="toc-text">重定位与初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#动态链接器的实现"><span class="toc-number">2.5.4.</span> <span class="toc-text">动态链接器的实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#显示运行时链接"><span class="toc-number">2.6.</span> <span class="toc-text">显示运行时链接</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux共享库的组织"><span class="toc-number">3.</span> <span class="toc-text">Linux共享库的组织</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows下的动态链接"><span class="toc-number">4.</span> <span class="toc-text">Windows下的动态链接</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#DLL简介"><span class="toc-number">4.1.</span> <span class="toc-text">DLL简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#导入表与导出表"><span class="toc-number">4.2.</span> <span class="toc-text">导入表与导出表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#导出表"><span class="toc-number">4.2.1.</span> <span class="toc-text">导出表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导入表"><span class="toc-number">4.2.2.</span> <span class="toc-text">导入表</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#内存"><span class="toc-number">5.</span> <span class="toc-text">内存</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#进程的内存布局"><span class="toc-number">5.1.</span> <span class="toc-text">进程的内存布局</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#栈与调用惯例"><span class="toc-number">5.2.</span> <span class="toc-text">栈与调用惯例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#函数返回值传递"><span class="toc-number">5.2.1.</span> <span class="toc-text">函数返回值传递</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆与内存管理"><span class="toc-number">5.3.</span> <span class="toc-text">堆与内存管理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#运行库"><span class="toc-number">6.</span> <span class="toc-text">运行库</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#入口函数与程序初始化"><span class="toc-number">6.1.</span> <span class="toc-text">入口函数与程序初始化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#glibc函数入口"><span class="toc-number">6.1.1.</span> <span class="toc-text">glibc函数入口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MSVC"><span class="toc-number">6.1.2.</span> <span class="toc-text">MSVC</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-C-运行库"><span class="toc-number">6.2.</span> <span class="toc-text">C&#x2F;C++运行库</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#系统调用与API"><span class="toc-number">7.</span> <span class="toc-text">系统调用与API</span></a></li></ol>
                 </div>
             </div>
             

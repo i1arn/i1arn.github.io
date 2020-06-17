@@ -5,12 +5,13 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>最小HelloWorld尝试 - Hexo</title>
+    <title>壳壳壳 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content="C/C++实验环境：Ubuntu、GCC7.5.0gcc编译选项：-fno-stack-protector -z execstack -z norelro -fno-builtin -O0，关闭常见,"> 
+    <meta name="description" content="FSG很迅速的找到了程序的入口点，但是IAT修复失败，无法执行  
+"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -57,7 +58,7 @@
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://i1arn.github.io">
         <!-- <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div> -->
-        <h3 class="subtitle">最小HelloWorld尝试</h3>
+        <h3 class="subtitle">壳壳壳</h3>
         <div class="social">
                    <!-- <div class="like-icon"> -->
                        <!-- <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a> -->
@@ -87,19 +88,19 @@
         <div class="else">
             <p class="animated fadeInDown">
                 
-                <a href="/categories/基础编程"><b>「
-                    </b>基础编程<b> 」</b></a>
+                <a href="/categories/逆向分析"><b>「
+                    </b>逆向分析<b> 」</b></a>
                 
-                April 21, 2020
+                January 28, 2020
             </p>
-            <h3 class="post-title animated fadeInDown"><a href="/2020/04/21/%E6%9C%80%E5%B0%8FHelloWorld%E5%B0%9D%E8%AF%95/" title="最小HelloWorld尝试" class="">最小HelloWorld尝试</a>
+            <h3 class="post-title animated fadeInDown"><a href="/2020/01/28/%E5%A3%B3%E5%A3%B3%E5%A3%B3/" title="壳壳壳" class="">壳壳壳</a>
             </h3>
             
             <p class="post-count animated fadeInDown">
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    1.3k
+                    109
                 </span>
                 
                 
@@ -118,7 +119,7 @@
             </p>
             
             
-            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Asm/" rel="tag">Asm</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/C-C/" rel="tag">C\C++</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Code/" rel="tag">Code</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/PE/" rel="tag">PE</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Shell/" rel="tag">Shell</a></li></ul>
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Reverse/" rel="tag">Reverse</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/Shell/" rel="tag">Shell</a></li></ul>
             
         </div>
     </div>
@@ -139,34 +140,8 @@
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <h1 id="C-C"><a href="#C-C" class="headerlink" title="C/C++"></a>C/C++</h1><p>实验环境：Ubuntu、GCC7.5.0<br>gcc编译选项：<code>-fno-stack-protector -z execstack -z norelro -fno-builtin -O0</code>，关闭常见的防护，关闭内置函数优化,关闭优化，动态链接，生成64位可执行程序</p>
-<h2 id="最常见的写法"><a href="#最常见的写法" class="headerlink" title="最常见的写法"></a>最常见的写法</h2><p>先写一个最为常见的HelloWorld</p>
-<pre><code class="c">#include&lt;stdio.h&gt;
-int main()
-{
-    printf(&quot;Hello,World\n&quot;);
-    return 1;
-}</code></pre>
-<p>编译最后大小为6952字节</p>
-<h3 id="使用init段"><a href="#使用init段" class="headerlink" title="使用init段"></a>使用init段</h3><pre><code class="c">#include&lt;stdio.h&gt;
+            <h1 id="FSG"><a href="#FSG" class="headerlink" title="FSG"></a>FSG</h1><p>很迅速的找到了程序的入口点，但是IAT修复失败，无法执行  </p>
 
-static __attribute__((constructor)) void before_main(void) 
-{
-    printf(&quot;Hello,World\n&quot;);
-}
-
-int main()
-{}</code></pre>
-<p>编译之后大小为7072字节，比常见的写法还大</p>
-<h3 id="使用全局变量"><a href="#使用全局变量" class="headerlink" title="使用全局变量"></a>使用全局变量</h3><pre><code class="c++">#include&lt;stdio.h&gt;
-
-char tmp=printf(&quot;Hello,World\n&quot;);
-
-int main()
-{}</code></pre>
-<p>编译之后是7272字节，更大。与上面一种方法一样，只是想到了在<code>main</code>函数之前执行代码的方式，实现一下</p>
-<h2 id="删减与合并段"><a href="#删减与合并段" class="headerlink" title="删减与合并段"></a>删减与合并段</h2><p>上面的都是常规演示,网上大佬们的想法一是汇编,二是c编写32位程序,剔除无关信息等等,也不是非要去比较,所以还是编译成64位程序<br>想要减少体积,可能我最先想到的就是压缩壳,一是段做了合并,二是数据进行了压缩。在此利用链接脚本尝试删减与合并段</p>
-<h2 id="压缩数据"><a href="#压缩数据" class="headerlink" title="压缩数据"></a>压缩数据</h2>
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
                 data-autoplay="false">
@@ -209,9 +184,9 @@ int main()
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">16 <p>Articles</p></a></li>
-                    <li><a href="/categories">11 <p>Categories</p></a></li>
-                    <li><a href="/tags">23 <p>Tags</p></a></li>
+                    <li><a href="/archives">17 <p>Articles</p></a></li>
+                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/tags">22 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -220,7 +195,7 @@ int main()
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C-C"><span class="toc-number">1.</span> <span class="toc-text">C&#x2F;C++</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#最常见的写法"><span class="toc-number">1.1.</span> <span class="toc-text">最常见的写法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用init段"><span class="toc-number">1.1.1.</span> <span class="toc-text">使用init段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用全局变量"><span class="toc-number">1.1.2.</span> <span class="toc-text">使用全局变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#删减与合并段"><span class="toc-number">1.2.</span> <span class="toc-text">删减与合并段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#压缩数据"><span class="toc-number">1.3.</span> <span class="toc-text">压缩数据</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#FSG"><span class="toc-number">1.</span> <span class="toc-text">FSG</span></a></li></ol>
                 </div>
             </div>
             

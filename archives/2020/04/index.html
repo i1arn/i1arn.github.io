@@ -60,7 +60,7 @@
                 <div class="content animated fadeIn">
                     <div class="set">
                         <h1 style="text-align: center">Archived</h1>
-                        <p style="text-align: center">「 16 」</p>
+                        <p style="text-align: center">「 17 」</p>
                         <ul class="timeline timeline-centered">
                             
                             
@@ -79,7 +79,7 @@
                                     </div>
                                     <div class="timeline-marker"></div>
                                     <div class="timeline-content">
-                                        <a class="timeline-title" target="_self" href="/2020/05/17/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB-2/">程序员的自我修养(2)--装载与动态链接</a>
+                                        <a class="timeline-title" target="_self" href="/2020/05/17/%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB-2/">程序员的自我修养(2)--装载与动态链接、库与运行库</a>
                                         <p>
                                             可执行文件的装载与进程6.2装载的方式动态装入:根据程序的局部性原理,将常用的部分驻留在内存中,不常用的存放在磁盘  
 覆盖装入程序员手动将程序分块,并自行设计覆盖管理器来管理模块的换入换出覆盖管理器的设计主要考虑的问题就是模块之间的调用依赖关系  
@@ -120,8 +120,7 @@
 #include&lt;stdio.h&gt;
 #include&lt;pthread.h&gt;
 
-int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
-         ...
+__attribute__((weak)) int pthread_create(pthread_t *thread, const pthread_a...
                                         </p>
                                     </div>
                                 </li>
@@ -137,6 +136,28 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
                                         <p>
                                             adworld攻防世界supermarket溢出点：在命令5修改商品描述的时候，会请求用户输入大小，调用realloc调整空间，但是在之后获取输入的时候最大长度还是第一次输入的长度，可能造成溢出而商品的结构体中依次保存的是商品名，价格，描述内容大小，描述内容指针，我们可以尝试通过修改指针指向来向合适的地址写入合适的内容  
 note-service2题目链接想尝试利用现有的一些shellco...
+                                        </p>
+                                    </div>
+                                </li>
+                            
+                                
+                                <li class="timeline-item">
+                                    <div class="timeline-info">
+                                        <span class="gradient-text">May 01, 2020</span>
+                                    </div>
+                                    <div class="timeline-marker"></div>
+                                    <div class="timeline-content">
+                                        <a class="timeline-title" target="_self" href="/2020/05/01/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%AE%9E%E6%88%98/">恶意代码分析实战</a>
+                                        <p>
+                                            恶意代码行为
+下载器与启动器
+后门
+登录凭证窃取
+存活机制
+提权
+隐藏踪迹
+
+实验11-1
                                         </p>
                                     </div>
                                 </li>
@@ -198,25 +219,6 @@ public:
 计算机科学领域的任何一个问题都可以通过增加一个间接的中间层来解决Any Problem in Computer science can be solved by another layer of indirection.
 
 分段与分页分段与分页最初始的内存分配方案（直接线性的分配物理内存）主要存在地址空间不隔离、内存使用效率低、程序的运行地址不确定三大问题，提出的‘中间层’解...
-                                        </p>
-                                    </div>
-                                </li>
-                            
-                                
-                                <li class="timeline-item">
-                                    <div class="timeline-info">
-                                        <span class="gradient-text">April 21, 2020</span>
-                                    </div>
-                                    <div class="timeline-marker"></div>
-                                    <div class="timeline-content">
-                                        <a class="timeline-title" target="_self" href="/2020/04/21/%E6%9C%80%E5%B0%8FHelloWorld%E5%B0%9D%E8%AF%95/">最小HelloWorld尝试</a>
-                                        <p>
-                                            C/C++实验环境：Ubuntu、GCC7.5.0gcc编译选项：-fno-stack-protector -z execstack -z norelro -fno-builtin -O0，关闭常见的防护，关闭内置函数优化,关闭优化，动态链接，生成64位可执行程序
-最常见的写法先写一个最为常见的HelloWorld
-#include&lt;stdio.h&gt;
-int main()
-{
- ...
                                         </p>
                                     </div>
                                 </li>
@@ -363,6 +365,29 @@ jump与call的区别jump是跳转到该地址开始执行。而执行完成之�
 指令区域对进程来说是只读的，数据区域需要读写，可以分别设置两者的权限，防止指令被修改
 现代CPU中L1 cache一般设计指令缓存与数据缓存，如此分开，可以提高cache的命中率
 当程序中运行多个该指令集的副本时，物理内存中只...
+                                        </p>
+                                    </div>
+                                </li>
+                            
+                                
+                                <li class="timeline-item period">
+                                    <div class="timeline-info"></div>
+                                    <div class="timeline-marker"></div>
+                                    <div class="timeline-content">
+                                        <h2 class="timeline-title">January 2020</h2>
+                                    </div>
+                                </li>
+                                
+                                <li class="timeline-item">
+                                    <div class="timeline-info">
+                                        <span class="gradient-text">January 28, 2020</span>
+                                    </div>
+                                    <div class="timeline-marker"></div>
+                                    <div class="timeline-content">
+                                        <a class="timeline-title" target="_self" href="/2020/01/28/%E5%A3%B3%E5%A3%B3%E5%A3%B3/">壳壳壳</a>
+                                        <p>
+                                            FSG很迅速的找到了程序的入口点，但是IAT修复失败，无法执行  
+
                                         </p>
                                     </div>
                                 </li>

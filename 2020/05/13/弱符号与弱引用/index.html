@@ -145,8 +145,8 @@
 <pre><code class="c++">#include&lt;stdio.h&gt;
 #include&lt;pthread.h&gt;
 
-int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
-                          void *(*start_routine) (void *), void *arg)  __attribute__((weak));
+__attribute__((weak)) int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
+                          void *(*start_routine) (void *), void *arg) ;
 
 int main()
 {
@@ -157,17 +157,16 @@ int main()
     return 1;
 }</code></pre>
 <p>书中给出的编译选项：<code>gcc pthread.c -o pt</code>与<code>gcc pthread.c -l pthread -o pt</code></p>
-<h2 id="原程序编译"><a href="#原程序编译" class="headerlink" title="原程序编译"></a>原程序编译</h2><h3 id="问题1-ptread-create始终没有定义"><a href="#问题1-ptread-create始终没有定义" class="headerlink" title="问题1 ptread_create始终没有定义"></a>问题1 ptread_create始终没有定义</h3><p>两种编译选项编译之后执行结果都是“single-thread”，<code>pthread_create</code>在符号表中的表现一致</p>
-<div align=center><img src="./pthread_create在符号表与重定位表中.png" alt="pthread_create在符号表与重定位表中"  /></div>
+<h2 id="原程序弱符号编译"><a href="#原程序弱符号编译" class="headerlink" title="原程序弱符号编译"></a>原程序弱符号编译</h2><h3 id="问题-ptread-create始终为0"><a href="#问题-ptread-create始终为0" class="headerlink" title="问题 ptread_create始终为0"></a>问题 ptread_create始终为0</h3><p>两种编译选项编译之后执行结果都是“single-thread”，<code>pthread_create</code>在符号表中的表现一致</p>
+<div align=center><img src="./pthread_create符号.png" alt="pthread_create符号"  /></div>
 
-<h2 id="跟换为弱引用编译"><a href="#跟换为弱引用编译" class="headerlink" title="跟换为弱引用编译"></a>跟换为弱引用编译</h2><pre><code class="c++">int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
-                          void *(*start_routine) (void *), void *arg)  __attribute__((weakref));</code></pre>
-<h3 id="问题1-if判断去了哪里"><a href="#问题1-if判断去了哪里" class="headerlink" title="问题1 if判断去了哪里"></a>问题1 if判断去了哪里</h3><p>gcc最终生成的可执行文件中，main函数调用puts函数打印了字符串，<code>if(pthread_create)</code>的判断被“优化”掉了，采用编译选项禁用优化<code>-O0</code>也没有用  </p>
-<div align=center><img src="./if判断语句去哪了.png" alt="if判断语句去哪了"  /></div>
 
-<h3 id="问题2-找不到pthread-create符号"><a href="#问题2-找不到pthread-create符号" class="headerlink" title="问题2 找不到pthread_create符号"></a>问题2 找不到pthread_create符号</h3><p>最终的执行结果都是“multi-thread”，但是符号表中都未找到<code>pthread_create</code>符号  </p>
-<pre><code class="c++">printf(&quot;multi-thread\n，%x&quot;，pthread_create);                 </code></pre>
-<p>我们尝试去打印<code>pthread_create</code>的值，<code>gcc pthread.c -l pthread -o pt</code>能够成功编译，执行打印出pthread_create地址，同时在符号表中也找到了该符号，但是<code>gcc pthread.c -o pt</code>编译出错，显示<code>undefined reference to &#39;pthread_create&#39;</code></p>
+
+<h2 id="跟换为弱引用编译"><a href="#跟换为弱引用编译" class="headerlink" title="跟换为弱引用编译"></a>跟换为弱引用编译</h2><pre><code class="c++">__attribute__((weakref)) int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
+                          void *(*start_routine) (void *), void *arg)  ;</code></pre>
+<h3 id="问题-编译失败"><a href="#问题-编译失败" class="headerlink" title="问题 编译失败"></a>问题 编译失败</h3><pre><code class="c++">printf(&quot;multi-thread\n，%x&quot;，pthread_create);                 </code></pre>
+<p>我们尝试去打印<code>pthread_create</code>的值，<code>gcc pthread.c -l pthread -o pt</code>能够成功编译，执行打印出pthread_create地址，同时在符号表中也找到了该符号，但是<code>gcc pthread.c -o pt</code>编译出错，显示<code>undefined reference to &#39;pthread_create&#39;</code>，不是说弱引用的时候找不到定义也不报错么，为啥现在直接编译报错<br><a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes" target="_blank" rel="noopener">gcc函数通用属性</a>中提到了通过<code>alias</code>来设置符号的别名来使用，例如<code>__attribute__((weakref，alias(&quot;pthread_create&quot;))) int MyPthread ...</code>，编译能够通过，但是<code>MyPthread</code>符号值为0。</p>
+<h1 id="解答"><a href="#解答" class="headerlink" title="解答"></a>解答</h1><p>待解答。。。</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
@@ -211,9 +210,9 @@ int main()
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">16 <p>Articles</p></a></li>
-                    <li><a href="/categories">11 <p>Categories</p></a></li>
-                    <li><a href="/tags">23 <p>Tags</p></a></li>
+                    <li><a href="/archives">17 <p>Articles</p></a></li>
+                    <li><a href="/categories">12 <p>Categories</p></a></li>
+                    <li><a href="/tags">22 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -222,7 +221,7 @@ int main()
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问题"><span class="toc-number">1.</span> <span class="toc-text">问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#原程序编译"><span class="toc-number">1.1.</span> <span class="toc-text">原程序编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题1-ptread-create始终没有定义"><span class="toc-number">1.1.1.</span> <span class="toc-text">问题1 ptread_create始终没有定义</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#跟换为弱引用编译"><span class="toc-number">1.2.</span> <span class="toc-text">跟换为弱引用编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题1-if判断去了哪里"><span class="toc-number">1.2.1.</span> <span class="toc-text">问题1 if判断去了哪里</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题2-找不到pthread-create符号"><span class="toc-number">1.2.2.</span> <span class="toc-text">问题2 找不到pthread_create符号</span></a></li></ol></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问题"><span class="toc-number">1.</span> <span class="toc-text">问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#原程序弱符号编译"><span class="toc-number">1.1.</span> <span class="toc-text">原程序弱符号编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题-ptread-create始终为0"><span class="toc-number">1.1.1.</span> <span class="toc-text">问题 ptread_create始终为0</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#跟换为弱引用编译"><span class="toc-number">1.2.</span> <span class="toc-text">跟换为弱引用编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题-编译失败"><span class="toc-number">1.2.1.</span> <span class="toc-text">问题 编译失败</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#解答"><span class="toc-number">2.</span> <span class="toc-text">解答</span></a></li></ol>
                 </div>
             </div>
             
