@@ -10,8 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="TriDiamond Obsidian,"> 
-    <meta name="description" content="FSG很迅速的找到了程序的入口点，但是IAT修复失败，无法执行  
-"> 
+    <meta name="description" content="Overlay附加数据Overlay数据,附加数据.数据被附加在PE文件后面,使用的时候打开PE文件本身直接读取就行,但系统在映射文件到内存的时候,因为附加数据相关信息不包含在PE头中,所以不会被映,"> 
     <meta name="author" content="熬夜脑阔疼"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -100,7 +99,7 @@
                 
                 <span>
                     <b class="iconfont icon-text2"></b> <i>Words count</i>
-                    109
+                    436
                 </span>
                 
                 
@@ -140,7 +139,8 @@
 <div class="article">
     <div class='main'>
         <div class="content markdown animated fadeIn">
-            <h1 id="FSG"><a href="#FSG" class="headerlink" title="FSG"></a>FSG</h1><p>很迅速的找到了程序的入口点，但是IAT修复失败，无法执行  </p>
+            <h1 id="Overlay附加数据"><a href="#Overlay附加数据" class="headerlink" title="Overlay附加数据"></a>Overlay附加数据</h1><p>Overlay数据,附加数据.数据被附加在PE文件后面,使用的时候打开PE文件本身直接读取就行,但系统在映射文件到内存的时候,因为附加数据相关信息不包含在PE头中,所以不会被映射进内存  </p>
+<p>拿到程序,查壳UPX,两秒脱完,运行,失败!调试发现,在<code>ReadFileA</code>之后,检查数据时报错.使用PEStudy很快就找到了附加数据的起始地址<br><img src="./%E9%99%84%E5%8A%A0%E6%95%B0%E6%8D%AE%E8%B5%B7%E5%A7%8B%E5%9C%B0%E5%9D%80.png" alt="附加数据起始地址"><br>将附加数据复制粘贴到脱壳文件后的末尾就能成功运行了</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls"
@@ -184,9 +184,9 @@
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">17 <p>Articles</p></a></li>
+                    <li><a href="/archives">18 <p>Articles</p></a></li>
                     <li><a href="/categories">12 <p>Categories</p></a></li>
-                    <li><a href="/tags">22 <p>Tags</p></a></li>
+                    <li><a href="/tags">23 <p>Tags</p></a></li>
                 </ul>
             </div>
             
@@ -195,7 +195,7 @@
             <div class="box sticky animated fadeInRight faster">
                 <div id="toc" class="subbox">
                     <h4>Contents</h4>
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#FSG"><span class="toc-number">1.</span> <span class="toc-text">FSG</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Overlay附加数据"><span class="toc-number">1.</span> <span class="toc-text">Overlay附加数据</span></a></li></ol>
                 </div>
             </div>
             

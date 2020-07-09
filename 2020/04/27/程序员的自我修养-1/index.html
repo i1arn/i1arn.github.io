@@ -119,7 +119,7 @@
             </p>
             
             
-            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/%E7%BC%96%E8%AF%91%E3%80%81%E9%93%BE%E6%8E%A5/" rel="tag">编译、链接</a></li></ul>
+            <ul class="animated fadeInDown post-tags-list" itemprop="keywords"><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/OS/" rel="tag">OS</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/PE-ELF-COFF/" rel="tag">PE\ELF\COFF</a></li><li class="animated fadeInDown post-tags-list-item"><a class="animated fadeInDown post-tags-list-link" href="/tags/%E7%BC%96%E8%AF%91%E3%80%81%E9%93%BE%E6%8E%A5/" rel="tag">编译、链接</a></li></ul>
             
         </div>
     </div>
@@ -792,7 +792,7 @@ PE是COFF的拓展,主要表现在两点不同:
   WORD                 MajorSubsystemVersion;               //子系统主版本号
   WORD                 MinorSubsystemVersion;
   DWORD                Win32VersionValue;                   //保留
-  DWORD                SizeOfImage;                         //整个文件的大小,必须是内存对齐粒度的倍数
+  DWORD                SizeOfImage;                         //整个文件的大小,必须是内存对齐粒度的倍数...是指文件在内存中展开之后得到的内存大小,并非文件大小
   DWORD                SizeOfHeaders;                       //所有文件头,包含magic魔数 ,或者说 文件大小减去所有section的大小
   DWORD                CheckSum;                            //文件校验和
   WORD                 Subsystem;                           //需要的子系统,GUI、CUI等等
@@ -854,9 +854,9 @@ PE是COFF的拓展,主要表现在两点不同:
                     </dl>
                 </div>
                 <ul>
-                    <li><a href="/archives">17 <p>Articles</p></a></li>
+                    <li><a href="/archives">18 <p>Articles</p></a></li>
                     <li><a href="/categories">12 <p>Categories</p></a></li>
-                    <li><a href="/tags">22 <p>Tags</p></a></li>
+                    <li><a href="/tags">23 <p>Tags</p></a></li>
                 </ul>
             </div>
             
